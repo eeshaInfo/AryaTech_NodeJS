@@ -19,19 +19,11 @@ var validateMobileNumber = function (mobileNumber) {
  **************************************************/
 const adminSchema = new Schema(
     {
-        name: { type: String },
         email: {
             type: String, trim: true, required: [true, "email address is required."], validate: [validateEmail, "Must be a valid email address."], unique: true
         },
-        userType: { type: Number, maxlength: 2, default: USER_TYPES.USER },
-        country: { type: String, default: "" },
-        city: { type: String, default: "" },
         password: { type: String },
-        gender: { type: Number, enum: [GENDER_TYPES.MALE, GENDER_TYPES.FEMALE] },
-        dob: { type: Date, max: new Date() },
-        imagePath: { type: String },
-        registrationToken: [{ type: String }],
-        isLoggedIn: { type: Boolean, default: false },
+        name: { type: String }
     },
     { versionKey: false }
 );
