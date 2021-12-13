@@ -136,6 +136,7 @@ userController.socialLogin = async (payload) => {
  * @param {*} userId 
  * @param {*} payload 
  */
+
 let createUserSession = async (criteriaForSession, userId, payload) => {
   payload.userId = userId;
   await SERVICES.sessionService.updateSession(criteriaForSession, payload);

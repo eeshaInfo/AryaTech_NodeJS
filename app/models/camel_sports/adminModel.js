@@ -17,7 +17,7 @@ var validateMobileNumber = function (mobileNumber) {
 /**************************************************
  ************* User Model or collection ***********
  **************************************************/
-const userSchema = new Schema(
+const adminSchema = new Schema(
     {
         name: { type: String },
         email: {
@@ -36,7 +36,7 @@ const userSchema = new Schema(
     { versionKey: false }
 );
 
-userSchema.set("timestamps", true);
+adminSchema.set("timestamps", true);
 
-module.exports = MONGOOSE.model("users", userSchema);
+module.exports = MONGOOSE.model("admin", adminSchema);
 
