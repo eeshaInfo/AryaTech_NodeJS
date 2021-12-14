@@ -47,6 +47,7 @@ userController.loginUser = async (payload) => {
       };
       delete user.password;
       let token = await encryptJwt(dataForJwt);
+      console.log(token)
       await SERVICES.sessionService.updateSession({userId: user._id},{token});
       return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
     }
@@ -253,6 +254,7 @@ userController.activateAccount = async (payload) => {
  */
 userController.resetPassword = async (payload) => {
   let decodedObj = decryptJwt(payload.token);
+  console.log(decodedObj)
   if (!decodedObj) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.UNAUTHORIZED, ERROR_TYPES.UNAUTHORIZED);
   }
