@@ -51,7 +51,7 @@ commonFunctions.convertIdToMongooseId = (stringId) => {
 /** create jsonwebtoken **/
 commonFunctions.encryptJwt = (payload) => {
 
-  return JWT.sign(payload, CONSTANTS.SECURITY.JWT_SIGN_KEY, { algorithm: 'HS256', expiresIn: '24h' });
+  return JWT.sign(payload, CONSTANTS.SECURITY.JWT_SIGN_KEY, { algorithm: 'HS256', expiresIn: '1m' });
 };
 
 commonFunctions.decryptJwt = (token) => {

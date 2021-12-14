@@ -8,8 +8,8 @@ var PLATFORM = process.env.PLATFORM || 'CamelSports';
 var defaults = {
     PLATFORM: PLATFORM,
     ADMIN: {
-        EMAIL: `admin.test@yopmail.com`,
-        PASSWORD: `Admin@123`,
+        EMAIL: process.env.ADMIN_EMAIL || `admin.test@yopmail.com`,
+        PASSWORD: process.env.EMAIL_PASSWORD || `Admin@123`,
         STATUS: 2
     },
     root: path.normalize(__dirname + '/../app'),
