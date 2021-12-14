@@ -51,7 +51,7 @@ commonFunctions.convertIdToMongooseId = (stringId) => {
 /** create jsonwebtoken **/
 commonFunctions.encryptJwt = (payload) => {
 
-  return JWT.sign(payload, CONSTANTS.SECURITY.JWT_SIGN_KEY, { algorithm: 'HS256', expiresIn: '1m' });
+  return JWT.sign(payload, CONSTANTS.SECURITY.JWT_SIGN_KEY, { algorithm: 'HS256', expiresIn: '24h' });
 };
 
 commonFunctions.decryptJwt = (token) => {
@@ -119,10 +119,10 @@ commonFunctions.sendEmail = async (userData, type) => {
     to: email,
     from: CONFIG.MAIL_GUN.SENDER,
     subject: mailData.Subject,
-    ...(type == CONSTANTS.EMAIL_TYPES.SEND_PAYROLL && {text: 'Payroll'}),
-    ...(type != CONSTANTS.EMAIL_TYPES.SEND_PAYROLL && {html: templateData}),
+    ...(type == CONSTANTS.EMAIL_TYPES.SEND_PAYROLL && { text: 'Payroll' }),
+    ...(type != CONSTANTS.EMAIL_TYPES.SEND_PAYROLL && { html: templateData }),
     //attachment: mailData.attachment,
-    ...(type == CONSTANTS.EMAIL_TYPES.SEND_PAYROLL && {attachment: mailData.attachment}),
+    ...(type == CONSTANTS.EMAIL_TYPES.SEND_PAYROLL && { attachment: mailData.attachment }),
     //template: mailData.template,
     'h:X-Mailgun-Variables': JSON.stringify(mailData.data)
   };

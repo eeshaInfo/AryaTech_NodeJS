@@ -8,6 +8,20 @@ const { userController } = require('../../controllers');
 
 let routesAdmin = [
     {
+        method: 'GET',
+        path: '/v1/admin/auth',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            group: 'Admin',
+            description: 'Route to user auth example',
+            model: 'Admin_Auth'
+        },
+        auth: AVAILABLE_AUTHS.USER,
+        handler: userController.getServerResponse
+    },
+    {
         method: 'POST',
         path: '/v1/admin/login',   //ADMIN_LOGIN
         joiSchemaForSwagger: {
@@ -21,6 +35,7 @@ let routesAdmin = [
         },
         handler: userController.loginUser
     },
+
     {
         method: 'POST',
         path: '/v1/admin/logout',        //ADMIN_LOGOUT...
