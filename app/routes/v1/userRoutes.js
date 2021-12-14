@@ -29,6 +29,7 @@ let routes = [
         auth: AVAILABLE_AUTHS.USER,
         handler: userController.getServerResponse
     },
+
     {
         method: 'POST',
         path: '/v1/user/register',

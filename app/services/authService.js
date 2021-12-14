@@ -30,29 +30,25 @@ authService.userValidate = () => {
  * @param {} request 
  */
 let validateUser = async (request) => {
-    try {
-        // let session = await sessionService.getSession({token: request.headers.authorization, tokenType: TOKEN_TYPES.LOGIN});
-        // if(!session || (session && session.tokenExpDate < new Date())){
-        //     return false;
-        // }
-        // if(authType == AVAILABLE_AUTHS.USER && session.userType != USER_TYPE.USER){
-        //     return false;
-        // }
-        // else if(authType == AVAILABLE_AUTHS.ADMIN && session.userType != USER_TYPE.SUPER_ADMIN){
-        //     return false;
-        // }
-        // else if(authType == AVAILABLE_AUTHS.ALL && !(session.userType == USER_TYPE.SUPER_ADMIN  || session.userType == USER_TYPE.USER)){
-        //     return false;
-        // }
 
-        let token = await utils.decryptJwt(request.headers.authorization);
-        let user = await userModel.findOne({ _id: token.id }).lean();
-        if (user) {
-            //user.session = session;
-            request.user = user;
-            return true;
+    try {
+        let decodedToken = JWT.verify(request.headers.authorization, SECURITY.JWT_SIGN_KEY);
+        // console.log(decodedToken);
+        if (!decodedToken) {
+            return false;
+        }
+        let checkSession = await sessionModel.findOne({ userId: decodedToken.id, token: request.headers.authorization });
+        if (!checkSession) {
+            return false;
+        }
+        let criteria = { _id: decodedToken.id };
+        let authenticatedUser = await userModel.findOne(criteria).lean();
+        if (authenticatedUser) {
+            request.user = authenticatedUser;
+            return true
         }
         return false;
+
     } catch (err) {
         return false;
     }

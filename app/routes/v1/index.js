@@ -6,7 +6,8 @@
  ********* All routes ***********
  ********************************/
 let v1Routes = [
-    ...require('./userRoutes')
+    ...require('./userRoutes'), ...require('./adminRoute')
+    
 ]
 
 

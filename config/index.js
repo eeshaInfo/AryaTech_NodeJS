@@ -8,8 +8,8 @@ var PLATFORM = process.env.PLATFORM || 'CamelSports';
 var defaults = {
     PLATFORM: PLATFORM,
     ADMIN: {
-        EMAIL: `admin.test@yopmail.com`,
-        PASSWORD: `Admin@123`,
+        EMAIL: process.env.ADMIN_EMAIL || `admin.test@yopmail.com`,
+        PASSWORD: process.env.EMAIL_PASSWORD || `Admin@123`,
         STATUS: 2
     },
     root: path.normalize(__dirname + '/../app'),
@@ -30,7 +30,7 @@ var defaults = {
         PROTOCOL: process.env.DB_PROTOCOL || 'mongodb',
         HOST: process.env.DB_HOST || '127.0.0.1',
         PORT: process.env.DB_PORT || 27017,
-        NAME: PLATFORM || 'funkoInternational',
+        NAME: PLATFORM || 'Camel Sports',
         USER: '',
         PASSWORD: '',
         get URL() { return process.env.dbUrl || `${this.PROTOCOL}://${this.HOST}:${this.PORT}/${this.NAME}` }

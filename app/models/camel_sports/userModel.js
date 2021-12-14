@@ -21,7 +21,7 @@ const userSchema = new Schema(
     {
         name: { type: String },
         email: {
-            type: String, trim: true, required: [true, "email address is required."], validate: [validateEmail, "Must be a valid email address."], unique: true
+            type: String
         },
         userType: { type: Number, maxlength: 2, default: USER_TYPES.USER },
         country: { type: String, default: "" },
@@ -31,7 +31,7 @@ const userSchema = new Schema(
         dob: { type: Date, max: new Date() },
         imagePath: { type: String },
         registrationToken: [{ type: String }],
-        isLoggedIn: { type: Boolean, default: false },
+       // isLoggedIn: { type: Boolean, default: false },
     },
     { versionKey: false }
 );
@@ -39,3 +39,4 @@ const userSchema = new Schema(
 userSchema.set("timestamps", true);
 
 module.exports = MONGOOSE.model("users", userSchema);
+

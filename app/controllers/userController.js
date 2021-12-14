@@ -36,7 +36,7 @@ userController.registerNewUser = async (payload) => {
  */
 userController.loginUser = async (payload) => {
   // check is user exists in the database with provided email or not.
-  let user = await SERVICES.userService.getUser({ email: payload.email , status :CONSTANTS.STATUS.ACTIVE}, { ...NORMAL_PROJECTION, openSheets: 0,passwordToken: 0 });
+  let user = await SERVICES.userService.getUser({ email: payload.email }, { ...NORMAL_PROJECTION });
   // if user exists then compare the password that user entered.
   if (user) {
     // compare user's password.
@@ -46,7 +46,9 @@ userController.loginUser = async (payload) => {
         date: Date.now()
       };
       delete user.password;
-      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token: encryptJwt(dataForJwt), user });
+      let token = await encryptJwt(dataForJwt);
+      await SERVICES.sessionService.updateSession({userId: user._id},{token});
+      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
     }
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_PASSWORD, ERROR_TYPES.BAD_REQUEST);
   }
@@ -136,6 +138,7 @@ userController.socialLogin = async (payload) => {
  * @param {*} userId 
  * @param {*} payload 
  */
+
 let createUserSession = async (criteriaForSession, userId, payload) => {
   payload.userId = userId;
   await SERVICES.sessionService.updateSession(criteriaForSession, payload);
@@ -149,7 +152,6 @@ userController.logout = async (payload) => {
     userId: payload.user._id 
    }, dataToUpdate = { $unset: { token: 1 } };
   await SERVICES.sessionService.updateSession(criteria, dataToUpdate);
-  await SERVICES.userService.updateUser({_id:payload.user._id },{openSheets:[]});
   return HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_OUT_SUCCESSFULLY);
 };
 

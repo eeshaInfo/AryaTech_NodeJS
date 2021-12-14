@@ -7,5 +7,7 @@ const CONFIG = require('../../config');
 module.exports = {
     userService: require('./userService'),
     swaggerService: require('./swaggerService'),
-    authService: require('./authService')
+    authService: require('./authService'),
+    sessionService: require('./sessionService')
+
 };

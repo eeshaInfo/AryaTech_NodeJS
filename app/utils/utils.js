@@ -119,10 +119,10 @@ commonFunctions.sendEmail = async (userData, type) => {
     to: email,
     from: CONFIG.MAIL_GUN.SENDER,
     subject: mailData.Subject,
-    ...(type == CONSTANTS.EMAIL_TYPES.SEND_PAYROLL && {text: 'Payroll'}),
-    ...(type != CONSTANTS.EMAIL_TYPES.SEND_PAYROLL && {html: templateData}),
+    ...(type == CONSTANTS.EMAIL_TYPES.SEND_PAYROLL && { text: 'Payroll' }),
+    ...(type != CONSTANTS.EMAIL_TYPES.SEND_PAYROLL && { html: templateData }),
     //attachment: mailData.attachment,
-    ...(type == CONSTANTS.EMAIL_TYPES.SEND_PAYROLL && {attachment: mailData.attachment}),
+    ...(type == CONSTANTS.EMAIL_TYPES.SEND_PAYROLL && { attachment: mailData.attachment }),
     //template: mailData.template,
     'h:X-Mailgun-Variables': JSON.stringify(mailData.data)
   };
