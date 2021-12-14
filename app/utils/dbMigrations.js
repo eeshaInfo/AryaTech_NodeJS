@@ -1,8 +1,7 @@
-const { DATABASE_VERSIONS } = require("./constants");
-const { dbVersionModel } = require("./../models");
+const { DATABASE_VERSIONS, USER_TYPES } = require("./constants");
 const { ADMIN, LOCATION } = require("../../config");
 const { hashPassword } = require("./utils");
-const { adminModel } = require('../models/index')
+const { userModel, dbVersionModel } = require('../models')
 let dbMigrations = {};
 
 /** -- function to migerate database based on version number. */
@@ -15,7 +14,7 @@ dbMigrations.migerateDatabase = async () => {
     if (version < DATABASE_VERSIONS.ONE) {
         /** -- create admin if not exist */
         let password = hashPassword(ADMIN.PASSWORD);
-        await adminModel({ email: ADMIN.EMAIL, password: password, name: ADMIN.NAME }).save();
+        await userModel({ email: ADMIN.EMAIL, password: password, name: ADMIN.NAME, userType: USER_TYPES.ADMIN }).save();
         await dbVersionModel.findOneAndUpdate({ version: DATABASE_VERSIONS.ONE }).lean();
         await dbVersionModel({ version: DATABASE_VERSIONS.ONE }).save();
     }

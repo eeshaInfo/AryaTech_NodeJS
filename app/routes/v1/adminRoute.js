@@ -3,12 +3,10 @@
 const { Joi } = require('../../utils/joiUtils');
 const { AVAILABLE_AUTHS, GENDER_TYPES } = require('../../utils/constants');
 //load controllers
-const { adminController } = require('../../controllers');
+const { userController } = require('../../controllers');
 
 
 let routesAdmin = [
-
-
     {
         method: 'POST',
         path: '/v1/admin/login',
@@ -21,7 +19,7 @@ let routesAdmin = [
             description: 'Route to login a admin.',
             model: 'AdminLogin'
         },
-        handler: adminController.loginUser
+        handler: userController.loginUser
     },
     {
         method: 'POST',
@@ -35,7 +33,7 @@ let routesAdmin = [
             model: 'adminLogout'
         },
         auth: AVAILABLE_AUTHS.USER,
-        handler: adminController.logout
+        handler: userController.logout
     },
 ];
 

@@ -36,7 +36,7 @@ userController.registerNewUser = async (payload) => {
  */
 userController.loginUser = async (payload) => {
   // check is user exists in the database with provided email or not.
-  let user = await SERVICES.userService.getUser({ email: payload.email , status :CONSTANTS.STATUS.ACTIVE}, { ...NORMAL_PROJECTION, openSheets: 0,passwordToken: 0 });
+  let user = await SERVICES.userService.getUser({ email: payload.email }, { ...NORMAL_PROJECTION });
   // if user exists then compare the password that user entered.
   if (user) {
     // compare user's password.
