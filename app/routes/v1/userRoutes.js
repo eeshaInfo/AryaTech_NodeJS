@@ -52,14 +52,15 @@ let routes = [
         },
         handler: userController.registerNewUser
     },
-
     {
         method: 'POST',
         path: '/v1/user/login',
         joiSchemaForSwagger: {
             body: {
-                email: Joi.string().email().required().description('User\'s email Id.'),
-                password: Joi.string().required().regex(/^(?=.*[A-Za-z])(?=(.*[\d]){1,})(?=.*?[^\w\s]).{8,}$/).description('User\'s password.')
+                isAdminRole: Joi.boolean(),
+                mobileNumber: Joi.alternatives().conditional('isAdminRole',{is:true,then: Joi.string().optional(),otherwise: Joi.string().required()}),
+                email: Joi.alternatives().conditional('isAdminRole',{is:true,then: Joi.string().required(),otherwise: Joi.string().optional()}),
+                password: Joi.alternatives().conditional('isAdminRole',{is:true,then: Joi.string().required(),otherwise: Joi.string().optional()}),
             },
             group: 'User',
             description: 'Route to login a user.',
