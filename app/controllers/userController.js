@@ -15,7 +15,7 @@ let userController = {};
 /**
  * function to check server.
  */
-userController.getServerResponse= async(payload) =>{
+userController.getServerResponse = async (payload) => {
   throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS);
 }
 
@@ -35,25 +35,42 @@ userController.registerNewUser = async (payload) => {
  * function to login a user to the system.
  */
 userController.loginUser = async (payload) => {
-  // check is user exists in the database with provided email or not.
-  let user = await SERVICES.userService.getUser({ email: payload.email }, { ...NORMAL_PROJECTION });
-  // if user exists then compare the password that user entered.
-  if (user) {
-    // compare user's password.
-    if (compareHash(payload.password, user.password)) {
-      const dataForJwt = {
-        id: user._id,
-        date: Date.now()
-      };
-      delete user.password;
-      let token = await encryptJwt(dataForJwt);
-      console.log(token)
-      await SERVICES.sessionService.updateSession({userId: user._id},{token});
-      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
+  if (payload.isAdminRole) {
+    // check is user exists in the database with provided email or not.
+    let user = await SERVICES.userService.getUser({ email: payload.email }, { ...NORMAL_PROJECTION });
+    // if user exists then compare the password that user entered.
+    if (user) {
+      // compare user's password.
+      if (compareHash(payload.password, user.password)) {
+        const dataForJwt = {
+          id: user._id,
+          date: Date.now()
+        };
+        delete user.password;
+        let token = await encryptJwt(dataForJwt);
+        console.log(token)
+        await SERVICES.sessionService.updateSession({ userId: user._id }, { token });
+        return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
+      }
+      throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_PASSWORD, ERROR_TYPES.BAD_REQUEST);
     }
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_PASSWORD, ERROR_TYPES.BAD_REQUEST);
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_EMAIL, ERROR_TYPES.BAD_REQUEST);
+
   }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_EMAIL, ERROR_TYPES.BAD_REQUEST);
+  else {
+    let user = await SERVICES.userService.getUser({ mobileNumber: payload.mobileNumber }, { ...NORMAL_PROJECTION });
+    if (user) {
+        const dataForJwt = {
+          id: user._id,
+          date: Date.now()
+        };
+        let token = await encryptJwt(dataForJwt);
+        console.log(token)
+        await SERVICES.sessionService.updateSession({ userId: user._id }, { token });
+        return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
+      }
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
+  }
 };
 
 /**
@@ -107,8 +124,8 @@ let createUserSession = async (criteriaForSession, userId, payload) => {
  */
 userController.logout = async (payload) => {
   let criteria = {
-    userId: payload.user._id 
-   }, dataToUpdate = { $unset: { token: 1 } };
+    userId: payload.user._id
+  }, dataToUpdate = { $unset: { token: 1 } };
   await SERVICES.sessionService.updateSession(criteria, dataToUpdate);
   return HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_OUT_SUCCESSFULLY);
 };
