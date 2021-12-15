@@ -48,7 +48,6 @@ userController.loginUser = async (payload) => {
         };
         delete user.password;
         let token = await encryptJwt(dataForJwt);
-        console.log(token)
         await SERVICES.sessionService.updateSession({ userId: user._id }, { token });
         return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
       }
@@ -65,7 +64,6 @@ userController.loginUser = async (payload) => {
         date: Date.now()
       };
       let token = await encryptJwt(dataForJwt);
-      console.log(token)
       await SERVICES.sessionService.updateSession({ userId: user._id }, { token });
       return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
     }
@@ -134,7 +132,6 @@ userController.logout = async (payload) => {
  * function to update user's profile
  */
 userController.updateProfile = async (payload) => {
-  console.log(payload);
   let updatedUser = await SERVICES.userService.updateUser({ _id: payload.user._id }, payload, { ...NORMAL_PROJECTION, password: 0, passwordToken: 0 });
   if (updatedUser) {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_UPDATE_SUCCESSFULLY), { data: updatedUser });

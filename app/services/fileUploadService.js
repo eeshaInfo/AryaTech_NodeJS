@@ -34,7 +34,6 @@ fileUploadService.uploadFileToS3 = (payload, fileName, bucketName) => {
  */
 fileUploadService.uploadFileToLocal = async (payload, fileName, pathToUpload, pathOnServer) => {
     let directoryPath = pathToUpload ? pathToUpload : path.resolve(__dirname + `../../../..${CONFIG.PATH_TO_UPLOAD_SUBMISSIONS_ON_LOCAL}/${payload.user._id}`);
-    console.log(pathToUpload);
     // create user's directory if not present.
     if (!fs.existsSync(directoryPath)) {
         fs.mkdirSync(directoryPath);
