@@ -29,7 +29,6 @@ let routes = [
         auth: AVAILABLE_AUTHS.USER,
         handler: userController.getServerResponse
     },
-
     {
         method: 'POST',
         path: '/v1/user/register',
@@ -37,8 +36,13 @@ let routes = [
             body: {
                 firstName: Joi.string().required().description('User\'s first name.'),
                 lastName: Joi.string().required().description('User\'s last name.'),
-                location: Joi.string().required().description('User\'s location.'),
-                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female.`),
+                //location: Joi.string().required().description('User\'s location.'),
+                country: Joi.string().required().description('User\'s country.'),
+                state: Joi.string().required().description('User\'s state.'),
+                city: Joi.string().required().description('User\'s city.'),
+                zipCode: Joi.string().required().description('User\'s zip code.'),
+                mobileNumber: Joi.string().required().description('User\'s mobile number.'),
+                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3 for other.`),
                 dob: Joi.date().max(new Date()).description('User date of birth.'),
                 imagePath: Joi.string().optional().description('Url of image.')
             },

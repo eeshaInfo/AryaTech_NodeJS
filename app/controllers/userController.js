@@ -23,12 +23,12 @@ userController.getServerResponse= async(payload) =>{
  * function to register a user to the system.
  */
 userController.registerNewUser = async (payload) => {
-  let isUserAlreadyExists = await SERVICES.userService.getUser({ email: payload.email }, NORMAL_PROJECTION);
+  let isUserAlreadyExists = await SERVICES.userService.getUser({ mobileNumber: payload.mobileNumber }, NORMAL_PROJECTION);
   if (!isUserAlreadyExists) {
     let newRegisteredUser = await SERVICES.userService.registerUser(payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser });
   }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.EMAIL_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
 };
 
 /**
@@ -91,49 +91,6 @@ userController.forgotPassword = async (payload) => {
   return HELPERS.responseHelper.createErrorResponse(MESSAGES.NO_USER_FOUND);
 };
 
-
-/**
- * function to login using google play,  and using device id.
- */
-userController.socialLogin = async (payload) => {
-  // check user's session with provided device id is exists or not.
-  let criteriaForSession = { deviceId: payload.deviceId, loginType: payload.loginType };
-  if (payload.loginType !== LOGIN_TYPES.NORMAL && !payload.socialId) {
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.SOCIAL_ID_REQUIRED_FOR_THIS_LOGIN, ERROR_TYPES.BAD_REQUEST);
-  }
-  let userSession = await SERVICES.sessionService.getSession(criteriaForSession);
-  if (userSession || (!userSession && payload.loginType !== LOGIN_TYPES.NORMAL)) {
-    let userFindCriteria = userSession ? { _id: userSession.userId._id, isDeleted: false } : {};
-    // if user wants to login using google play then find its google's record from database.
-    if (payload.socialId && payload.loginType === LOGIN_TYPES.GOOGLE) {
-      userFindCriteria = { 'googlePlayServices.id': payload.socialId, isDeleted: false };
-      payload.googlePlayServices = { id: payload.socialId };
-    }
-    // check user exists based on above criteria if yes then return it in response otherwise create new one and update its session.  
-    let user = await SERVICES.userService.getUser(userFindCriteria, { ...NORMAL_PROJECTION, password: 0 });
-    if (user) {
-      // update user's session.
-      const dataForJwt = {
-        id: user._id,
-        date: Date.now()
-      };
-      payload.token = encryptJwt(dataForJwt);
-      await createUserSession(criteriaForSession, user._id, payload);
-      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { data: user, token: payload.token });
-    }
-  }
-
-  let newUser = await SERVICES.userService.createUser(payload);
-  // update session with new created user.
-  const dataForJwt = {
-    id: newUser._id,
-    date: Date.now()
-  };
-  payload.token = encryptJwt(dataForJwt);
-  await createUserSession(criteriaForSession, newUser._id, payload);
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { data: newUser, token: payload.token });
-};
-
 /**
  * function to create user's sesion or update an existing one.
  * @param {*} userId 
@@ -181,72 +138,6 @@ userController.uploadFile = async (payload) => {
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FILE_UPLOADED_SUCCESSFULLY), { fileUrl });
 };
 
-/**
- * Function to invite a user to a system.
- * @param {*} payload 
- * @returns 
- */
-userController.inviteUser = async (payload) => {
-  let isUserAlreadyExists = await SERVICES.userService.getUser({ email: payload.email }, NORMAL_PROJECTION);
-  if (isUserAlreadyExists) {
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.EMAIL_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
-  }
-
-  payload.status = CONSTANTS.STATUS.PENDING;
-  let userData = await SERVICES.userService.createUser(payload);
-  // create setup password link
-  let setupPasswordLink = createSetupPasswordLink({ id: userData._id, tokenType: CONSTANTS.TOKEN_TYPE.ACTIVATE_ACCOUNT });
-  let linkParts = setupPasswordLink.split("/");
-  payload.passwordToken = linkParts[linkParts.length - 1];
-  // send setup password email to user.
-  await sendEmail(
-    {
-      email: payload.email,
-      firstName: payload.firstName || CONFIG.USER_NAME,
-      lastName: payload.lastName || CONFIG.LAST_NAME,
-      setupPasswordLink: setupPasswordLink
-    },
-    EMAIL_TYPES.SETUP_PASSWORD
-  );
-
-  await SERVICES.userService.updateUser({ _id: userData._id }, { passwordToken: payload.passwordToken });
-  return HELPERS.responseHelper.createSuccessResponse(MESSAGES.INVITATION_SENT_SUCCESSFULLY);
-
-  // if (!isUserAlreadyExists) {
-  //   let newRegisteredUser = await SERVICES.userService.registerUser(payload);
-  //   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser });
-  // }
-  // throw HELPERS.responseHelper.createErrorResponse(MESSAGES.EMAIL_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
-};
-
-/**
- * Function to setup password. 
- * @param {*} payload 
- */
-userController.activateAccount = async (payload) => {
-  let decodedObj = decryptJwt(payload.token);
-  if (!decodedObj) {
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_TOKEN, ERROR_TYPES.UNAUTHORIZED);
-  }
-  if (decodedObj.tokenType != TOKEN_TYPE.ACTIVATE_ACCOUNT) throw HELPERS.responseHelper.createErrorResponse(MESSAGES.UNAUTHORIZED, ERROR_TYPES.UNAUTHORIZED);
-  // Get the user by payload token from database.
-  let userData = await SERVICES.userService.getUser({ passwordToken: payload.token });
-  if (!userData) {
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_TOKEN, ERROR_TYPES.UNAUTHORIZED);
-  }
-  if (userData && userData.status === STATUS.ACTIVE) {
-    return HELPERS.responseHelper.createErrorResponse(MESSAGES.ALREADY_ACTIVATED, ERROR_TYPES.ALREADY_EXISTS);
-  }
-  let payloadObj = {
-    password: hashPassword(payload.password),
-    status: STATUS.ACTIVE
-  }
-  let updatedData = await SERVICES.userService.updateUser({ _id: userData._id }, payloadObj, { ...NORMAL_PROJECTION, password: 0, passwordToken: 0 });
-  const dataForJwt = { id: userData._id, date: Date.now() };
-  let jwtToken = encryptJwt(dataForJwt);
-  // await SERVICES.sessionService.updateSession({ userId: userData._id, accessToken: jwtToken }, { accessToken: jwtToken, refreshToken: refreshToken });
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DETAILED_SUBMITED_SUCCESSFULLY), { token: jwtToken, user: updatedData });
-}
 
 /**
  * Function to reset password of user.
@@ -254,7 +145,6 @@ userController.activateAccount = async (payload) => {
  */
 userController.resetPassword = async (payload) => {
   let decodedObj = decryptJwt(payload.token);
-  decodedObj.tokenType = TOKEN_TYPE.RESET_PASSWORD
   if (!decodedObj) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.UNAUTHORIZED, ERROR_TYPES.UNAUTHORIZED);
   }
@@ -265,14 +155,10 @@ userController.resetPassword = async (payload) => {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.UNAUTHORIZED, ERROR_TYPES.UNAUTHORIZED);
   }
   // Update the user password if found in db.
-
-let x=  await SERVICES.userService.updateUser({ _id: userData._id }, { password: hashPassword(payload.password) }, NORMAL_PROJECTION);
-  console.log(x)
-
+  await SERVICES.userService.updateUser({ _id: userData._id }, { password: hashPassword(payload.password) }, NORMAL_PROJECTION);
   // Now delete the token from db.
   await SERVICES.userService.updateUser({ _id: userData._id }, { $unset: { passwordToken: 1 } });
   return HELPERS.responseHelper.createSuccessResponse(MESSAGES.PASSWORD_UPDATED_SUCCESSFULLY);
-
 };
 
 

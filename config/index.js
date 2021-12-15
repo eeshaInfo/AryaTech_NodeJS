@@ -10,7 +10,8 @@ var defaults = {
     ADMIN: {
         EMAIL: process.env.ADMIN_EMAIL || `admin.test@yopmail.com`,
         PASSWORD: process.env.EMAIL_PASSWORD || `Admin@123`,
-        STATUS: 2
+        FIRST_NAME: 'ADMIN',
+        LAST_NAME: 'ADMIN'
     },
     root: path.normalize(__dirname + '/../app'),
     SENDGRID_API_KEY: 'CHANGEME',

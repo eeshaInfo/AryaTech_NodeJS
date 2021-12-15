@@ -9,7 +9,7 @@ let userService = {};
  */
 userService.registerUser = async (payload) => {
   // encrypt user's password and store it in the database.
-  payload.password = utils.hashPassword(payload.password);
+  //payload.password = utils.hashPassword(payload.password);
   return await userModel(payload).save();
 };
 
