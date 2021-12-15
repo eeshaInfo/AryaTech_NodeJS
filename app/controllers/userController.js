@@ -60,15 +60,15 @@ userController.loginUser = async (payload) => {
   else {
     let user = await SERVICES.userService.getUser({ mobileNumber: payload.mobileNumber }, { ...NORMAL_PROJECTION });
     if (user) {
-        const dataForJwt = {
-          id: user._id,
-          date: Date.now()
-        };
-        let token = await encryptJwt(dataForJwt);
-        console.log(token)
-        await SERVICES.sessionService.updateSession({ userId: user._id }, { token });
-        return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
-      }
+      const dataForJwt = {
+        id: user._id,
+        date: Date.now()
+      };
+      let token = await encryptJwt(dataForJwt);
+      console.log(token)
+      await SERVICES.sessionService.updateSession({ userId: user._id }, { token });
+      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
+    }
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
   }
 };
@@ -144,6 +144,8 @@ userController.updateProfile = async (payload) => {
 /**
  * Function to upload file.
  */
+
+
 userController.uploadFile = async (payload) => {
   // check whether the request contains valid payload.
   if (!Object.keys(payload.file).length) {

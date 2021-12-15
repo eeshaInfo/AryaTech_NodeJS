@@ -93,7 +93,7 @@ let routes = [
             formData: {
                 file: Joi.file({ name: "image", description: "Single image file" }),
                 // body: {
-                //     locationId: Joi.string().alphanum().min(24).max(24).required().description(`Location id.`),
+                //     locationId: Joi.string().alphanum().min(24).max(24).optional().description(`Location id.`),
                 //     title: Joi.string().optional().description('Title.'),
                 //     alt: Joi.string().optional().description('Alt.')
                 // },
