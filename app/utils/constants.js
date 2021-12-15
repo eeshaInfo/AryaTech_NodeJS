@@ -8,6 +8,8 @@ CONSTANTS.SERVER = {
 
 CONSTANTS.AVAILABLE_AUTHS = {
     USER: 1,
+    ADMIN: 2,
+    COMMON: 3
 };
 
 CONSTANTS.PASSWORD_PATTER_REGEX = /^(?=.{6,})(?=.*[a-z])(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$/;

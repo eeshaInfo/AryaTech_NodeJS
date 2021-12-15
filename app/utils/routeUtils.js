@@ -25,8 +25,9 @@ routeUtils.route = async (app, routes = []) => {
       middlewares = [multerMiddleware];
     }
     middlewares.push(getValidatorMiddleware(route));
-    if (route.auth === AVAILABLE_AUTHS.USER) {
-      middlewares.push(SERVICES.authService.userValidate());
+    //1,2,3
+    if (Object.values(AVAILABLE_AUTHS).includes(route.auth)) {
+      middlewares.push(SERVICES.authService.userValidate(route.auth));
     };
     app.route(route.path)[route.method.toLowerCase()](...middlewares, getHandlerMethod(route));
   });

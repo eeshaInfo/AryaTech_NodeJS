@@ -15,19 +15,6 @@ let routes = [
             model: 'SERVER'
         },
         handler: userController.getServerResponse
-    }, {
-        method: 'GET',
-        path: '/v1/user/auth',
-        joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
-            group: 'User',
-            description: 'Route to user auth example',
-            model: 'UserAuth'
-        },
-        auth: AVAILABLE_AUTHS.USER,
-        handler: userController.getServerResponse
     },
     {
         method: 'POST',
@@ -79,7 +66,7 @@ let routes = [
             description: 'Route to logout user auth',
             model: 'UserAuth'
         },
-        auth: AVAILABLE_AUTHS.USER,
+        auth: AVAILABLE_AUTHS.COMMON,
         handler: userController.logout
     },
     {
@@ -92,17 +79,12 @@ let routes = [
             },
             formData: {
                 file: Joi.file({ name: "image", description: "Single image file" }),
-                // body: {
-                //     locationId: Joi.string().alphanum().min(24).max(24).optional().description(`Location id.`),
-                //     title: Joi.string().optional().description('Title.'),
-                //     alt: Joi.string().optional().description('Alt.')
-                // },
             },
             group: "File",
             description: "Route to upload files in multiple formats",
             model: "UploadFiles",
         },
-        auth: "admin",
+        auth: AVAILABLE_AUTHS.COMMON,
         handler: userController.uploadFile,
     },
     {
@@ -127,7 +109,7 @@ let routes = [
             description: 'Route to edit user profile.',
             model: 'UpdateProfile'
         },
-        auth: AVAILABLE_AUTHS.USER,
+        auth: AVAILABLE_AUTHS.COMMON,
         handler: userController.updateProfile
     },
 ];

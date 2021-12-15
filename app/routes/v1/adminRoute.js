@@ -18,37 +18,8 @@ let routesAdmin = [
             description: 'Route to user auth example',
             model: 'Admin_Auth'
         },
-        auth: AVAILABLE_AUTHS.USER,
+        auth: AVAILABLE_AUTHS.COMMON,
         handler: userController.getServerResponse
-    },
-    {
-        method: 'POST',
-        path: '/v1/admin/login',
-        joiSchemaForSwagger: {
-            body: {
-                email: Joi.string().email().required().description('User\'s email Id.'),
-                password: Joi.string().required().regex(/^(?=.*[A-Za-z])(?=(.*[\d]){1,})(?=.*?[^\w\s]).{8,}$/).description('User\'s password.')
-            },
-            group: 'Admin',
-            description: 'Route to login a admin.',
-            model: 'Admin_Login'
-        },
-        handler: userController.loginUser
-    },
-
-    {
-        method: 'POST',
-        path: '/v1/admin/logout',
-        joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("Admin's JWT token.")
-            },
-            group: 'Admin',
-            description: 'Route to logout admin auth',
-            model: 'UserAuth'
-        },
-        auth: AVAILABLE_AUTHS.USER,
-        handler: userController.logout
     },
     {
         method: 'POST',
