@@ -8,6 +8,7 @@ module.exports = {
     userService: require('./userService'),
     swaggerService: require('./swaggerService'),
     authService: require('./authService'),
-    sessionService: require('./sessionService')
-
+    sessionService: require('./sessionService'),
+    challengeService: require('./challengeService'),
+    fileUploadService: require('./fileUploadService'),
 };

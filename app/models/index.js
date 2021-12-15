@@ -7,5 +7,6 @@ const CONFIG = require("../../config");
 module.exports = {
   userModel: require(`../models/camel_sports/userModel`),
   dbVersionModel: require(`../models/camel_sports/dbVersionModel`),
-  sessionModel:require(`../models/camel_sports/sessionModel`)
+  sessionModel:require(`../models/camel_sports/sessionModel`),
+  challengeModel:require(`../models/camel_sports/challengeModel`),
 };

@@ -105,7 +105,31 @@ let routes = [
         auth: "admin",
         handler: userController.uploadFile,
     },
-
+    {
+        method: 'PUT',
+        path: '/v1/user/updateProfile',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            body: {
+                firstName: Joi.string().description('User\'s first name.'),
+                lastName: Joi.string().description('User\'s last name.'),
+                country: Joi.string().required().description('User\'s country.'),
+                state: Joi.string().description('User\'s state.'),
+                city: Joi.string().description('User\'s city.'),
+                zipCode: Joi.string().description('User\'s zip code.'),
+                mobileNumber: Joi.string().description('User\'s mobile number.'),
+                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3 for other.`),                dob: Joi.date().max(new Date()).description('User date of birth.'),
+                imagePath: Joi.string().optional().description('Url of image.')
+            },
+            group: 'User',
+            description: 'Route to edit user profile.',
+            model: 'UpdateProfile'
+        },
+        auth: AVAILABLE_AUTHS.USER,
+        handler: userController.updateProfile
+    },
 ];
 
 module.exports = routes;

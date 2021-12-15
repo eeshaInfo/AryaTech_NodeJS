@@ -45,11 +45,11 @@ var defaults = {
     server: {
         PROTOCOL: process.env.SERVER_PROTOCOL || 'http',
         HOST: process.env.SERVER_HOST || '0.0.0.0',
-        PORT: process.env.SERVER_PORT || '4001',
+        PORT: process.env.SERVER_PORT || '4000',
         get URL() { return `${this.PROTOCOL}://${this.HOST}:${this.PORT}` }
     },
     PATH_FOR_LOCAL: process.env.PATH_FOR_LOCAL || '/uploads/',
-    SERVER_URL: process.env.SERVER_URL || 'http://localhost:4001',
+    SERVER_URL: process.env.SERVER_URL || 'http://localhost:4000',
     CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:4200',
     swagger: require('./swagger'),
     S3_BUCKET: {

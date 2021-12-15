@@ -5,5 +5,6 @@
  ********* independently ********
  ********************************/
 module.exports = {
-    userController: require('./userController')
+    userController: require('./userController'),
+    challengeController: require('./challengeController')
 };

@@ -32,6 +32,7 @@ const userSchema = new Schema(
         dob: { type: Date, max: new Date() },
         imagePath: { type: String },
         passwordToken: { type: String },
+        password: { type: String },
         // isLoggedIn: { type: Boolean, default: false },
     },
     { versionKey: false }

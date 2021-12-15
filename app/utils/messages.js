@@ -26,4 +26,12 @@ module.exports = {
     REGISTRATION_SUCCESSFULLY: 'Registration successfully.',
     INVITATION_SENT_SUCCESSFULLY: 'Invitation Sent Successfully.',
 
+    //challenges
+    CHALLENGE_CREATED_SUCCESSFULLY: 'Challenge created successfully.',
+    CHALLENGE_UPDATED_SUCCESSFULLY: 'Challenge Updated successfully.',
+    CHALLENGE_DELETED_SUCCESSFULLY: 'Challenge deleted successfully.',
+    CHALLENGE_FETCHED_SUCCESSFULLY: 'Challenge fetched successfully.',
+    CHALLENGE_ALREADY_EXISTS: 'Challenge already exists.',
+
+
 };
