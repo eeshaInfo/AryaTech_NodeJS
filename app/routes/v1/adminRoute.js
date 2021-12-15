@@ -23,7 +23,7 @@ let routesAdmin = [
     },
     {
         method: 'POST',
-        path: '/v1/admin/login',   //ADMIN_LOGIN
+        path: '/v1/admin/login',
         joiSchemaForSwagger: {
             body: {
                 email: Joi.string().email().required().description('User\'s email Id.'),
@@ -38,7 +38,7 @@ let routesAdmin = [
 
     {
         method: 'POST',
-        path: '/v1/admin/logout',        //ADMIN_LOGOUT...
+        path: '/v1/admin/logout',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("Admin's JWT token.")
@@ -52,7 +52,7 @@ let routesAdmin = [
     },
     {
         method: 'POST',
-        path: '/v1/admin/forgotPassword',  //FORGET PASSWORD  FOR ADMIN
+        path: '/v1/admin/forgotPassword',
         joiSchemaForSwagger: {
             body: {
                 email: Joi.string().email().lowercase().required().messages({ "string.email": "Whoops, invalid email. Please try again." }).description('User\'s email Id.'),
@@ -65,7 +65,7 @@ let routesAdmin = [
     },
     {
         method: 'POST',
-        path: '/v1/admin/reset-password',  //RESET PASSWORD FOR ADMIN...
+        path: '/v1/admin/reset-password',
         joiSchemaForSwagger: {
             body: {
                 token: Joi.string().required().description('reset password token').label('Reset password token'),

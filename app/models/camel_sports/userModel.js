@@ -19,14 +19,10 @@ var validateMobileNumber = function (mobileNumber) {
  **************************************************/
 const userSchema = new Schema(
     {
-        name: { type: String },
-        email: {
-            type: String
-        },
+        firstName: { type: String },
+        lastName:{type:String},
         userType: { type: Number, maxlength: 2, default: USER_TYPES.USER },
-        country: { type: String, default: "" },
-        city: { type: String, default: "" },
-        password: { type: String },
+        location: { type: String, default: "" },
         gender: { type: Number, enum: [GENDER_TYPES.MALE, GENDER_TYPES.FEMALE] },
         dob: { type: Date, max: new Date() },
         imagePath: { type: String },

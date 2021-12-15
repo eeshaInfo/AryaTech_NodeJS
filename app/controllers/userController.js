@@ -254,7 +254,7 @@ userController.activateAccount = async (payload) => {
  */
 userController.resetPassword = async (payload) => {
   let decodedObj = decryptJwt(payload.token);
-  console.log(decodedObj)
+  decodedObj.tokenType = TOKEN_TYPE.RESET_PASSWORD
   if (!decodedObj) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.UNAUTHORIZED, ERROR_TYPES.UNAUTHORIZED);
   }
@@ -266,7 +266,8 @@ userController.resetPassword = async (payload) => {
   }
   // Update the user password if found in db.
 
-  await SERVICES.userService.updateUser({ _id: userData._id }, { password: hashPassword(payload.password) }, NORMAL_PROJECTION);
+let x=  await SERVICES.userService.updateUser({ _id: userData._id }, { password: hashPassword(payload.password) }, NORMAL_PROJECTION);
+  console.log(x)
 
   // Now delete the token from db.
   await SERVICES.userService.updateUser({ _id: userData._id }, { $unset: { passwordToken: 1 } });
