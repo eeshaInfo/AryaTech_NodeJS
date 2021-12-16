@@ -26,10 +26,10 @@ challengeService.getChallenge = async (criteria) => {
 };
 
 /**
- * function to remove session of a user when user is deleted from system.
+ * function to  get count based on criteria
  */
-challengeService.removeSession = async (criteria) => {
-    return await challengeModel.findOneAndDelete(criteria);
+challengeService.listCount = async (criteria) => {
+    return await challengeModel.countDocuments(criteria);
 };
 
 module.exports = challengeService;

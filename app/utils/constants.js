@@ -12,6 +12,11 @@ CONSTANTS.AVAILABLE_AUTHS = {
     COMMON: 3
 };
 
+CONSTANTS.STATUS = {
+    ACTIVE: 1,
+    BLOCK: 2,
+};
+
 CONSTANTS.PASSWORD_PATTER_REGEX = /^(?=.{6,})(?=.*[a-z])(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$/;
 
 CONSTANTS.NORMAL_PROJECTION = { __v: 0, isDeleted: 0, createdAt: 0, updatedAt: 0 };

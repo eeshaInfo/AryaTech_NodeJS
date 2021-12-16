@@ -4,7 +4,7 @@ const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
 const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS } = require('../utils/constants');
 const SERVICES = require('../services');
-const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword } = require('../utils/utils');
+const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword, sendSms } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
 
 /**************************************************
@@ -25,6 +25,7 @@ userController.getServerResponse = async (payload) => {
 userController.registerNewUser = async (payload) => {
   let isUserAlreadyExists = await SERVICES.userService.getUser({ mobileNumber: payload.mobileNumber }, NORMAL_PROJECTION);
   if (!isUserAlreadyExists) {
+    payload.status = STATUS.ACTIVE;
     let newRegisteredUser = await SERVICES.userService.registerUser(payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser });
   }
@@ -67,7 +68,7 @@ userController.loginUser = async (payload) => {
       await SERVICES.sessionService.updateSession({ userId: user._id }, { token });
       return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
     }
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_MOBILE_NUMBER, ERROR_TYPES.BAD_REQUEST);
   }
 };
 

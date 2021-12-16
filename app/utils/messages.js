@@ -25,6 +25,7 @@ module.exports = {
     NO_REQUEST_FOUND: 'No request found.',
     REGISTRATION_SUCCESSFULLY: 'Registration successfully.',
     INVITATION_SENT_SUCCESSFULLY: 'Invitation Sent Successfully.',
+    INVALID_MOBILE_NUMBER: 'Invalid mobile number.',
 
     //challenges
     CHALLENGE_CREATED_SUCCESSFULLY: 'Challenge created successfully.',
@@ -32,6 +33,8 @@ module.exports = {
     CHALLENGE_DELETED_SUCCESSFULLY: 'Challenge deleted successfully.',
     CHALLENGE_FETCHED_SUCCESSFULLY: 'Challenge fetched successfully.',
     CHALLENGE_ALREADY_EXISTS: 'Challenge already exists.',
+    DASHBOARD_DATA_FETCHED: 'Dashboard Data fetched successfully.'
+
 
 
 };
