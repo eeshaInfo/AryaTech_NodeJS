@@ -1,4 +1,4 @@
-const { SECURITY, MESSAGES, ERROR_TYPES,AVAILABLE_AUTHS } = require('../utils/constants');
+const { SECURITY, MESSAGES, ERROR_TYPES,AVAILABLE_AUTHS, USER_TYPES } = require('../utils/constants');
 const HELPERS = require("../helpers");
 const { userModel, sessionModel } = require('../models');
 const JWT = require('jsonwebtoken');
@@ -30,7 +30,6 @@ authService.userValidate = (auth) => {
  * @param {} request 
  */
 let validateUser = async (request,auth) => {
-    console.log(request,auth);
 
     try {
         let decodedToken = JWT.verify(request.headers.authorization, SECURITY.JWT_SIGN_KEY);
@@ -44,10 +43,10 @@ let validateUser = async (request,auth) => {
         }
         let criteria = { _id: decodedToken.id };
         if(auth == AVAILABLE_AUTHS.ADMIN) {
-            criteria.userType = AVAILABLE_AUTHS.ADMIN;
+            criteria.userType = USER_TYPES.ADMIN;
         }
         if(auth == AVAILABLE_AUTHS.USER) {
-            criteria.userType = AVAILABLE_AUTHS.USER;
+            criteria.userType = USER_TYPES.USER;
         }
         let authenticatedUser = await userModel.findOne(criteria).lean();
         if (authenticatedUser) {

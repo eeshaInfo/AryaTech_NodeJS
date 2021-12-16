@@ -28,6 +28,13 @@ challengeService.getChallenge = async (criteria) => {
 /**
  * function to  get count based on criteria
  */
+challengeService.listChallenge = async (criteria) => {
+    return await challengeModel.find(criteria).sort({'createdAt': -1 }).limit(10);
+};
+
+/**
+ * function to  get count based on criteria
+ */
 challengeService.listCount = async (criteria) => {
     return await challengeModel.countDocuments(criteria);
 };
