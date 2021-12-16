@@ -27,7 +27,7 @@ let routes = [
             description: 'Route to create a challenge.',
             model: 'CreateChallenge'
         },
-        auth: AVAILABLE_AUTHS.USER,
+        auth: AVAILABLE_AUTHS.ADMIN,
         handler: challengeController.create
     },
     {
@@ -50,7 +50,7 @@ let routes = [
             description: 'Route to update a challenge.',
             model: 'UpdateChallenge'
         },
-        auth: AVAILABLE_AUTHS.USER,
+        auth: AVAILABLE_AUTHS.ADMIN,
         handler: challengeController.updateChallenge
     },
     {
@@ -67,7 +67,7 @@ let routes = [
             description: 'Route to delete a challenge.',
             model: 'DeleteChallenge'
         },
-        auth: AVAILABLE_AUTHS.USER,
+        auth: AVAILABLE_AUTHS.ADMIN,
         handler: challengeController.delete
     },
     {
@@ -81,7 +81,7 @@ let routes = [
 			description: 'Route to get challenges',
 			model: 'GetChallenges'
 		},
-		auth: AVAILABLE_AUTHS.USER,
+		auth: AVAILABLE_AUTHS.ADMIN,
 		handler: challengeController.list
 	},
     {

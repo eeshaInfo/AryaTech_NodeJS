@@ -7,8 +7,8 @@ CONSTANTS.SERVER = {
 };
 
 CONSTANTS.AVAILABLE_AUTHS = {
-    USER: 1,
-    ADMIN: 2,
+    ADMIN: 1,
+    USER: 2,
     COMMON: 3
 };
 
