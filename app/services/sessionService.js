@@ -10,6 +10,10 @@ sessionService.updateSession = async (criteria, dataToUpdate) => {
     return await sessionModel.findOneAndUpdate(criteria, dataToUpdate, { new: true, upsert: true }).lean();
 };
 
+
+sessionService.createSession = async (dataToInsert) => {
+    return await sessionModel.insertMany([dataToInsert])
+};
 /**
  * function to verify a user's session.
  */
@@ -32,7 +36,7 @@ sessionService.getSession = async (criteria) => {
  * function to remove session of a user when user is deleted from system.
  */
 sessionService.removeSession = async (criteria) => {
-    return await sessionModel.findOneAndDelete(criteria);
+    return await sessionModel.deleteOne(criteria);
 };
 
 module.exports = sessionService;

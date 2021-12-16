@@ -49,7 +49,10 @@ userController.loginUser = async (payload) => {
         };
         delete user.password;
         let token = await encryptJwt(dataForJwt);
-        await SERVICES.sessionService.updateSession({ userId: user._id }, { token });
+        let data = { userId: user._id, token: token }
+
+        await SERVICES.sessionService.createSession(data);
+
         return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
       }
       throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_PASSWORD, ERROR_TYPES.BAD_REQUEST);
@@ -122,10 +125,13 @@ let createUserSession = async (criteriaForSession, userId, payload) => {
  * function to logout an user.
  */
 userController.logout = async (payload) => {
+
   let criteria = {
-    userId: payload.user._id
-  }, dataToUpdate = { $unset: { token: 1 } };
-  await SERVICES.sessionService.updateSession(criteria, dataToUpdate);
+    token: payload.user.token,
+  };
+
+  await SERVICES.sessionService.removeSession(criteria);
+
   return HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_OUT_SUCCESSFULLY);
 };
 

@@ -52,6 +52,7 @@ let validateUser = async (request,auth) => {
         let authenticatedUser = await userModel.findOne(criteria).lean();
         if (authenticatedUser) {
             request.user = authenticatedUser;
+            request.user.token = request.headers.authorization;
             return true
         }
         return false;
