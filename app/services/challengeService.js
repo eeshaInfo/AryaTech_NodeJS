@@ -24,7 +24,12 @@ challengeService.update = async (criteria, dataToUpdate) => {
 challengeService.getChallenge = async (criteria) => {
     return await challengeModel.findOne(criteria).lean();
 };
-
+/**
+ * function to get all challenges.
+ */
+challengeService.getAllChallenges = async (criteria,projection) => {
+    return await challengeModel.find(criteria,projection).lean();
+};
 /**
  * function to  get count based on criteria
  */

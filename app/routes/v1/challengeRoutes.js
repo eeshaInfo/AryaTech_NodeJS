@@ -77,6 +77,10 @@ let routes = [
 			headers: {
 				'authorization': Joi.string().required().description("User's JWT token.")
 			},
+            query: {
+                skip:Joi.number().optional().description('skip'),
+                limit: Joi.number().optional().description('limit'),
+            },
 			group: 'Challenge',
 			description: 'Route to get challenges',
 			model: 'GetChallenges'
