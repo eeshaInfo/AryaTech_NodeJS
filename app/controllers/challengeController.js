@@ -38,6 +38,7 @@ challengeController.dashBoardData = async (payload) => {
       let totalChallenge = await SERVICES.challengeService.listCount({isDeleted: false});
       let totalUser = await SERVICES.userService.getCountOfUsers({ userType: USER_TYPES.USER });
       let paidChallenge = await SERVICES.challengeService.listCount({isDeleted: false, challengeType: CHALLENGES_TYPES.PAID });
+      let blockUser = await SERVICES.userService.getCountOfUsers({ userType: USER_TYPES.USER, status: STATUS.BLOCK});
       return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DASHBOARD_DATA_FETCHED), { totalChallenge, totalUser, paidChallenge });
 
   };

@@ -25,6 +25,7 @@ userController.getServerResponse = async (payload) => {
 userController.registerNewUser = async (payload) => {
   let isUserAlreadyExists = await SERVICES.userService.getUser({ mobileNumber: payload.mobileNumber }, NORMAL_PROJECTION);
   if (!isUserAlreadyExists) {
+    payload.status = STATUS.ACTIVE;
     let newRegisteredUser = await SERVICES.userService.registerUser(payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser });
   }
