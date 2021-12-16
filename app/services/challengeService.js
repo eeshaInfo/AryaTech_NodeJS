@@ -15,7 +15,7 @@ challengeService.create = async (criteria) => {
  * function to update a challenge.
  */
 challengeService.update = async (criteria, dataToUpdate) => {
-    await userModel.findOneAndUpdate(criteria, dataToUpdate);
+    await challengeModel.findOneAndUpdate(criteria, dataToUpdate);
 };
 
 /**

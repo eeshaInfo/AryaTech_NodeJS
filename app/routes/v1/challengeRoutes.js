@@ -43,7 +43,7 @@ let routes = [
             body: {
                 challengeName: Joi.string().required().description('Challenge name.'),
                 challengeType: Joi.number().required().description('Challenge type i.e 1=> PAID, 2=> UNPAID.'),
-                distanceType: Joi.string().required().description('Challenge distance type. i.e Meter or KM'),
+                distanceType: Joi.number().required().description('Challenge distance type. i.e Meter or KM'),
                 amount: Joi.alternatives().conditional('challengeType',{is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1),otherwise: Joi.number().optional()}),
             },
             group: 'Challenge',
