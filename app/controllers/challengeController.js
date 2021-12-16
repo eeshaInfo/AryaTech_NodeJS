@@ -23,11 +23,11 @@ challengeController.getServerResponse = async (payload) => {
  * function to create a chaalenge.
  */
 challengeController.create = async (payload) => {
-//   let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName });
-//   if (!isChallengeExists) {
+  //let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName,isDeleted: false });
+  //if (!isChallengeExists) {
     let data = await SERVICES.challengeService.create(payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_CREATED_SUCCESSFULLY), { data });
- // }
+ //}
   //throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
 };
 
@@ -73,7 +73,7 @@ challengeController.delete = async (payload) => {
  * Function to fetch list of chaalenges
  */
 challengeController.list = async (payload) => {
-  let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false}, {skip: payload.skip, ...(payload.limit && { limit: payload.limit })} ,{...CHALLENGE_PROJECTION});
+  let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false}, {skip: payload.skip, ...(payload.limit && { limit: payload.limit })} );
   console.log(challenges);
   let totalCounts = await SERVICES.challengeService.listCount({isDeleted: false});
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {challenges,totalCounts} });
