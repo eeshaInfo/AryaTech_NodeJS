@@ -20,8 +20,9 @@ let routes = [
                 //location: Joi.string().required().description('User\'s location.'),
                 distanceType: Joi.number().required().description('Challenge distace  type.'),
                 //amount: Joi.alternatives().when(CONSTANTS.CHALLENGES_TYPES.PAID == 'challengeType',{is:true,then: Joi.number().min(1),otherwise: Joi.number().optional()}),
-                amount: Joi.alternatives().conditional('challengeType',{is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1),otherwise: Joi.number().optional()}),
-                
+                amount: Joi.alternatives().conditional('challengeType', { is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1), otherwise: Joi.number().optional() }),
+                completed: Joi.number().default(0).description('Completed Challenge'),
+
             },
             group: 'Challenge',
             description: 'Route to create a challenge.',
@@ -44,7 +45,8 @@ let routes = [
                 challengeName: Joi.string().required().description('Challenge name.'),
                 challengeType: Joi.number().required().description('Challenge type i.e 1=> PAID, 2=> UNPAID.'),
                 distanceType: Joi.number().required().description('Challenge distance type. i.e Meter or KM'),
-                amount: Joi.alternatives().conditional('challengeType',{is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1),otherwise: Joi.number().optional()}),
+                amount: Joi.alternatives().conditional('challengeType', { is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1), otherwise: Joi.number().optional() }),
+                completed: Joi.number().default(0).description('Completed Challenge'),
             },
             group: 'Challenge',
             description: 'Route to update a challenge.',
@@ -71,37 +73,37 @@ let routes = [
         handler: challengeController.delete
     },
     {
-		method: 'GET',
-		path: '/v1/challenge/list',
-		joiSchemaForSwagger: {
-			headers: {
-				'authorization': Joi.string().required().description("User's JWT token.")
-			},
+        method: 'GET',
+        path: '/v1/challenge/list',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
             query: {
-                skip:Joi.number().optional().description('skip'),
+                skip: Joi.number().optional().description('skip'),
                 limit: Joi.number().optional().description('limit'),
             },
-			group: 'Challenge',
-			description: 'Route to get challenges',
-			model: 'GetChallenges'
-		},
-		auth: AVAILABLE_AUTHS.ADMIN,
-		handler: challengeController.list
-	},
+            group: 'Challenge',
+            description: 'Route to get challenges',
+            model: 'GetChallenges'
+        },
+        auth: AVAILABLE_AUTHS.ADMIN,
+        handler: challengeController.list
+    },
     {
-		method: 'GET',
-		path: '/v1/challenge/dashBoardData',
-		joiSchemaForSwagger: {
-			headers: {
-				'authorization': Joi.string().required().description("User's JWT token.")
-			},
-			group: 'Challenge',
-			description: 'Route to get dashboard data',
-			model: 'GetDashboardData'
-		},
-		auth: AVAILABLE_AUTHS.ADMIN,
-		handler: challengeController.dashBoardData
-	},
+        method: 'GET',
+        path: '/v1/challenge/dashBoardData',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            group: 'Challenge',
+            description: 'Route to get dashboard data',
+            model: 'GetDashboardData'
+        },
+        auth: AVAILABLE_AUTHS.ADMIN,
+        handler: challengeController.dashBoardData
+    },
 ];
 
 module.exports = routes;
