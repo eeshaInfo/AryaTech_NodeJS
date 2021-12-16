@@ -2,7 +2,7 @@
 const path = require('path');
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
-const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS } = require('../utils/constants');
+const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES, CHALLENGES_TYPES } = require('../utils/constants');
 const SERVICES = require('../services');
 const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
@@ -30,6 +30,17 @@ challengeController.create = async (payload) => {
  // }
   //throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
 };
+
+/**
+ * function to get a dashboard data.
+ */
+challengeController.dashBoardData = async (payload) => {
+      let totalChallenge = await SERVICES.challengeService.listCount({isDeleted: false});
+      let totalUser = await SERVICES.userService.getCountOfUsers({ userType: USER_TYPES.USER });
+      let paidChallenge = await SERVICES.challengeService.listCount({isDeleted: false, challengeType: CHALLENGES_TYPES.PAID });
+      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DASHBOARD_DATA_FETCHED), { totalChallenge, totalUser, paidChallenge });
+
+  };
 
 /**
  * function to update a challenge.

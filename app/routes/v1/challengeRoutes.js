@@ -84,6 +84,20 @@ let routes = [
 		auth: AVAILABLE_AUTHS.USER,
 		handler: challengeController.list
 	},
+    {
+		method: 'GET',
+		path: '/v1/challenge/dashBoardData',
+		joiSchemaForSwagger: {
+			headers: {
+				'authorization': Joi.string().required().description("User's JWT token.")
+			},
+			group: 'Challenge',
+			description: 'Route to get dashboard data',
+			model: 'GetDashboardData'
+		},
+		auth: AVAILABLE_AUTHS.ADMIN,
+		handler: challengeController.dashBoardData
+	},
 ];
 
 module.exports = routes;
