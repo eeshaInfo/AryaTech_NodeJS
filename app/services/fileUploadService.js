@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 const fs = require('fs');
-const fse = require('fs-extra');
+// const fse = require('fs-extra');
 const path = require('path');
 const CONFIG = require('../../config');
 const fileUploadService = {};
