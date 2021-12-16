@@ -78,8 +78,8 @@ let routes = [
 				'authorization': Joi.string().required().description("User's JWT token.")
 			},
             query: {
-                skip:Joi.number().optional().description('skip'),
-                limit: Joi.number().optional().description('limit'),
+                skip:Joi.number().default(0).description('skip'),
+                limit: Joi.number().default(10).description('limit'),
             },
 			group: 'Challenge',
 			description: 'Route to get challenges',

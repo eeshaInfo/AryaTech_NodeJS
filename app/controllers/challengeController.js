@@ -73,21 +73,10 @@ challengeController.delete = async (payload) => {
  * Function to fetch list of chaalenges
  */
 challengeController.list = async (payload) => {
-  let challenges = await SERVICES.challengeService.getAllChallenges({isDeleted: false},{...CHALLENGE_PROJECTION});
-        let limit=2,skip=0;
-        let start,end
-        if (payload.limit != undefined) {
-            limit = payload.limit
-        } 
-        if (payload.skip != undefined) {
-            skip = payload.skip
-        }     
-        console.log(skip, limit)
-        let results=challenges.slice(skip, limit)
-    if (challenges) {
-      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: results });
-    }
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false}, {skip: payload.skip, ...(payload.limit && { limit: payload.limit })} ,{...CHALLENGE_PROJECTION});
+  console.log(challenges);
+  let totalCounts = await SERVICES.challengeService.listCount({isDeleted: false});
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {challenges,totalCounts} });
   };
 
 
