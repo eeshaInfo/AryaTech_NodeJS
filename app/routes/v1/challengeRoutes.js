@@ -1,7 +1,7 @@
 'use strict';
 
 const { Joi } = require('../../utils/joiUtils');
-const { AVAILABLE_AUTHS, GENDER_TYPES } = require('../../utils/constants');
+const { AVAILABLE_AUTHS, GENDER_TYPES, CHALLENGES_TYPES,DISTANCE_TYPE } = require('../../utils/constants');
 //load controllers
 const { challengeController } = require('../../controllers');
 const CONSTANTS = require('../../utils/constants');
@@ -16,9 +16,9 @@ let routes = [
             },
             body: {
                 challengeName: Joi.string().required().description('Challenge name.'),
-                challengeType: Joi.number().required().description('Challenge type i.e 1=> PAID, 2=> UNPAID.'),
+                challengeType: Joi.number().required().valid(...Object.values(CHALLENGES_TYPES)).description('Challenge type i.e 1=> PAID, 2=> UNPAID.'),
                 //location: Joi.string().required().description('User\'s location.'),
-                distanceType: Joi.number().required().description('Challenge distace  type.'),
+                distanceType: Joi.number().required().valid(...Object.values(DISTANCE_TYPE)).description('Challenge distace  type.'),
                 //amount: Joi.alternatives().when(CONSTANTS.CHALLENGES_TYPES.PAID == 'challengeType',{is:true,then: Joi.number().min(1),otherwise: Joi.number().optional()}),
                 amount: Joi.alternatives().conditional('challengeType', { is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1), otherwise: Joi.number().optional() }),
                 completed: Joi.number().default(0).description('Completed Challenge'),
@@ -43,10 +43,16 @@ let routes = [
             },
             body: {
                 challengeName: Joi.string().required().description('Challenge name.'),
+<<<<<<< HEAD
                 challengeType: Joi.number().required().description('Challenge type i.e 1=> PAID, 2=> UNPAID.'),
                 distanceType: Joi.number().required().description('Challenge distance type. i.e Meter or KM'),
                 amount: Joi.alternatives().conditional('challengeType', { is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1), otherwise: Joi.number().optional() }),
                 completed: Joi.number().default(0).description('Completed Challenge'),
+=======
+                challengeType: Joi.number().required().valid(...Object.values(CHALLENGES_TYPES)).description('Challenge type i.e 1=> PAID, 2=> UNPAID.'),
+                distanceType: Joi.number().required().valid(...Object.values(DISTANCE_TYPE)).description('Challenge distance type. i.e Meter or KM'),
+                amount: Joi.alternatives().conditional('challengeType',{is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1),otherwise: Joi.number().optional()}),
+>>>>>>> 1992d9e3cf2df2856a13679f7c7297d5adeca32f
             },
             group: 'Challenge',
             description: 'Route to update a challenge.',
@@ -80,8 +86,13 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
+<<<<<<< HEAD
                 skip: Joi.number().optional().description('skip'),
                 limit: Joi.number().optional().description('limit'),
+=======
+                skip:Joi.number().default(0).description('skip'),
+                limit: Joi.number().default(10).description('limit'),
+>>>>>>> 1992d9e3cf2df2856a13679f7c7297d5adeca32f
             },
             group: 'Challenge',
             description: 'Route to get challenges',
