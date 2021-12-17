@@ -33,7 +33,8 @@ const userSchema = new Schema(
         imagePath: { type: String },
         passwordToken: { type: String },
         password: { type: String },
-        status: { type: Number }
+        status: { type: Number },
+        challengeCompleted: { type: Number ,default: 0 }
         // isLoggedIn: { type: Boolean, default: false },
     },
     { versionKey: false }
