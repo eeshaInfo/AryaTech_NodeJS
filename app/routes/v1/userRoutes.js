@@ -102,7 +102,8 @@ let routes = [
                 city: Joi.string().description('User\'s city.'),
                 zipCode: Joi.string().description('User\'s zip code.'),
                 mobileNumber: Joi.string().description('User\'s mobile number.'),
-                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3 for other.`),                dob: Joi.date().max(new Date()).description('User date of birth.'),
+                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).description(`User's gender. 1 for male and 2 for female 3 for other.`),
+                dob: Joi.date().max(new Date()).description('User date of birth.'),
                 imagePath: Joi.string().optional().description('Url of image.')
             },
             group: 'User',

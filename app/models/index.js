@@ -9,4 +9,5 @@ module.exports = {
   dbVersionModel: require(`../models/camel_sports/dbVersionModel`),
   sessionModel:require(`../models/camel_sports/sessionModel`),
   challengeModel:require(`../models/camel_sports/challengeModel`),
+  userChallengesModel:require(`../models/camel_sports/userChallengesModel`),
 };
