@@ -49,6 +49,24 @@ let routesAdmin = [
         },
         handler: userController.resetPassword
     },
+    {
+        method: 'PUT',
+        path: '/v1/admin/update-password',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            body: {
+                oldPassword: Joi.string().required().description('old password '),
+                newPassword: Joi.string().required().regex(/^(?=.*[A-Za-z])(?=(.*[\d]){1,})(?=.*?[^\w\s]).{8,}$/).description("User's new password.")
+            },
+            group: 'Admin',
+            description: 'Admin update password page .',
+            model: 'Admin_UpdatePassword'
+        },
+        auth: AVAILABLE_AUTHS.ADMIN,
+        handler: userController.updatePassword
+    },
 ];
 
 module.exports = routesAdmin;

@@ -35,8 +35,8 @@ challengeService.getUserChallengeBasedOnCriteria = async (criteria) => {
 /**
  * function to get all challenges.
  */
-challengeService.getAllChallenges = async (criteria, pagination) => {
-    return await challengeModel.find(criteria).skip(pagination.skip).limit(pagination.limit).lean();
+challengeService.getAllChallenges = async (criteria,pagination) => {
+    return await challengeModel.find(criteria).sort( { 'createdAt': -1 } ).skip(pagination.skip).limit(pagination.limit).lean();
 };
 /**
  * function to  get count based on criteria
