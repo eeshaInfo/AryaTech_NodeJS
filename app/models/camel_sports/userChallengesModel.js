@@ -11,7 +11,7 @@ const { CHALLENGES_TYPES, DISTANCE_TYPE } = require(`../../utils/constants`)
 const userChallengesSchema = new Schema(
     {
         userId: { type: Schema.Types.ObjectId, ref: 'users' },
-        challengeId: { type: Schema.Types.ObjectId, ref: 'challanges' },
+        challengeId: { type: Schema.Types.ObjectId, ref: 'challenges' },
         date: { type: Date, max: new Date() },
         timeTaken: { type: String },
         caloriesBurned: { type: Number },

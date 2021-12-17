@@ -32,8 +32,10 @@ module.exports = {
     CHALLENGE_UPDATED_SUCCESSFULLY: 'Challenge Updated successfully.',
     CHALLENGE_DELETED_SUCCESSFULLY: 'Challenge deleted successfully.',
     CHALLENGE_FETCHED_SUCCESSFULLY: 'Challenge fetched successfully.',
+    CHALLENGE_COMPLETED_SUCCESSFULLY:'Challenge Completed Successfully',
     CHALLENGE_ALREADY_EXISTS: 'Challenge already exists.',
-    DASHBOARD_DATA_FETCHED: 'Dashboard Data fetched successfully.'
+    DASHBOARD_DATA_FETCHED: 'Dashboard Data fetched successfully.',
+    CHALLENGE_ALREADY_COMPLETED: 'Challenge already completed.',
 
 
 

@@ -82,7 +82,7 @@ let routes = [
             description: 'Route to get challenges',
             model: 'GetChallenges'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.COMMON,
         handler: challengeController.list
     },
     {
@@ -119,26 +119,8 @@ let routes = [
         handler: challengeController.getChallengeById
     },
     {
-        method: 'GET',
-        path: '/v1/user/getChallengeForUser',
-        joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
-            query: {
-                skip: Joi.number().default(0).description('skip'),
-                limit: Joi.number().default(10).description('limit'),
-            },
-            group: 'User',
-            description: 'Route to get Challenges for user',
-            model: 'GetChallengesForUser'
-        },
-        auth: AVAILABLE_AUTHS.USER,
-        handler: challengeController.getUserChallenge
-    },
-    {
         method: 'POST',
-        path: '/v1/user/completedChallenge',
+        path: '/v1/challenge/completedChallenge',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -162,7 +144,7 @@ let routes = [
 
     {
 		method: 'GET',
-		path: '/v1/user/getUserByChallenges',
+		path: '/v1/challenge/getUserByChallenges',
 		joiSchemaForSwagger: {
 			headers: {
 				'authorization': Joi.string().required().description("User's JWT token.")
@@ -172,9 +154,28 @@ let routes = [
                 limit: Joi.number().default(10).description('limit'),
                 id: Joi.string().objectId().required().description('Challenge Id.'),
             },
-			group: 'User',
+			group: 'Challenge',
 			description: 'Route to get users by challenges',
 			model: 'GetUserByChallenges'
+		},
+		auth: AVAILABLE_AUTHS.ADMIN,
+		handler:  challengeController.getUserByChallenges
+	},
+    {
+		method: 'GET',
+		path: '/v1/challenge/getChallengeByUser',
+		joiSchemaForSwagger: {
+			headers: {
+				'authorization': Joi.string().required().description("User's JWT token.")
+			},
+            query: {
+                skip:Joi.number().default(0).description('skip'),
+                limit: Joi.number().default(10).description('limit'),
+                id: Joi.string().objectId().required().description('User Id.'),
+            },
+			group: 'Challenge',
+			description: 'Route to get challenge by user',
+			model: 'GetChallengeByUser'
 		},
 		auth: AVAILABLE_AUTHS.ADMIN,
 		handler:  challengeController.getUserByChallenges
