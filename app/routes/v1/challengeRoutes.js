@@ -86,19 +86,56 @@ let routes = [
         handler: challengeController.list
     },
     {
-        method: 'GET',
-        path: '/v1/challenge/dashBoardData',
-        joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
+		method: 'GET',
+		path: '/v1/challenge/dashBoardData',
+		joiSchemaForSwagger: {
+			headers: {
+				'authorization': Joi.string().required().description("User's JWT token.")
+			},
+			group: 'Challenge',
+			description: 'Route to get dashboard data',
+			model: 'GetDashboardData'
+		},
+		auth: AVAILABLE_AUTHS.ADMIN,
+		handler: challengeController.dashBoardData
+	},
+    {
+		method: 'GET',
+		path: '/v1/challenge/getChallengeById',
+		joiSchemaForSwagger: {
+			headers: {
+				'authorization': Joi.string().required().description("User's JWT token.")
+			},
+            query: {
+                id: Joi.string().objectId().required().description('Challenge Id.'),
+                skip:Joi.number().default(0).description('skip'),
+                limit: Joi.number().default(10).description('limit'),
             },
-            group: 'Challenge',
-            description: 'Route to get dashboard data',
-            model: 'GetDashboardData'
-        },
-        auth: AVAILABLE_AUTHS.ADMIN,
-        handler: challengeController.dashBoardData
-    },
+			group: 'Challenge',
+			description: 'Route to get Users data',
+			model: 'GetDashboardData'
+		},
+		auth: AVAILABLE_AUTHS.ADMIN,
+		handler: challengeController.getChallengeById
+	},
+    {
+		method: 'GET',
+		path: '/v1/user/getChallengeForUser',
+		joiSchemaForSwagger: {
+			headers: {
+				'authorization': Joi.string().required().description("User's JWT token.")
+			},
+            query: {
+                skip:Joi.number().default(0).description('skip'),
+                limit: Joi.number().default(10).description('limit'),
+            },
+			group: 'User',
+			description: 'Route to get Challenges for user',
+			model: 'GetChallengesForUser'
+		},
+		auth: AVAILABLE_AUTHS.USER,
+		handler:  challengeController.getUserChallenge
+	},
 ];
 
 module.exports = routes;

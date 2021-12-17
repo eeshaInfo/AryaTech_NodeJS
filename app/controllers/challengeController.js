@@ -73,14 +73,31 @@ challengeController.delete = async (payload) => {
  * Function to fetch list of chaalenges
  */
 challengeController.list = async (payload) => {
-  let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false}, {skip: payload.skip, limit: payload.limit } );
-  console.log(challenges);
+  let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false}, {skip: payload.skip, ...(payload.limit && { limit: payload.limit })} );
   let totalCounts = await SERVICES.challengeService.listCount({isDeleted: false});
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {challenges,totalCounts} });
   };
+  
+
+/**
+ * Function to fetch list of users completed task
+ */
+ challengeController.getChallengeById = async (payload) => {
+  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
+  console.log(challenge);
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {challenge} });
+ };
 
 
-
+ 
+ /**
+ * Function to fetch list of challenges to user
+ */
+  challengeController.getUserChallenge= async (payload) => {
+    let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false}, {skip: payload.skip, ...(payload.limit && { limit: payload.limit })} );
+    let totalCounts = await SERVICES.challengeService.listCount({isDeleted: false});
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {challenges,totalCounts} });
+    };
 
 /* export challengeController */
 module.exports = challengeController;
