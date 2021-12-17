@@ -113,26 +113,7 @@ let routes = [
         auth: AVAILABLE_AUTHS.COMMON,
         handler: userController.updateProfile
     },
-    {
-        method: 'POST',
-        path: '/v1/user/completedChallenge',
-        joiSchemaForSwagger: {
-
-            body: {
-                timeTaken: Joi.string().required().description('Time taken by the user'),
-                caloriesBurned: Joi.string().required().description('Calories Burned'),
-                avgSpeed: Joi.string().required().description(`Average Speed`),
-                maxSpeed: Joi.string().required().description('Maximum Speed'),
-            },
-                headers: {
-                    'authorization': Joi.string().required().description("User's JWT token.")
-                },
-                group: 'User',
-                description: 'Route to user Completed Challenge.',
-                model: 'UserChallenge'
-            },
-        handler: userChallenges.completedChallenge
-        },
+   
     
 ]
 

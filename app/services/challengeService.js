@@ -1,5 +1,5 @@
 const CONFIG = require('../../config');
-const { challengeModel } = require(`../models`);
+const { challengeModeluserChallangeModel } = require(`../models`);
 
 let challengeService = {};
 
@@ -24,17 +24,25 @@ challengeService.update = async (criteria, dataToUpdate) => {
 challengeService.getChallenge = async (criteria) => {
     return await challengeModel.findOne(criteria).lean();
 };
+
+/**
+ * function to get challenge.
+ */
+challengeService.getUserChallengeBasedOnCriteria = async (criteria) => {
+    return await userChallengesModel.findOne(criteria).lean();
+};
+
 /**
  * function to get all challenges.
  */
-challengeService.getAllChallenges = async (criteria,pagination) => {
+challengeService.getAllChallenges = async (criteria, pagination) => {
     return await challengeModel.find(criteria).skip(pagination.skip).limit(pagination.limit).lean();
 };
 /**
  * function to  get count based on criteria
  */
 challengeService.listChallenge = async (criteria) => {
-    return await challengeModel.find(criteria).sort({'createdAt': -1 }).limit(10);
+    return await challengeModel.find(criteria).sort({ 'createdAt': -1 }).limit(10);
 };
 
 /**
@@ -43,5 +51,12 @@ challengeService.listChallenge = async (criteria) => {
 challengeService.listCount = async (criteria) => {
     return await challengeModel.countDocuments(criteria);
 };
+
+/**
+* Fucntion to complete Challenges
+*/
+challengeService.createUserChallenge = async (criteria) => {
+    return await userChallengesModel(criteria).save();
+}
 
 module.exports = challengeService;
