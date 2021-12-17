@@ -1,5 +1,5 @@
 const CONFIG = require('../../config');
-const { challengeModeluserChallangeModel } = require(`../models`);
+const { challengeModel, userChallengesModel } = require(`../models`);
 
 let challengeService = {};
 
@@ -46,6 +46,36 @@ challengeService.listChallenge = async (criteria) => {
 };
 
 /**
+ * function to  get user by challanges
+ */
+challengeService.getUserByChallenges = async (criteria) => {
+    let query = [
+     {
+     $match: criteria,
+     },
+     { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
+     //{ $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
+     { $unwind: "$userData" },
+     //{ $unwind: "$challengeData" },
+     {
+         $project: {
+             "date":1 ,
+             "timeTaken":1 ,
+             "caloriesBurned":1 ,
+             "avgSpeed":1 ,
+             "maxSpeed":1 ,
+             "userData.firstName": 1,
+             "userData.lastName": 1,
+             "userData.imagePath": 1
+
+         }
+     }
+    ]
+    return await userChallengesModel.aggregate(query);
+};
+
+
+/**
  * function to  get count based on criteria
  */
 challengeService.listCount = async (criteria) => {
@@ -58,5 +88,11 @@ challengeService.listCount = async (criteria) => {
 challengeService.createUserChallenge = async (criteria) => {
     return await userChallengesModel(criteria).save();
 }
+/** 
+ * function to  get count of user by challenge
+ */
+challengeService.getUserCountByChallenge = async (criteria) => {
+    return await userChallengesModel.countDocuments(criteria);
+};
 
 module.exports = challengeService;

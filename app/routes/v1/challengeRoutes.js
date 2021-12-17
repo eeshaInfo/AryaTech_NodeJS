@@ -159,6 +159,26 @@ let routes = [
         handler: challengeController.completedChallenge,
         auth: AVAILABLE_AUTHS.USER,
     },
+
+    {
+		method: 'GET',
+		path: '/v1/user/getUserByChallenges',
+		joiSchemaForSwagger: {
+			headers: {
+				'authorization': Joi.string().required().description("User's JWT token.")
+			},
+            query: {
+                skip:Joi.number().default(0).description('skip'),
+                limit: Joi.number().default(10).description('limit'),
+                id: Joi.string().objectId().required().description('Challenge Id.'),
+            },
+			group: 'User',
+			description: 'Route to get users by challenges',
+			model: 'GetUserByChallenges'
+		},
+		auth: AVAILABLE_AUTHS.ADMIN,
+		handler:  challengeController.getUserByChallenges
+	},
 ];
 
 module.exports = routes;
