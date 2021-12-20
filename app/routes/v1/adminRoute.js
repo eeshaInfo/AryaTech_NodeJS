@@ -67,6 +67,21 @@ let routesAdmin = [
         auth: AVAILABLE_AUTHS.ADMIN,
         handler: userController.updatePassword
     },
+    {
+        method: 'GET',
+        path: '/v1/admin/getAdminProfile',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("Admin's JWT token.")
+            },
+            
+            group: 'Admin',
+            description: 'Admin get profile  ',
+            model: 'Admin_GetProfile'
+        },
+        auth: AVAILABLE_AUTHS.ADMIN,
+        handler: userController.getAdminProfile
+    },
 ];
 
 module.exports = routesAdmin;

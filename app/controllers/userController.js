@@ -185,6 +185,10 @@ userController.resetPassword = async (payload) => {
   return HELPERS.responseHelper.createSuccessResponse(MESSAGES.PASSWORD_UPDATED_SUCCESSFULLY);
 };
 
+/**
+ * Function to update password of admin.
+
+ */
 userController.updatePassword = async (payload) => {
   //let user = await SERVICES.userService.getUsers({ _id: payload.user._id })
   if (!compareHash(payload.oldPassword, payload.user.password)) {
@@ -195,6 +199,17 @@ userController.updatePassword = async (payload) => {
     return HELPERS.responseHelper.createSuccessResponse(MESSAGES.PASSWORD_UPDATED_SUCCESSFULLY);
   }
 
+};
+
+/**
+ * Function to get admin data.
+ */
+userController.getAdminProfile= async (payload) => {
+  let admin = await SERVICES.userService.getUser({ _id: payload.user._id},{...NORMAL_PROJECTION,password:0,challengeCompleted: 0})
+  if (admin) {
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: admin });
+  }
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
 };
 
 /* export userController */
