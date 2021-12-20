@@ -28,6 +28,7 @@ module.exports = {
     REGISTRATION_SUCCESSFULLY: 'Registration successfully.',
     INVITATION_SENT_SUCCESSFULLY: 'Invitation Sent Successfully.',
     INVALID_MOBILE_NUMBER: 'Invalid mobile number.',
+    USER_DOESNOT_EXIST:'User does not Exist',
 
     //challenges
     CHALLENGE_CREATED_SUCCESSFULLY: 'Challenge created successfully.',

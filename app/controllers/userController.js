@@ -71,7 +71,7 @@ userController.loginUser = async (payload) => {
       await SERVICES.sessionService.updateSession({ userId: user._id }, { token });
       return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
     }
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_MOBILE_NUMBER, ERROR_TYPES.BAD_REQUEST);
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_DOESNOT_EXIST, ERROR_TYPES.DATA_NOT_FOUND);
   }
 };
 
