@@ -27,6 +27,13 @@ userController.registerNewUser = async (payload) => {
   if (!isUserAlreadyExists) {
     payload.status = STATUS.ACTIVE;
     let newRegisteredUser = await SERVICES.userService.registerUser(payload);
+    // console.log("New RegistredUser:.....",newRegisteredUser, newRegisteredUser._id)
+    const dataForJwt = {
+      id: newRegisteredUser._id,
+      date: Date.now()
+    };
+    let token = await encryptJwt(dataForJwt);
+    await SERVICES.sessionService.updateSession({ userId: newRegisteredUser._id }, { token });
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser });
   }
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
