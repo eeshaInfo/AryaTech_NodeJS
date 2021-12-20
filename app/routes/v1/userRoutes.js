@@ -31,7 +31,7 @@ let routes = [
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
                 gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3 for other.`),
                 dob: Joi.date().max(new Date()).description('User date of birth.'),
-                imagePath: Joi.string().optional().description('Url of image.')
+                imagePath: Joi.string().default("").optional().description('Url of image.')
             },
             group: 'User',
             description: 'Route to register a user.',

@@ -25,6 +25,9 @@ challengeController.getServerResponse = async (payload) => {
 challengeController.create = async (payload) => {
   //let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName,isDeleted: false });
   //if (!isChallengeExists) {
+  if(payload.challengeType === CHALLENGES_TYPES.UNPAID) {
+    payload.amount = 0;
+  }
   let data = await SERVICES.challengeService.create(payload);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_CREATED_SUCCESSFULLY), { data });
   //}
@@ -51,6 +54,9 @@ challengeController.dashBoardData = async (payload) => {
 challengeController.updateChallenge = async (payload) => {
   let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
   if (challenge) {
+    if(payload.challengeType === CHALLENGES_TYPES.UNPAID) {
+      payload.amount = 0;
+    }
     await SERVICES.challengeService.update({ _id: payload.id }, payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_UPDATED_SUCCESSFULLY));
   }
@@ -73,7 +79,7 @@ challengeController.delete = async (payload) => {
  * Function to fetch list of chaalenges
  */
 challengeController.list = async (payload) => {
-  let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false }, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }) });
+  let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false , ...(payload.searchKey && {challengeName: {$regex: payload.searchKey, $options: 'i' }})}, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }) });
   let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, totalCounts } });
 };

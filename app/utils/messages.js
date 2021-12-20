@@ -9,6 +9,8 @@ module.exports = {
     EMP_NO_ALREADY_EXISTS: ' Employement number already exists',
     INVALID_EMAIL: 'Invalid email address.',
     INVALID_PASSWORD: 'Invalid password.',
+    OLD_PASSWORD_INVALID: 'Old password invalid. ',
+    PASSWORD_UPDATED_SUCCESSFULLY: 'Password updated Successfully.',
     NOT_FOUND: 'Data not found.',
     PROFILE_FETCHED_SUCCESSFULLY: 'Profile fetched successfully.',
     SOCIAL_ID_REQUIRED_FOR_THIS_LOGIN: 'Social id required for this type of login.',

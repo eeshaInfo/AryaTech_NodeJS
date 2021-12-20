@@ -10,7 +10,7 @@ const { CHALLENGES_TYPES, DISTANCE_TYPE } = require(`../../utils/constants`)
  **************************************************/
 const challengeSchema = new Schema(
     {
-        challengeName: { type: String },
+        challengeName: { type: String ,unique: true },
         challengeType: { type: Number, enum: [CHALLENGES_TYPES.PAID, CHALLENGES_TYPES.UNPAID] },
         distanceType: { type: Number, enum: [DISTANCE_TYPE.METER, DISTANCE_TYPE.KM] },
         amount: { type: Number },

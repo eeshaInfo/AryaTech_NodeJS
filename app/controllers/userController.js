@@ -188,11 +188,11 @@ userController.resetPassword = async (payload) => {
 userController.updatePassword = async (payload) => {
   //let user = await SERVICES.userService.getUsers({ _id: payload.user._id })
   if (!compareHash(payload.oldPassword, payload.user.password)) {
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_PASSWORD, ERROR_TYPES.BAD_REQUEST);
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.OLD_PASSWORD_INVALID, ERROR_TYPES.BAD_REQUEST);
   }
   else {
     await SERVICES.userService.updateUser({ _id: payload.user._id }, { password: hashPassword(payload.newPassword) }, NORMAL_PROJECTION);
-    return HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_UPDATE_SUCCESSFULLY);
+    return HELPERS.responseHelper.createSuccessResponse(MESSAGES.PASSWORD_UPDATED_SUCCESSFULLY);
   }
 
 };
