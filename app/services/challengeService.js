@@ -1,6 +1,6 @@
 const CONFIG = require('../../config');
 const { challengeModel, userChallengesModel } = require(`../models`);
-const { convertIdToMongooseId} = require(`../utils/utils`);
+const { convertIdToMongooseId } = require(`../utils/utils`);
 
 let challengeService = {};
 
@@ -36,8 +36,8 @@ challengeService.getUserChallengeBasedOnCriteria = async (criteria) => {
 /**
  * function to get all challenges.
  */
-challengeService.getAllChallenges = async (criteria,pagination) => {
-    return await challengeModel.find(criteria).sort( { 'createdAt': -1 } ).skip(pagination.skip).limit(pagination.limit).lean();
+challengeService.getAllChallenges = async (criteria, pagination) => {
+    return await challengeModel.find(criteria).sort([[pagination.sortKey, pagination.sortDirection]]).skip(pagination.skip).limit(pagination.limit).lean();
 };
 /**
  * function to  get count based on criteria
@@ -51,49 +51,49 @@ challengeService.listChallenge = async (criteria) => {
  */
 challengeService.getUserByChallenges = async (criteria, pagination) => {
     let query = criteria.searchKey ? [
-     {
-     $match: { challengeId: convertIdToMongooseId(criteria.id)},
-     },
-     {
-        $lookup: {
-            from: 'users',
-            let: { userId: '$userId',searchKey: criteria.searchKey },
-            pipeline: [
-                {
-                    $match: {
-                        $expr: {
-                            $and: [
-                                { $eq: ['$$userId', '$_id'] },
-                            ]
+        {
+            $match: { challengeId: convertIdToMongooseId(criteria.id) },
+        },
+        {
+            $lookup: {
+                from: 'users',
+                let: { userId: '$userId', searchKey: criteria.searchKey },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ['$$userId', '$_id'] },
+                                ]
+                            },
                         },
                     },
-                },
-                    { $match: {firstName: {$regex: criteria.searchKey, $options: 'i'}}},
-            ],
-            as: "userData"
-        }
-    },
-    { $unwind: "$userData" },
-    { $skip: pagination.skip },
-    { $limit: pagination.limit },
-     //{ $match: {'userData.firstName': {$regex: criteria.searchKey, $options: 'i'}}},
-     {
-         $project: {
-             "date":1 ,
-             "timeTaken":1 ,
-             "caloriesBurned":1 ,
-             "avgSpeed":1 ,
-             "maxSpeed":1 ,
-             "completingDate": 1,
-             "userData.firstName": 1,
-             "userData.lastName": 1,
-             "userData.imagePath": 1
+                    { $match: { firstName: { $regex: criteria.searchKey, $options: 'i' } } },
+                ],
+                as: "userData"
+            }
+        },
+        { $unwind: "$userData" },
+        { $skip: pagination.skip },
+        { $limit: pagination.limit },
+        //{ $match: {'userData.firstName': {$regex: criteria.searchKey, $options: 'i'}}},
+        {
+            $project: {
+                "date": 1,
+                "timeTaken": 1,
+                "caloriesBurned": 1,
+                "avgSpeed": 1,
+                "maxSpeed": 1,
+                "completingDate": 1,
+                "userData.firstName": 1,
+                "userData.lastName": 1,
+                "userData.imagePath": 1
 
-         }
-     }
+            }
+        }
     ] : [
         {
-        $match: { challengeId: convertIdToMongooseId(criteria.id)},
+            $match: { challengeId: convertIdToMongooseId(criteria.id) },
         },
         { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
         { $unwind: "$userData" },
@@ -101,19 +101,19 @@ challengeService.getUserByChallenges = async (criteria, pagination) => {
         { $limit: pagination.limit },
         {
             $project: {
-                "date":1 ,
-                "timeTaken":1 ,
-                "caloriesBurned":1 ,
-                "avgSpeed":1 ,
-                "maxSpeed":1 ,
+                "date": 1,
+                "timeTaken": 1,
+                "caloriesBurned": 1,
+                "avgSpeed": 1,
+                "maxSpeed": 1,
                 "completingDate": 1,
                 "userData.firstName": 1,
                 "userData.lastName": 1,
                 "userData.imagePath": 1
-   
+
             }
         }
-       ]
+    ]
     return await userChallengesModel.aggregate(query);
 };
 

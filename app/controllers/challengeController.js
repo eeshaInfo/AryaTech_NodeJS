@@ -84,16 +84,16 @@ challengeController.delete = async (payload) => {
  * Function to fetch list of chaalenges
  */
 challengeController.list = async (payload) => {
-  if(payload.isRecentKey) {
-     let recentChallenges = await SERVICES.challengeService.listChallenge({ isDeleted: false });
-     let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false});
-     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { recentChallenges, totalCounts } });
+  if (payload.isRecentKey) {
+    let recentChallenges = await SERVICES.challengeService.listChallenge({ isDeleted: false });
+    let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false });
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { recentChallenges, totalCounts } });
   }
   else {
-  let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false , ...(payload.searchKey && {challengeName: {$regex: payload.searchKey, $options: 'i' }})}, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }) });
-  let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false , ...(payload.searchKey && {challengeName: {$regex: payload.searchKey, $options: 'i' }})});
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, totalCounts } });
-  } 
+    let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false, ...(payload.searchKey && { challengeName: { $regex: payload.searchKey, $options: 'i' } }) }, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }), sortKey: payload.sortKey, sortDirection: payload.sortDirection },);
+    let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false, ...(payload.searchKey && { challengeName: { $regex: payload.searchKey, $options: 'i' } }) });
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, totalCounts } });
+  }
 };
 
 
@@ -110,34 +110,34 @@ challengeController.getChallengeById = async (payload) => {
 */
 
 challengeController.completedChallenge = async (payload) => {
-    let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
-    //if (!challenge) {
-    payload.userId = payload.user._id;
-    payload.challengeId = payload.id;
-    payload.completingDate = new Date();
-    await SERVICES.challengeService.createUserChallenge(payload);
-    //let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
-     if (!challenge) {
-      await SERVICES.challengeService.update({ _id: payload.id }, { $inc: { completed: 1 } });
-      await SERVICES.userService.updateUser({ _id: payload.user._id }, { $inc: { challengeCompleted: 1 } });
-    }
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_COMPLETED_SUCCESSFULLY));
+  let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
+  //if (!challenge) {
+  payload.userId = payload.user._id;
+  payload.challengeId = payload.id;
+  payload.completingDate = new Date();
+  await SERVICES.challengeService.createUserChallenge(payload);
+  //let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
+  if (!challenge) {
+    await SERVICES.challengeService.update({ _id: payload.id }, { $inc: { completed: 1 } });
+    await SERVICES.userService.updateUser({ _id: payload.user._id }, { $inc: { challengeCompleted: 1 } });
+  }
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_COMPLETED_SUCCESSFULLY));
   //}
   //throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_COMPLETED, ERROR_TYPES.BAD_REQUEST);
 };
 
 
- /**
- * Function to fetch user for particular challange
- */
-  challengeController.getUserByChallenges= async (payload) => {
-    let criteria = {
-      challengeId: payload.id
-    }
-    let list = await SERVICES.challengeService.getUserByChallenges(payload, {skip: payload.skip, limit: payload.limit} );
-    let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {list,totalCounts} });
-    };
+/**
+* Function to fetch user for particular challange
+*/
+challengeController.getUserByChallenges = async (payload) => {
+  let criteria = {
+    challengeId: payload.id
+  }
+  let list = await SERVICES.challengeService.getUserByChallenges(payload, { skip: payload.skip, limit: payload.limit });
+  let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { list, totalCounts } });
+};
 
 /* export challengeController */
 module.exports = challengeController;

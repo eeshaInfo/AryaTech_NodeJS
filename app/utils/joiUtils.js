@@ -13,7 +13,8 @@ joiUtils.Joi = Joi.extend((Joi) => ({
     messages: {
         'string.objectId': '{{#label}} must be a valid id',
         'string.emailMessage': '{{#label}} must be a valid email',
-        'string.invalidTimeZone': '{{#label}} must be a valid timezone.'
+        'string.invalidTimeZone': '{{#label}} must be a valid timezone.',
+        'string.invalidPasswordFormat': 'password must be in a valid format',
     },
     rules: {
         objectId: {
@@ -39,6 +40,15 @@ joiUtils.Joi = Joi.extend((Joi) => ({
                     return value;
                 }
                 return helpers.error('string.invalidTimeZone');
+            }
+        },
+        isValidPassword: {
+            validate(value, helpers) {
+                let filter =/^(?=.*[A-Za-z])(?=(.*[\d]){1,})(?=.*?[^\w\s]).{8,}$/
+                if (filter.test(value)) {
+                    return value;
+                }
+                return helpers.error('string.invalidPasswordFormat');
             }
         }
     }

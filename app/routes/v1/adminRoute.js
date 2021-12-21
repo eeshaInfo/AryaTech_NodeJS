@@ -58,7 +58,7 @@ let routesAdmin = [
             },
             body: {
                 oldPassword: Joi.string().required().description('old password '),
-                newPassword: Joi.string().required().regex(/^(?=.*[A-Za-z])(?=(.*[\d]){1,})(?=.*?[^\w\s]).{8,}$/).description("User's new password.")
+                newPassword: Joi.string().required().isValidPassword().description("User's new password.")
             },
             group: 'Admin',
             description: 'Admin update password page .',
