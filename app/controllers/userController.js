@@ -34,7 +34,8 @@ userController.registerNewUser = async (payload) => {
     };
     let token = await encryptJwt(dataForJwt);
     await SERVICES.sessionService.updateSession({ userId: newRegisteredUser._id }, { token });
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser });
+    
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser,token});
   }
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
 };
@@ -211,8 +212,8 @@ userController.updatePassword = async (payload) => {
 /**
  * Function to get admin data.
  */
-userController.getAdminProfile= async (payload) => {
-  let admin = await SERVICES.userService.getUser({ _id: payload.user._id},{...NORMAL_PROJECTION,password:0,challengeCompleted: 0})
+userController.getAdminProfile = async (payload) => {
+  let admin = await SERVICES.userService.getUser({ _id: payload.user._id }, { ...NORMAL_PROJECTION, password: 0, challengeCompleted: 0 })
   if (admin) {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: admin });
   }

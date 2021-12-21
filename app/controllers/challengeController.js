@@ -6,6 +6,7 @@ const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKE
 const SERVICES = require('../services');
 const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
+const { CHALLENGE_ALREADY_EXISTS } = require('../utils/messages');
 
 /**************************************************
  ***************** challenges controller ***************
@@ -23,15 +24,15 @@ challengeController.getServerResponse = async (payload) => {
  * function to create a chaalenge.
  */
 challengeController.create = async (payload) => {
-  //let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName,isDeleted: false });
-  //if (!isChallengeExists) {
-  if(payload.challengeType === CHALLENGES_TYPES.UNPAID) {
-    payload.amount = 0;
+  let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName, isDeleted: false });
+  if (!isChallengeExists) {
+    if (payload.challengeType === CHALLENGES_TYPES.UNPAID) {
+      payload.amount = 0;
+    }
+    let data = await SERVICES.challengeService.create(payload);
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_CREATED_SUCCESSFULLY), { data });
   }
-  let data = await SERVICES.challengeService.create(payload);
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_CREATED_SUCCESSFULLY), { data });
-  //}
-  //throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
 };
 
 /**
@@ -53,14 +54,20 @@ challengeController.dashBoardData = async (payload) => {
  */
 challengeController.updateChallenge = async (payload) => {
   let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
-  if (challenge) {
-    if(payload.challengeType === CHALLENGES_TYPES.UNPAID) {
-      payload.amount = 0;
+  let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName, isDeleted: false });
+
+  if (!isChallengeExists) {
+    if (challenge) {
+      if (payload.challengeType === CHALLENGES_TYPES.UNPAID) {
+        payload.amount = 0;
+      }
+      await SERVICES.challengeService.update({ _id: payload.id }, payload);
+      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_UPDATED_SUCCESSFULLY));
     }
-    await SERVICES.challengeService.update({ _id: payload.id }, payload);
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_UPDATED_SUCCESSFULLY));
+
   }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.DATA_NOT_FOUND);
 };
 
 /**
@@ -79,7 +86,7 @@ challengeController.delete = async (payload) => {
  * Function to fetch list of chaalenges
  */
 challengeController.list = async (payload) => {
-  let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false , ...(payload.searchKey && {challengeName: {$regex: payload.searchKey, $options: 'i' }})}, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }) });
+  let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false, ...(payload.searchKey && { challengeName: { $regex: payload.searchKey, $options: 'i' } }) }, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }) });
   let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, totalCounts } });
 };
@@ -102,7 +109,7 @@ challengeController.completedChallenge = async (payload) => {
   let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
   if (!challenge) {
     payload.userId = payload.user._id;
-    payload.challengeId =  payload.id;
+    payload.challengeId = payload.id;
     payload.completingDate = new Date();
     await SERVICES.challengeService.createUserChallenge(payload);
     await SERVICES.challengeService.update({ _id: payload.id }, { $inc: { completed: 1 } });
@@ -113,17 +120,17 @@ challengeController.completedChallenge = async (payload) => {
 };
 
 
-     /**
- * Function to fetch user for particular challange
- */
-  challengeController.getUserByChallenges= async (payload) => {
-    let criteria = {
-      challengeId: payload.id
-    }
-    let list = await SERVICES.challengeService.getUserByChallenges(criteria, {skip: payload.skip, limit: payload.limit} );
-    let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {list,totalCounts} });
-    };
+/**
+* Function to fetch user for particular challange
+*/
+challengeController.getUserByChallenges = async (payload) => {
+  let criteria = {
+    challengeId: payload.id
+  }
+  let list = await SERVICES.challengeService.getUserByChallenges(criteria, { skip: payload.skip, limit: payload.limit });
+  let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { list, totalCounts } });
+};
 
 /* export challengeController */
 module.exports = challengeController;

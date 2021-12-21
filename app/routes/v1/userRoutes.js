@@ -74,17 +74,14 @@ let routes = [
         path: "/v1/file/upload",
         joiSchemaForSwagger: {
             // Route format to use for files upload 
-            headers: {
-                authorization: Joi.string().required().description("Your's JWT token."),
-            },
+
             formData: {
                 file: Joi.file({ name: "image", description: "Single image file" }),
             },
             group: "File",
-            description: "Route to upload files in multiple formats",
+            description: "Route to upload profile image",
             model: "UploadFiles",
         },
-        auth: AVAILABLE_AUTHS.COMMON,
         handler: userController.uploadFile,
     },
     {
@@ -113,8 +110,8 @@ let routes = [
         auth: AVAILABLE_AUTHS.COMMON,
         handler: userController.updateProfile
     },
-   
-    
+
+
 ]
 
 module.exports = routes;
