@@ -29,6 +29,7 @@ challengeController.create = async (payload) => {
     if (payload.challengeType === CHALLENGES_TYPES.UNPAID) {
       payload.amount = 0;
     }
+    payload.completed = 0;
     let data = await SERVICES.challengeService.create(payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_CREATED_SUCCESSFULLY), { data });
   }
@@ -53,8 +54,7 @@ challengeController.dashBoardData = async (payload) => {
  */
 challengeController.updateChallenge = async (payload) => {
   let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
-  let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName, isDeleted: false });
-
+  let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName, _id: { $ne: payload.id } });
   if (!isChallengeExists) {
     if (challenge) {
       if (payload.challengeType === CHALLENGES_TYPES.UNPAID) {
@@ -63,7 +63,6 @@ challengeController.updateChallenge = async (payload) => {
       await SERVICES.challengeService.update({ _id: payload.id }, payload);
       return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_UPDATED_SUCCESSFULLY));
     }
-
   }
 
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.DATA_NOT_FOUND);

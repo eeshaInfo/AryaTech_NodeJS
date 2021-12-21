@@ -84,6 +84,7 @@ challengeService.getUserByChallenges = async (criteria, pagination) => {
              "caloriesBurned":1 ,
              "avgSpeed":1 ,
              "maxSpeed":1 ,
+             "completingDate": 1,
              "userData.firstName": 1,
              "userData.lastName": 1,
              "userData.imagePath": 1
@@ -105,6 +106,7 @@ challengeService.getUserByChallenges = async (criteria, pagination) => {
                 "caloriesBurned":1 ,
                 "avgSpeed":1 ,
                 "maxSpeed":1 ,
+                "completingDate": 1,
                 "userData.firstName": 1,
                 "userData.lastName": 1,
                 "userData.imagePath": 1

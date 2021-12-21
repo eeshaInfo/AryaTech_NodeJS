@@ -10,4 +10,5 @@ module.exports = {
   sessionModel:require(`../models/camel_sports/sessionModel`),
   challengeModel:require(`../models/camel_sports/challengeModel`),
   userChallengesModel:require(`../models/camel_sports/userChallengesModel`),
+  transactionModel:require(`../models/camel_sports/transactionModel`),
 };
