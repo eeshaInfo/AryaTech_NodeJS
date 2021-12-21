@@ -39,7 +39,7 @@ module.exports = {
     CHALLENGE_ALREADY_EXISTS: 'Challenge already exists.',
     DASHBOARD_DATA_FETCHED: 'Dashboard Data fetched successfully.',
     CHALLENGE_ALREADY_COMPLETED: 'Challenge already completed.',
-
+    CHALLENGE_CANNOT_DELETED: 'Challenge cannot be deleted'
 
 
 };

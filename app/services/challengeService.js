@@ -1,5 +1,6 @@
 const CONFIG = require('../../config');
 const { challengeModel, userChallengesModel } = require(`../models`);
+const { convertIdToMongooseId} = require(`../utils/utils`);
 
 let challengeService = {};
 
@@ -48,15 +49,34 @@ challengeService.listChallenge = async (criteria) => {
 /**
  * function to  get user by challanges
  */
-challengeService.getUserByChallenges = async (criteria) => {
-    let query = [
+challengeService.getUserByChallenges = async (criteria, pagination) => {
+    let query = criteria.searchKey ? [
      {
-     $match: criteria,
+     $match: { challengeId: convertIdToMongooseId(criteria.id)},
      },
-     { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
-     //{ $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
-     { $unwind: "$userData" },
-     //{ $unwind: "$challengeData" },
+     {
+        $lookup: {
+            from: 'users',
+            let: { userId: '$userId',searchKey: criteria.searchKey },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                { $eq: ['$$userId', '$_id'] },
+                            ]
+                        },
+                    },
+                },
+                    { $match: {firstName: {$regex: criteria.searchKey, $options: 'i'}}},
+            ],
+            as: "userData"
+        }
+    },
+    { $unwind: "$userData" },
+    { $skip: pagination.skip },
+    { $limit: pagination.limit },
+     //{ $match: {'userData.firstName': {$regex: criteria.searchKey, $options: 'i'}}},
      {
          $project: {
              "date":1 ,
@@ -70,7 +90,28 @@ challengeService.getUserByChallenges = async (criteria) => {
 
          }
      }
-    ]
+    ] : [
+        {
+        $match: { challengeId: convertIdToMongooseId(criteria.id)},
+        },
+        { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
+        { $unwind: "$userData" },
+        { $skip: pagination.skip },
+        { $limit: pagination.limit },
+        {
+            $project: {
+                "date":1 ,
+                "timeTaken":1 ,
+                "caloriesBurned":1 ,
+                "avgSpeed":1 ,
+                "maxSpeed":1 ,
+                "userData.firstName": 1,
+                "userData.lastName": 1,
+                "userData.imagePath": 1
+   
+            }
+        }
+       ]
     return await userChallengesModel.aggregate(query);
 };
 

@@ -77,7 +77,8 @@ let routes = [
             query: {
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
-                searchKey: Joi.string().allow("")
+                searchKey: Joi.string().allow(""),
+                isRecentKey: Joi.boolean().default(false),
             },
             group: 'Challenge',
             description: 'Route to get challenges',
@@ -108,13 +109,11 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                id: Joi.string().objectId().required().description('Challenge Id.'),
-                skip: Joi.number().default(0).description('skip'),
-                limit: Joi.number().default(10).description('limit'),
+                id: Joi.string().objectId().required().description('Challenge Id.')
             },
             group: 'Challenge',
-            description: 'Route to get Users data',
-            model: 'GetDashboardData'
+            description: 'Route to get Challenge by id',
+            model: 'GetChallengeById'
         },
         auth: AVAILABLE_AUTHS.ADMIN,
         handler: challengeController.getChallengeById
@@ -137,7 +136,7 @@ let routes = [
             },
             group: 'Challenge',
             description: 'Route to Completed Challenge',
-            model: 'completedChallenge'
+            model: 'CompletedChallenge'
         },
         handler: challengeController.completedChallenge,
         auth: AVAILABLE_AUTHS.USER,
