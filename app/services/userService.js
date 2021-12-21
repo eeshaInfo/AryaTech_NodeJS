@@ -30,6 +30,12 @@ userService.getUser = async (criteria, projection) => {
   return await userModel.findOne(criteria, projection).lean();
 };
 
+
+userService.getUsersList = async (criteria,skip,limit) => {
+  return await userModel.find(criteria).skip(skip).limit(limit);
+};
+
+
 /**
  * function to create new user into the system.
  */

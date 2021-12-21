@@ -34,8 +34,8 @@ userController.registerNewUser = async (payload) => {
     };
     let token = await encryptJwt(dataForJwt);
     await SERVICES.sessionService.updateSession({ userId: newRegisteredUser._id }, { token });
-    
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser,token});
+
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser, token });
   }
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
 };
@@ -219,6 +219,23 @@ userController.getAdminProfile = async (payload) => {
   }
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
 };
+
+
+
+
+userController.list = async (payload) => {
+  let criteria = {
+    userType: CONSTANTS.USER_TYPES.USER
+  }
+  let userList = await SERVICES.userService.getUsersList(criteria, payload.skip, payload.limit)
+  let userCount = await SERVICES.userService.getCountOfUsers(criteria);
+  // console.log("UserList:==>", userList)
+  let data = {
+    list: userList,
+    userCount: userCount
+  }
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { data})
+}
 
 /* export userController */
 module.exports = userController;
