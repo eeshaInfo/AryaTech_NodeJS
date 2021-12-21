@@ -111,6 +111,27 @@ let routes = [
         handler: userController.updateProfile
     },
 
+    {
+        method: 'GET',
+        path: '/v1/user/list',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            query: {
+                skip: Joi.number().default(0).description('skip'),
+                limit: Joi.number().default(10).description('limit'),
+            },
+            group: 'User',
+            description: 'Route to get userList',
+            model: 'GetUserList'
+        },
+        auth: AVAILABLE_AUTHS.ADMIN,
+        handler: userController.list
+    },
+
+
+
 
 ]
 
