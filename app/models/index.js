@@ -5,10 +5,10 @@ const CONFIG = require("../../config");
  ********* independently ********
  ********************************/
 module.exports = {
-  userModel: require(`../models/camel_sports/userModel`),
-  dbVersionModel: require(`../models/camel_sports/dbVersionModel`),
-  sessionModel:require(`../models/camel_sports/sessionModel`),
-  challengeModel:require(`../models/camel_sports/challengeModel`),
-  userChallengesModel:require(`../models/camel_sports/userChallengesModel`),
-  transactionModel:require(`../models/camel_sports/transactionModel`),
+  userModel: require(`../models/userModel`),
+  dbVersionModel: require(`../models/dbVersionModel`),
+  sessionModel:require(`../models/sessionModel`),
+  challengeModel:require(`../models/challengeModel`),
+  userChallengesModel:require(`../models/userChallengesModel`),
+  transactionModel:require(`../models/transactionModel`),
 };

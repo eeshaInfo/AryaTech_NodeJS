@@ -1,9 +1,7 @@
 "use strict";
-const { boolean } = require("joi");
 /************* Modules ***********/
 const MONGOOSE = require("mongoose");
 const Schema = MONGOOSE.Schema;
-const { CHALLENGES_TYPES, DISTANCE_TYPE } = require(`../../utils/constants`)
 
 /**************************************************
  ************* Transaction Model or collection ***********
