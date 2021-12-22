@@ -2,7 +2,7 @@
 /************* Modules ***********/
 const MONGOOSE = require("mongoose");
 const Schema = MONGOOSE.Schema;
-const { CHALLENGES_TYPES, DISTANCE_TYPE } = require(`../../utils/constants`)
+const { CHALLENGES_TYPES, DISTANCE_TYPE } = require(`../utils/constants`)
 
 /**************************************************
  ************* Challenge Model or collection ***********

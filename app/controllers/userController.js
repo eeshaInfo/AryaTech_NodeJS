@@ -237,5 +237,25 @@ userController.list = async (payload) => {
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { data})
 }
 
+
+
+userController.blockUser = async (payload) => {
+  let criteria = {
+    _id: payload.id,
+    userType: CONSTANTS.USER_TYPES.USER
+  }
+
+  console.log(payload.id)
+  let user = await SERVICES.userService.getUser(criteria, NORMAL_PROJECTION)
+  console.log(user);
+  if (user) {
+    if (user.status === CONSTANTS.STATUS.BLOCK) {
+      throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_ALREADY_BLOCKED, ERROR_TYPES.BAD_REQUEST);
+    }
+    await SERVICES.userService.updateUser(criteria, { status: CONSTANTS.STATUS.BLOCK })
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_BLOCKED_SUCCESSFULLY), { user })
+  }
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+}
 /* export userController */
 module.exports = userController;

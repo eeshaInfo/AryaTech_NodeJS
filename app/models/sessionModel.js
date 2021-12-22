@@ -3,7 +3,7 @@
 /************ Modules **********/
 const MONGOOSE = require('mongoose');
 const Schema = MONGOOSE.Schema;
-const { TOKEN_TYPES, USER_TYPE, DEVICE_TYPES } = require("../../utils/constants");
+const { TOKEN_TYPES, USER_TYPE, DEVICE_TYPES } = require("../utils/constants");
 
 /************ user Session Model **********/
 const sessionSchema = new Schema({

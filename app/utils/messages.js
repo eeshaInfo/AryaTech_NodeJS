@@ -29,7 +29,9 @@ module.exports = {
     INVITATION_SENT_SUCCESSFULLY: 'Invitation Sent Successfully.',
     INVALID_MOBILE_NUMBER: 'Invalid mobile number.',
     USER_DOESNOT_EXIST: 'User does not Exist',
-    USER_FETCHED_SUCCESSFULLY:'User List fetched Successfully',
+    USER_FETCHED_SUCCESSFULLY: 'User List fetched Successfully',
+    USER_BLOCKED_SUCCESSFULLY: 'User blocked Successfully',
+    USER_ALREADY_BLOCKED:'User Already Blocked Successfully',
 
     //challenges
     CHALLENGE_CREATED_SUCCESSFULLY: 'Challenge created successfully.',

@@ -130,6 +130,24 @@ let routes = [
         handler: userController.list
     },
 
+    {
+        method: 'POST',
+        path: '/v1/user/block',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            query: {
+                id: Joi.string().objectId().required().description('User Id.')
+            },
+            group: 'User',
+            description: 'Route to block user',
+            model: 'blockUser'
+        },
+        auth: AVAILABLE_AUTHS.ADMIN,
+        handler: userController.blockUser
+    },
+
 
 
 

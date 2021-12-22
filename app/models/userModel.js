@@ -1,6 +1,6 @@
 "use strict";
 /************* Modules ***********/
-const { USER_TYPES, GENDER_TYPES } = require("../../utils/constants");
+const { USER_TYPES, GENDER_TYPES } = require("../utils/constants");
 const MONGOOSE = require("mongoose");
 const Schema = MONGOOSE.Schema;
 
