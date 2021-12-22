@@ -134,7 +134,7 @@ challengeController.getUserByChallenges = async (payload) => {
   let criteria = {
     challengeId: payload.id
   }
-  let list = await SERVICES.challengeService.getUserByChallenges(payload, { skip: payload.skip, limit: payload.limit });
+  let list = await SERVICES.challengeService.getUserByChallenges(payload);
   let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { list, totalCounts } });
 };

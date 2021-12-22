@@ -49,11 +49,22 @@ challengeService.listChallenge = async (criteria) => {
 /**
  * function to  get user by challanges
  */
-challengeService.getUserByChallenges = async (criteria, pagination) => {
+challengeService.getUserByChallenges = async (criteria) => {
+ 
+    let sort = {}
+    if (criteria.sortKey === "firstName" || criteria.sortKey === "lastName") {
+        criteria.sortKey = `userData.${criteria.sortKey}`
+        sort[criteria.sortKey] = criteria.sortDirection;
+    }
+    else {
+        sort[criteria.sortKey] = criteria.sortDirection;
+    }
+   
     let query = criteria.searchKey ? [
         {
             $match: { challengeId: convertIdToMongooseId(criteria.id) },
         },
+
         {
             $lookup: {
                 from: 'users',
@@ -74,8 +85,10 @@ challengeService.getUserByChallenges = async (criteria, pagination) => {
             }
         },
         { $unwind: "$userData" },
-        { $skip: pagination.skip },
-        { $limit: pagination.limit },
+        { $sort: sort },
+        { $skip: criteria.skip },
+        { $limit: criteria.limit },
+
         //{ $match: {'userData.firstName': {$regex: criteria.searchKey, $options: 'i'}}},
         {
             $project: {
@@ -90,15 +103,17 @@ challengeService.getUserByChallenges = async (criteria, pagination) => {
                 "userData.imagePath": 1
 
             }
-        }
+        },
+        //   {$sort:{"pagination.sortKey":pagination.sortDirection}},
     ] : [
         {
             $match: { challengeId: convertIdToMongooseId(criteria.id) },
         },
         { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
         { $unwind: "$userData" },
-        { $skip: pagination.skip },
-        { $limit: pagination.limit },
+        { $sort: sort },
+        { $skip: criteria.skip },
+        { $limit: criteria.limit },
         {
             $project: {
                 "date": 1,

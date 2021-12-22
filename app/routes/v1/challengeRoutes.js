@@ -156,7 +156,8 @@ let routes = [
                 limit: Joi.number().default(10).description('limit'),
                 id: Joi.string().objectId().required().description('Challenge Id.'),
                 searchKey: Joi.string().allow(""),
-
+                sortKey: Joi.string().optional().description('sort key'),
+                sortDirection: Joi.number().default(-1).optional().description('sort direction'),
             },
             group: 'Challenge',
             description: 'Route to get users by challenges',
