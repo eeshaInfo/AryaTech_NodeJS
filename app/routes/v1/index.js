@@ -8,7 +8,8 @@
 let v1Routes = [
     ...require('./userRoutes'),
      ...require('./adminRoute'),
-     ...require('./challengeRoutes'),
+    ...require('./challengeRoutes'),
+     ...require('./paymentRoute')
     
 ]
 

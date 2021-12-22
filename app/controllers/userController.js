@@ -234,7 +234,7 @@ userController.list = async (payload) => {
     list: userList,
     userCount: userCount
   }
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { data})
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { data })
 }
 
 
@@ -245,9 +245,8 @@ userController.blockUser = async (payload) => {
     userType: CONSTANTS.USER_TYPES.USER
   }
 
-  console.log(payload.id)
   let user = await SERVICES.userService.getUser(criteria, NORMAL_PROJECTION)
-  console.log(user);
+    ;
   if (user) {
     if (user.status === CONSTANTS.STATUS.BLOCK) {
       throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_ALREADY_BLOCKED, ERROR_TYPES.BAD_REQUEST);

@@ -6,15 +6,15 @@ const Schema = MONGOOSE.Schema;
 /**************************************************
  ************* Transaction Model or collection ***********
  **************************************************/
-const transactionSchema = new Schema(
+const paymentSchema = new Schema(
     {
         userId: { type: Schema.Types.ObjectId, ref: 'users' },
         challengeId: { type: Schema.Types.ObjectId, ref: 'challenges' },
         transactionID: { type: String },
-        status: { type: Boolean }
+        status: { type: Number }
     },
     { versionKey: false, timestamps: true }
 );
 
 
-module.exports = MONGOOSE.model("transactions", transactionSchema);
+module.exports = MONGOOSE.model("transactions", paymentSchema);

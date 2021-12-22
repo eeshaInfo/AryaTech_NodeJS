@@ -10,5 +10,5 @@ module.exports = {
   sessionModel:require(`../models/sessionModel`),
   challengeModel:require(`../models/challengeModel`),
   userChallengesModel:require(`../models/userChallengesModel`),
-  transactionModel:require(`../models/transactionModel`),
+  paymentModel:require(`./paymentModel`),
 };

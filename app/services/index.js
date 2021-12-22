@@ -11,4 +11,5 @@ module.exports = {
     sessionService: require('./sessionService'),
     challengeService: require('./challengeService'),
     fileUploadService: require('./fileUploadService'),
+    paymentService: require('./paymentService')
 };
