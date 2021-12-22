@@ -31,18 +31,22 @@ module.exports = {
     USER_DOESNOT_EXIST: 'User does not Exist,please register',
     USER_FETCHED_SUCCESSFULLY: 'User List fetched Successfully',
     USER_BLOCKED_SUCCESSFULLY: 'User blocked Successfully',
-    USER_ALREADY_BLOCKED:'User Already Blocked Successfully',
+    USER_ALREADY_BLOCKED: 'User Already Blocked Successfully',
 
     //challenges
     CHALLENGE_CREATED_SUCCESSFULLY: 'Challenge created successfully.',
     CHALLENGE_UPDATED_SUCCESSFULLY: 'Challenge Updated successfully.',
     CHALLENGE_DELETED_SUCCESSFULLY: 'Challenge deleted successfully.',
     CHALLENGE_FETCHED_SUCCESSFULLY: 'Challenge fetched successfully.',
-    CHALLENGE_COMPLETED_SUCCESSFULLY:'Challenge Completed Successfully',
+    CHALLENGE_COMPLETED_SUCCESSFULLY: 'Challenge Completed Successfully',
     CHALLENGE_ALREADY_EXISTS: 'Challenge already exists.',
     DASHBOARD_DATA_FETCHED: 'Dashboard Data fetched successfully.',
     CHALLENGE_ALREADY_COMPLETED: 'Challenge already completed.',
-    CHALLENGE_CANNOT_DELETED: 'Challenge cannot be deleted'
+    CHALLENGE_CANNOT_DELETED: 'Challenge cannot be deleted',
+
+    //Payment
+    PAYMENT_SUCCESSFULLY_COMPLETED: 'Payment Successfully Completed',
+    COIN_AMOUNT_NOT_MATCHED: 'Coin Amount Not matched with Challenge Details',
 
 
 };

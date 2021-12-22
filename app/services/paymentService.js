@@ -25,4 +25,10 @@ paymentService.getPayment = async (criteria) => {
 };
 
 
+paymentService.updatePaymentDetails = async (dataToInsert) => {
+    return await paymentModel.create(dataToInsert)
+}
+
+
+
 module.exports = paymentService;

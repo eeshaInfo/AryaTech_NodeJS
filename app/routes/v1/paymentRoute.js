@@ -25,23 +25,23 @@ let routes = [
 
     {
         method: 'POST',
-        path: '/v1/payment/accept',
+        path: '/v1/payment/acceptPayment',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
+
             body: {
-                challengeName: Joi.string().required().description('Challenge name.'),
-                challengeType: Joi.number().required().valid(...Object.values(CHALLENGES_TYPES)).description('Challenge type i.e 1=> PAID, 2=> UNPAID.'),
-                distanceType: Joi.number().required().valid(...Object.values(DISTANCE_TYPE)).description('Challenge distace  type.'),
-                amount: Joi.alternatives().conditional('challengeType', { is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1), otherwise: Joi.number().optional() }),
+                coin: Joi.number().description(`HZM Coins`).required(),
+                challengeId: Joi.string().description('Challenge Id').required(),
+                transactionID: Joi.string().description('Transactions Id').required()
             },
             group: 'Payment',
-            description: 'Route to payment .',
-            model: 'GetPaymentDetails'
+            description: 'Route to accept Payment .',
+            model: 'AcceptPayment'
         },
         auth: AVAILABLE_AUTHS.USER,
-        handler:paymentController.getPayment
+        handler: paymentController.acceptPayment
     },
 
 ];
