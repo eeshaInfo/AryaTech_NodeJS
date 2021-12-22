@@ -18,10 +18,8 @@ const userChallengesSchema = new Schema(
         avgSpeed: { type: String },
         maxSpeed: { type: String },
     },
-    { versionKey: false }
+    { versionKey: false, timestamps: true }
 );
-
-userChallengesSchema.set("timestamps", true);
 
 module.exports = MONGOOSE.model("userChallenges", userChallengesSchema);
 

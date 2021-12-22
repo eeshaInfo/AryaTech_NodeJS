@@ -15,9 +15,8 @@ const transactionSchema = new Schema(
         transactionID: { type: String },
         status: { type: Boolean }
     },
-    { versionKey: false }
+    { versionKey: false, timestamps: true }
 );
 
-transactionSchema.set("timestamps", true);
 
 module.exports = MONGOOSE.model("transactions", transactionSchema);

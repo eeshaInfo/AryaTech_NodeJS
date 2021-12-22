@@ -85,12 +85,12 @@ challengeController.delete = async (payload) => {
  */
 challengeController.list = async (payload) => {
   if (payload.isRecentKey) {
-    let recentChallenges = await SERVICES.challengeService.listChallenge({ isDeleted: false });
+    let recentChallenges = await SERVICES.challengeService.listChallenge({ isDeleted: false }, { skip: payload.skip, limit: payload.limit} , { sortKey: payload.sortKey, sortDirection: payload.sortDirection });
     let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false });
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { recentChallenges, totalCounts } });
   }
   else {
-    let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false, ...(payload.searchKey && { challengeName: { $regex: payload.searchKey, $options: 'i' } }) }, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }), sortKey: payload.sortKey, sortDirection: payload.sortDirection },);
+    let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false, ...(payload.searchKey && { challengeName: { $regex: payload.searchKey, $options: 'i' } }) }, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }), sortKey: payload.sortKey, sortDirection: payload.sortDirection });
     let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false, ...(payload.searchKey && { challengeName: { $regex: payload.searchKey, $options: 'i' } }) });
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, totalCounts } });
   }
@@ -138,6 +138,18 @@ challengeController.getUserByChallenges = async (payload) => {
   let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { list, totalCounts } });
 };
+
+     /**
+ * Function to fetch user by particular challenge
+ */
+  challengeController.getChallengesByUser= async (payload) => {
+    let criteria = {
+      userId: payload.id
+    }
+    let list = await SERVICES.challengeService.getChallengesByUser(payload, {skip: payload.skip, limit: payload.limit} );
+    let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {list,totalCounts} });
+    };
 
 /* export challengeController */
 module.exports = challengeController;
