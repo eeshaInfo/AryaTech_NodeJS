@@ -77,9 +77,9 @@ userController.loginUser = async (payload) => {
       };
       let token = await encryptJwt(dataForJwt);
       await SERVICES.sessionService.updateSession({ userId: user._id }, { token });
-      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
+      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user, isNewUser: false });
     }
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_DOESNOT_EXIST, ERROR_TYPES.DATA_NOT_FOUND);
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_DOESNOT_EXIST), { isNewUser: false });
   }
 };
 
