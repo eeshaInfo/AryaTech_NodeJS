@@ -1,7 +1,7 @@
 'use strict';
 
 const { Joi } = require('../../utils/joiUtils');
-const { AVAILABLE_AUTHS, GENDER_TYPES } = require('../../utils/constants');
+const { AVAILABLE_AUTHS, GENDER_TYPES, STATUS } = require('../../utils/constants');
 //load controllers
 const { userController } = require('../../controllers');
 
@@ -130,23 +130,24 @@ let routes = [
         handler: userController.list
     },
 
+
     {
-        method: 'POST',
-        path: '/v1/user/block',
+        method: 'GET',
+        path: '/v1/user/listForGuest',
         joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
             query: {
-                id: Joi.string().objectId().required().description('User Id.')
+                skip: Joi.number().default(0).description('skip'),
+                limit: Joi.number().default(10).description('limit'),
             },
             group: 'User',
-            description: 'Route to block user',
-            model: 'blockUser'
+            description: 'Route to get userList for GUEST',
+            model: 'GetUserListForGuest'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
-        handler: userController.blockUser
+        handler: userController.list
     },
+
+
+    
 
 
 

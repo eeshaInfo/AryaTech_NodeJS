@@ -74,13 +74,31 @@ let routesAdmin = [
             headers: {
                 'authorization': Joi.string().required().description("Admin's JWT token.")
             },
-            
+
             group: 'Admin',
             description: 'Admin get profile  ',
             model: 'Admin_GetProfile'
         },
         auth: AVAILABLE_AUTHS.ADMIN,
         handler: userController.getAdminProfile
+    },
+
+    {
+        method: 'POST',
+        path: '/v1/user/block',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            query: {
+                id: Joi.string().objectId().required().description('User Id.')
+            },
+            group: 'Admin',
+            description: 'Route to block user',
+            model: 'blockUser'
+        },
+        auth: AVAILABLE_AUTHS.ADMIN,
+        handler: userController.blockUser
     },
 ];
 

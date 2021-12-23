@@ -117,7 +117,7 @@ let routes = [
             description: 'Route to get Challenge by id',
             model: 'GetChallengeById'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.COMMON,
         handler: challengeController.getChallengeById
     },
     {
