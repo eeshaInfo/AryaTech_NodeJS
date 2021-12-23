@@ -74,7 +74,7 @@ challengeController.updateChallenge = async (payload) => {
 challengeController.deleteChallenge = async (payload) => {
   let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
   let paidChallenge = await SERVICES.paymentService.getPayment({ challengeId: payload.id })
-  if (paidChallenge || challenge.completed>0) {
+  if ( challenge.completed > 0 || paidChallenge.status == 1) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_CANNOT_DELETED, ERROR_TYPES.BAD_REQUEST);
   }
   await SERVICES.challengeService.update({ _id: payload.id }, { isDeleted: true });

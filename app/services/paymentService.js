@@ -69,11 +69,12 @@ paymentService.getPaymentDetails = async (criteria) => {
             $match: {
                 $or: [
                     { "userData.firstName": { $regex: criteria.search, $options: 'i' } },
+                    { "userData.mobileNumber": { $regex: criteria.search, $options: 'i' } },
                     { 'userData.lastName': { $regex: criteria.search, $options: 'i' } },
                     { 'challengeData.challengeName': { $regex: criteria.search, $options: 'i' } },
                     { 'transactionID': { $regex: criteria.search, $options: 'i' } },
-                   // { 'status': { $regex: criteria.search, $options: 'i' } },
-                   // { 'challengeDataAmount': { $regex: criteria.search, $options: 'i' } },
+                    // { 'status': { $regex: criteria.search, $options: 'i' } },
+                    // { 'challengeDataAmount': { $regex: criteria.search, $options: 'i' } },
                 ]
             }
         },
@@ -87,7 +88,7 @@ paymentService.getPaymentDetails = async (criteria) => {
                 "createdAt": 1,
                 "userData.firstName": 1,
                 "userData.lastName": 1,
-                "userData.mobileNumber":1,
+                "userData.mobileNumber": 1,
                 "userData.imagePath": 1,
                 "userData.mobileNumber": 1,
                 "challengeData.challengeName": 1,
@@ -129,7 +130,7 @@ paymentService.getPaymentDetails = async (criteria) => {
                 "createdAt": 1,
                 "userData.firstName": 1,
                 "userData.lastName": 1,
-                "userData.mobileNumber":1,
+                "userData.mobileNumber": 1,
                 "userData.imagePath": 1,
                 "userData.mobileNumber": 1,
                 "challengeData.challengeName": 1,
