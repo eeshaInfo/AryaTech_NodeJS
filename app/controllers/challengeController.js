@@ -23,7 +23,7 @@ challengeController.getServerResponse = async (payload) => {
 /**
  * function to create a chaalenge.
  */
-challengeController.create = async (payload) => {
+challengeController.createChallenge = async (payload) => {
   let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName, isDeleted: false });
   if (!isChallengeExists) {
     if (payload.challengeType === CHALLENGES_TYPES.UNPAID) {
@@ -53,14 +53,14 @@ challengeController.dashBoardData = async (payload) => {
  * function to update a challenge.
  */
 challengeController.updateChallenge = async (payload) => {
-  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
-  let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName, _id: { $ne: payload.id } });
+  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId });
+  let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName, _id: { $ne: payload.challengeId } });
   if (!isChallengeExists) {
     if (challenge) {
       if (payload.challengeType === CHALLENGES_TYPES.UNPAID) {
         payload.amount = 0;
       }
-      await SERVICES.challengeService.update({ _id: payload.id }, payload);
+      await SERVICES.challengeService.update({ _id: payload.challengeId }, payload);
       return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_UPDATED_SUCCESSFULLY));
     }
   }
@@ -71,7 +71,7 @@ challengeController.updateChallenge = async (payload) => {
 /**
  * Function to delete a challenge.
  */
-challengeController.delete = async (payload) => {
+challengeController.deleteChallenge = async (payload) => {
   let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
   if (challenge && challenge.completed) {
     await SERVICES.challengeService.update({ _id: payload.id }, { isDeleted: true });

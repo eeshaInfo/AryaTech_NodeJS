@@ -128,30 +128,7 @@ let routes = [
         },
         auth: AVAILABLE_AUTHS.ADMIN,
         handler: userController.list
-    },
-
-
-    {
-        method: 'GET',
-        path: '/v1/user/listForGuest',
-        joiSchemaForSwagger: {
-            query: {
-                skip: Joi.number().default(0).description('skip'),
-                limit: Joi.number().default(10).description('limit'),
-            },
-            group: 'User',
-            description: 'Route to get userList for GUEST',
-            model: 'GetUserListForGuest'
-        },
-        handler: userController.list
-    },
-
-
-    
-
-
-
-
+    }
 ]
 
 module.exports = routes;
