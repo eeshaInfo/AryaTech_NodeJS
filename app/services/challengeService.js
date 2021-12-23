@@ -50,7 +50,7 @@ challengeService.listChallenge = async (criteria, pagination) => {
  * function to  get user by challanges
  */
 challengeService.getUserByChallenges = async (criteria) => {
-
+   console.log(criteria);
     let sort = {}
     if (criteria.sortKey === "firstName" || criteria.sortKey === "lastName") {
         criteria.sortKey = `userData.${criteria.sortKey}`
@@ -87,19 +87,17 @@ challengeService.getUserByChallenges = async (criteria) => {
         {
             $match: {
                 $or: [
-                    { "userData.firstName": { $regex: criteria.search, $options: 'i' } },
-                    { 'userData.lastName': { $regex: criteria.search, $options: 'i' } },
-                    { 'avgSpeed': { $regex: criteria.search, $options: 'i' } },
-                    { 'maxSpeed': { $regex: criteria.search, $options: 'i' } },
-                    { 'timeTaken': { $regex: criteria.search, $options: 'i' } }
+                    { "userData.firstName": { $regex: criteria.searchKey, $options: 'i' } },
+                    { 'userData.lastName': { $regex: criteria.searchKey, $options: 'i' } },
+                    { 'avgSpeed': { $regex: criteria.searchKey, $options: 'i' } },
+                    { 'maxSpeed': { $regex: criteria.searchKey, $options: 'i' } },
+                    { 'timeTaken': { $regex: criteria.searchKey, $options: 'i' } }
                 ]
             }
         },
         { $sort: sort },
         { $skip: criteria.skip },
         { $limit: criteria.limit },
-
-        //{ $match: {'userData.firstName': {$regex: criteria.searchKey, $options: 'i'}}},
         {
             $project: {
                 "date": 1,
@@ -143,6 +141,79 @@ challengeService.getUserByChallenges = async (criteria) => {
 };
 
 
+
+/**
+ * function to  get challenges by user
+ */
+challengeService.getChallengesByUser = async (criteria, pagination) => {
+    let query = criteria.searchKey ? [
+     {
+     $match: { userId: convertIdToMongooseId(criteria.id)},
+     },
+     {
+        $lookup: {
+            from: 'users',
+            let: { userId: '$userId',searchKey: criteria.searchKey },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                { $eq: ['$$userId', '$_id'] },
+                            ]
+                        },
+                    },
+                },
+                    { $match: {firstName: {$regex: criteria.searchKey, $options: 'i'}}},
+            ],
+            as: "userData"
+        }
+    },
+    { $unwind: "$userData" },
+    { $skip: pagination.skip },
+    { $limit: pagination.limit },
+     //{ $match: {'userData.firstName': {$regex: criteria.searchKey, $options: 'i'}}},
+     {
+         $project: {
+             "date":1 ,
+             "timeTaken":1 ,
+             "caloriesBurned":1 ,
+             "avgSpeed":1 ,
+             "maxSpeed":1 ,
+             "completingDate": 1,
+             "userData.firstName": 1,
+             "userData.lastName": 1,
+             "userData.imagePath": 1
+
+         }
+     }
+    ] : [
+        {
+        $match: { challengeId: convertIdToMongooseId(criteria.id)},
+        },
+        { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
+        { $unwind: "$userData" },
+        { $skip: pagination.skip },
+        { $limit: pagination.limit },
+        {
+            $project: {
+                "date":1 ,
+                "timeTaken":1 ,
+                "caloriesBurned":1 ,
+                "avgSpeed":1 ,
+                "maxSpeed":1 ,
+                "completingDate": 1,
+                "userData.firstName": 1,
+                "userData.lastName": 1,
+                "userData.imagePath": 1
+   
+            }
+        }
+       ]
+    return await userChallengesModel.aggregate(query);
+};
+
+
 /**
  * function to  get count based on criteria
  */
@@ -161,6 +232,39 @@ challengeService.createUserChallenge = async (criteria) => {
  */
 challengeService.getUserCountByChallenge = async (criteria) => {
     return await userChallengesModel.countDocuments(criteria);
+};
+
+/** 
+ * function to  get challenge list for user
+ */
+challengeService.getChallengeListForUser = async (criteria) => {
+    console.log(criteria)
+    let query = [
+        {
+        $match: { isDeleted: false },
+        },
+        {
+            // $addFields: {
+            //     isChallengeCompleted: { $cond: [{ $in: [criteria.user.challenges, '$challenges._id'] }, 1, 0] }
+            // }
+            $addFields: {
+                isChallengeCompleted: { $cond: { if: { $in: ["$_id", criteria.user.challenges ] }, then: 1, else:0 }}}
+            // $cond: { 
+            //     if: { $eq: ["$permissions.publicRead", true] }, then: true, else: false 
+            //   }
+        },
+        {
+            $project: {
+                "challengeName":1 ,
+                "challengeType":1 ,
+                "distanceType":1 ,
+                "amount":1 ,
+                isChallengeCompleted:1 ,
+   
+            }
+        }
+       ]
+    return await challengeModel.aggregate(query);
 };
 
 module.exports = challengeService;

@@ -89,6 +89,27 @@ let routes = [
     },
     {
         method: 'GET',
+        path: '/v1/challenge/listForUser',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            query: {
+                skip: Joi.number().default(0).description('skip'),
+                limit: Joi.number().default(10).description('limit'),
+                searchKey: Joi.string().allow(""),
+                sortKey: Joi.string().default("createdAt").optional().description('sort key'),
+                sortDirection: Joi.number().default(-1).optional().description('sort direction'),
+            },
+            group: 'Challenge',
+            description: 'Route to get challenges list for user',
+            model: 'GetChallenges'
+        },
+        auth: AVAILABLE_AUTHS.USER,
+        handler: challengeController.challengeListForUser
+    },
+    {
+        method: 'GET',
         path: '/v1/challenge/dashBoardData',
         joiSchemaForSwagger: {
             headers: {

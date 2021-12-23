@@ -36,7 +36,7 @@ let routes = [
             },
 
             body: {
-                coin: Joi.number().description(`HZM Coins`).required(),
+
                 challengeId: Joi.string().description('Challenge Id').required(),
                 transactionID: Joi.string().description('Transactions Id').required()
             },

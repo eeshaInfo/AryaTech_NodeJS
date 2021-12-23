@@ -117,10 +117,8 @@ challengeController.completedChallenge = async (payload) => {
   payload.completingDate = new Date();
   await SERVICES.challengeService.createUserChallenge(payload);
   //let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
-  if (!challenge) {
     await SERVICES.challengeService.update({ _id: payload.id }, { $inc: { completed: 1 } });
-    await SERVICES.userService.updateUser({ _id: payload.user._id }, { $inc: { challengeCompleted: 1 } });
-  }
+    await SERVICES.userService.updateUser({ _id: payload.user._id }, { $inc: { challengeCompleted: 1 } ,$addToSet: { challenges: payload.id }});
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_COMPLETED_SUCCESSFULLY));
   //}
   //throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_COMPLETED, ERROR_TYPES.BAD_REQUEST);
@@ -150,6 +148,15 @@ challengeController.getUserByChallenges = async (payload) => {
     let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {list,totalCounts} });
     };
+
+       /**
+ * Function to fetch list challenge list for user
+ */
+  challengeController.challengeListForUser= async (payload) => {
+    let list = await SERVICES.challengeService.getChallengeListForUser(payload);
+    //let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {list} });
+};
 
 /* export challengeController */
 module.exports = challengeController;

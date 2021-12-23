@@ -23,7 +23,10 @@ const userSchema = new Schema(
         imagePath: { type: String },
         password: { type: String },
         status: { type: Number },
-        challengeCompleted: { type: Number ,default: 0 }
+        challengeCompleted: { type: Number ,default: 0 },
+        challenges: [
+            { type: Schema.Types.ObjectId, ref: 'challenges' }
+        ]
         // isLoggedIn: { type: Boolean, default: false },
     },
     { versionKey: false, timestamps: true }
