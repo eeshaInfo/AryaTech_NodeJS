@@ -45,7 +45,7 @@ module.exports = {
     DASHBOARD_DATA_FETCHED: 'Dashboard Data fetched successfully.',
     CHALLENGE_ALREADY_COMPLETED: 'Challenge already completed.',
     CHALLENGE_CANNOT_DELETED: 'Challenge cannot be deleted',
-
+    CHALLENGE_NOT_FOUND: 'Challenge not found',
     //Payment
     PAYMENT_SUCCESSFULLY_COMPLETED: 'Payment Successfully Completed',
     COIN_AMOUNT_NOT_MATCHED: 'Coin Amount Not matched with Challenge Details',
