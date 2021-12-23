@@ -2,7 +2,7 @@
 const path = require('path');
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
-const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS } = require('../utils/constants');
+const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS,USER_TYPES } = require('../utils/constants');
 const SERVICES = require('../services');
 const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword, sendSms } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
@@ -26,6 +26,7 @@ userController.registerNewUser = async (payload) => {
   let isUserAlreadyExists = await SERVICES.userService.getUser({ mobileNumber: payload.mobileNumber }, NORMAL_PROJECTION);
   if (!isUserAlreadyExists) {
     payload.status = STATUS.ACTIVE;
+    payload.userType = USER_TYPES.USER
     let newRegisteredUser = await SERVICES.userService.registerUser(payload);
     // console.log("New RegistredUser:.....",newRegisteredUser, newRegisteredUser._id)
     const dataForJwt = {
