@@ -11,14 +11,18 @@ let routes = [
         method: 'PUT',
         path: '/v1/payment/approveOrReject',
         joiSchemaForSwagger: {
-            query: {
-                transactionID: Joi.string().required().description('Transaction id'),
-                status: Joi.number().required().description('1 => APPROVE, 2=> REJECT ')
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            body: {
+                id: Joi.string().required().description('Payment id'),
+                status: Joi.number().required().description('1 => APPROVE, 2=> REJECT ,3=> PENDING')
             },
             group: 'Payment',
             description: 'Route to approve or reject a payment.',
             model: 'ApproveOrRejectPayment'
         },
+        auth: AVAILABLE_AUTHS.ADMIN,
         handler: paymentController.approveOrRejectPayment
     },
 
@@ -42,6 +46,27 @@ let routes = [
         },
         auth: AVAILABLE_AUTHS.USER,
         handler: paymentController.acceptPayment
+    },
+    {
+        method: 'GET',
+        path: '/v1/payment/getPaymentList',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            query: {
+                skip: Joi.number().default(0).description('skip'),
+                limit: Joi.number().default(10).description('limit'),
+                searchKey: Joi.string().allow(""),
+                sortKey: Joi.string().optional().description('sort key'),
+                sortDirection: Joi.number().default(-1).optional().description('sort direction'),
+            },
+            group: 'Payment',
+            description: 'Route to get payment list.',
+            model: 'GetPaymentDetails'
+        },
+        auth: AVAILABLE_AUTHS.ADMIN,
+        handler: paymentController.getPaymentList
     },
 
 ];

@@ -18,25 +18,18 @@ let paymentController = {};
  * Function to approve or reject payment
  */
 paymentController.approveOrRejectPayment = async (payload) => {
-  let paymentData = await SERVICES.paymentService.getPayment({ paymentID: payload.paymentID })
+  let paymentData = await SERVICES.paymentService.getPayment({ _id: payload.id})
   if (!paymentData) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
   }
-
-  if (payload.status == TRANSACTION_STATUS.APPROVE) {
-
-  }
-  else {
-
-  }
-  //let user = await SERVICES.userService.getUsers({ _id: payload.user._id })
-  // if (!compareHash(payload.oldPassword, payload.user.password)) {
-  //   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.OLD_PASSWORD_INVALID, ERROR_TYPES.BAD_REQUEST);
-  // }
-  // else {
-  //   await SERVICES.userService.updateUser({ _id: payload.user._id }, { password: hashPassword(payload.newPassword) }, NORMAL_PROJECTION);
-  //   return HELPERS.responseHelper.createSuccessResponse(MESSAGES.PASSWORD_UPDATED_SUCCESSFULLY);
-  // }
+    if (payload.status == TRANSACTION_STATUS.APPROVE) {
+      await SERVICES.paymentService.updatePayment({ _id: paymentData._id }, { status: TRANSACTION_STATUS.APPROVE })
+      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_APPROVED));
+    }
+    else {
+      await SERVICES.paymentService.updatePayment({ _id: paymentData._id }, { status: TRANSACTION_STATUS.REJECT })
+      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_REJECTED));
+    }
 
 };
 
@@ -63,5 +56,9 @@ paymentController.acceptPayment = async (payload) => {
 }
 
 
+paymentController.getPaymentList = async (payload) => {
+  let paymentDetails = await SERVICES.paymentService.getPaymentDetails({skip: payload.skip, limit: payload.limit,search: payload.searchKey,sortKey:payload.sortKey, sortDirection: payload.sortDirection})
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_LIST_FETCHED_SUCCESSFULLY), { data: paymentDetails });
+}
 /* export challengeController */
 module.exports = paymentController;
