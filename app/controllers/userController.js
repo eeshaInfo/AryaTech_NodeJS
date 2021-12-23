@@ -34,7 +34,8 @@ userController.registerNewUser = async (payload) => {
       date: Date.now()
     };
     let token = await encryptJwt(dataForJwt);
-    await SERVICES.sessionService.updateSession({ userId: newRegisteredUser._id }, { token });
+    let data = { userId: newRegisteredUser._id, token: token }
+    await SERVICES.sessionService.updateSession(data);
 
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser, token });
   }

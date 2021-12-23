@@ -118,6 +118,20 @@ let routes = [
         auth: AVAILABLE_AUTHS.COMMON,
         handler: challengeController.getChallengeById
     },
+
+    {
+        method: 'GET',
+        path: '/v1/challenge/getChallengeByIdForGuest',
+        joiSchemaForSwagger: {
+            query: {
+                id: Joi.string().objectId().required().description('Challenge Id.')
+            },
+            group: 'Challenge',
+            description: 'Route to get Challenge by id',
+            model: 'GetChallengeByIdforGuest'
+        },
+        handler: challengeController.getChallengeById
+    },
     {
         method: 'GET',
         path: '/v1/challenge/getChallengeByIdForGuest',
@@ -133,7 +147,7 @@ let routes = [
     },
     {
         method: 'POST',
-        path: '/v1/challenge/completedChallenge',
+        path: '/v1/challenge/complete',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -143,7 +157,7 @@ let routes = [
             },
             body: {
                 timeTaken: Joi.string().required().description('Time taken by the user'),
-                caloriesBurned: Joi.string().required().description('Calories Burned'),
+                caloriesBurned: Joi.number().required().description('Calories Burned'),
                 avgSpeed: Joi.string().required().description(`Average Speed`),
                 maxSpeed: Joi.string().required().description('Maximum Speed'),
             },
@@ -210,6 +224,26 @@ let routes = [
         },
         handler: challengeController.list
     },
+    {
+        method: 'GET',
+        path: '/v1/user/challenge-list',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            // query: {
+            //     skip: Joi.number().default(0).description('skip'),
+            //     limit: Joi.number().default(10).description('limit'),
+            //     id: Joi.string().objectId().required().description('User Id.'),
+            // },
+            group: 'User',
+            description: 'Route to get all challenge list by User',
+            model: 'GetChallengeByUser'
+        },
+        auth: AVAILABLE_AUTHS.COMMON,
+        handler: challengeController.getChallengeList
+    },
+
 ];
 
 module.exports = routes;
