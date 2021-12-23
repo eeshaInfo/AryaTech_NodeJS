@@ -42,28 +42,11 @@ paymentService.getPaymentDetails = async (criteria) => {
     else {
         sort[criteria.sortKey] = criteria.sortDirection;
     }
+
     let query = criteria.search ? [
         {
             $lookup:
             {
-                // from: "users",
-                // let: { userId: "$userId", challengeId: "$challengeId" },
-                // pipeline: [
-                //     { $match: { $expr: { $and: [{ $eq: ['$$userId', '$_id'] }] } } },
-                //     {
-                //         $lookup:
-                //         {
-                //             from: "challenges",
-                //             let: { challengeId: "$$challengeId", searchKey: criteria.searchKey },
-                //             pipeline: [
-                //                 { $match: { $expr: { $and: [{ $eq: ['$$challengeId', '$_id'] }] } } },
-                //             ],
-                //             as: "challengeData"
-                //         }
-                //     }
-                // ],
-                // as: "userData"
-                //   },
                 from: "users",
                 localField: "userId",
                 foreignField: "_id",
@@ -81,7 +64,19 @@ paymentService.getPaymentDetails = async (criteria) => {
             }
         },
         { $unwind: "$challengeData" },
-        { $match: { firstName: { $regex: criteria.search, $options: 'i' } } },
+        //{ $addFields: { "challengeDataAmount": { $substr: ["$challengeData.amount", 0, -1] } } },
+        {
+            $match: {
+                $or: [
+                    { "userData.firstName": { $regex: criteria.search, $options: 'i' } },
+                    { 'userData.lastName': { $regex: criteria.search, $options: 'i' } },
+                    { 'challengeData.challengeName': { $regex: criteria.search, $options: 'i' } },
+                    { 'transactionID': { $regex: criteria.search, $options: 'i' } },
+                   // { 'status': { $regex: criteria.search, $options: 'i' } },
+                   // { 'challengeDataAmount': { $regex: criteria.search, $options: 'i' } },
+                ]
+            }
+        },
         { $sort: sort },
         { $skip: criteria.skip },
         { $limit: criteria.limit },
@@ -89,8 +84,10 @@ paymentService.getPaymentDetails = async (criteria) => {
             $project: {
                 "transactionID": 1,
                 "status": 1,
+                "createdAt": 1,
                 "userData.firstName": 1,
                 "userData.lastName": 1,
+                "userData.mobileNumber":1,
                 "userData.imagePath": 1,
                 "userData.mobileNumber": 1,
                 "challengeData.challengeName": 1,
@@ -129,8 +126,10 @@ paymentService.getPaymentDetails = async (criteria) => {
             $project: {
                 "transactionID": 1,
                 "status": 1,
+                "createdAt": 1,
                 "userData.firstName": 1,
                 "userData.lastName": 1,
+                "userData.mobileNumber":1,
                 "userData.imagePath": 1,
                 "userData.mobileNumber": 1,
                 "challengeData.challengeName": 1,

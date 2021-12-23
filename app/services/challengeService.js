@@ -42,15 +42,15 @@ challengeService.getAllChallenges = async (criteria, pagination) => {
 /**
  * function to  get count based on criteria
  */
-challengeService.listChallenge = async (criteria) => {
-    return await challengeModel.find(criteria).sort({ 'createdAt': -1 }).limit(10);
+challengeService.listChallenge = async (criteria, pagination) => {
+    return await challengeModel.find(criteria).sort([[pagination.sortKey, pagination.sortDirection]]).skip(pagination.skip).limit(pagination.limit).lean();
 };
 
 /**
  * function to  get user by challanges
  */
 challengeService.getUserByChallenges = async (criteria) => {
- 
+
     let sort = {}
     if (criteria.sortKey === "firstName" || criteria.sortKey === "lastName") {
         criteria.sortKey = `userData.${criteria.sortKey}`
@@ -59,12 +59,12 @@ challengeService.getUserByChallenges = async (criteria) => {
     else {
         sort[criteria.sortKey] = criteria.sortDirection;
     }
-   
+
     let query = criteria.searchKey ? [
         {
             $match: { challengeId: convertIdToMongooseId(criteria.id) },
         },
-
+        
         {
             $lookup: {
                 from: 'users',
@@ -79,12 +79,22 @@ challengeService.getUserByChallenges = async (criteria) => {
                             },
                         },
                     },
-                    { $match: { firstName: { $regex: criteria.searchKey, $options: 'i' } } },
                 ],
                 as: "userData"
             }
         },
         { $unwind: "$userData" },
+        {
+            $match: {
+                $or: [
+                    { "userData.firstName": { $regex: criteria.search, $options: 'i' } },
+                    { 'userData.lastName': { $regex: criteria.search, $options: 'i' } },
+                    { 'avgSpeed': { $regex: criteria.search, $options: 'i' } },
+                    { 'maxSpeed': { $regex: criteria.search, $options: 'i' } },
+                    { 'timeTaken': { $regex: criteria.search, $options: 'i' } }
+                ]
+            }
+        },
         { $sort: sort },
         { $skip: criteria.skip },
         { $limit: criteria.limit },

@@ -33,6 +33,7 @@ let validateUser = async (request,auth) => {
 
     try {
         let decodedToken = JWT.verify(request.headers.authorization, SECURITY.JWT_SIGN_KEY);
+        console.log(decodedToken);
         // console.log(decodedToken);
         if (!decodedToken) {
             return false;
@@ -49,6 +50,7 @@ let validateUser = async (request,auth) => {
             criteria.userType = USER_TYPES.USER;
         }
         let authenticatedUser = await userModel.findOne(criteria).lean();
+        console.log(authenticatedUser);
         if (authenticatedUser) {
             request.user = authenticatedUser;
             request.user.token = request.headers.authorization;
@@ -57,6 +59,7 @@ let validateUser = async (request,auth) => {
         return false;
 
     } catch (err) {
+        console.log(err);
         return false;
     }
 };

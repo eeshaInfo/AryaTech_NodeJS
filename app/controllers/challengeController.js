@@ -85,7 +85,7 @@ challengeController.deleteChallenge = async (payload) => {
  */
 challengeController.list = async (payload) => {
   if (payload.isRecentKey) {
-    let recentChallenges = await SERVICES.challengeService.listChallenge({ isDeleted: false }, { skip: payload.skip, limit: payload.limit} , { sortKey: payload.sortKey, sortDirection: payload.sortDirection });
+    let recentChallenges = await SERVICES.challengeService.listChallenge({ isDeleted: false }, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }), sortKey: payload.sortKey, sortDirection: payload.sortDirection });
     let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false });
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { recentChallenges, totalCounts } });
   }
