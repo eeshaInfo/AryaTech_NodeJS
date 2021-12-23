@@ -13,7 +13,7 @@ const userChallengesSchema = new Schema(
         challengeId: { type: Schema.Types.ObjectId, ref: 'challenges' },
         completingDate: { type: Date },
         timeTaken: { type: String },
-        caloriesBurned: { type: Number },
+        caloriesBurned: { type: String },
         avgSpeed: { type: String },
         maxSpeed: { type: String },
     },

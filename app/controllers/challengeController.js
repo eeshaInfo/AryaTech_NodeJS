@@ -73,11 +73,13 @@ challengeController.updateChallenge = async (payload) => {
  */
 challengeController.deleteChallenge = async (payload) => {
   let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
-  if (challenge && challenge.completed) {
-    await SERVICES.challengeService.update({ _id: payload.id }, { isDeleted: true });
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_DELETED_SUCCESSFULLY));
+  let paidChallenge = await SERVICES.paymentService.getPayment({ challengeId: payload.id })
+  if (paidChallenge || challenge.completed>0) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_CANNOT_DELETED, ERROR_TYPES.BAD_REQUEST);
   }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_CANNOT_DELETED, ERROR_TYPES.BAD_REQUEST);
+  await SERVICES.challengeService.update({ _id: payload.id }, { isDeleted: true });
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_DELETED_SUCCESSFULLY));
+
 };
 
 /**
@@ -139,17 +141,17 @@ challengeController.getUserByChallenges = async (payload) => {
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { list, totalCounts } });
 };
 
-     /**
- * Function to fetch user by particular challenge
- */
-  challengeController.getChallengesByUser= async (payload) => {
-    let criteria = {
-      userId: payload.id
-    }
-    let list = await SERVICES.challengeService.getChallengesByUser(payload, {skip: payload.skip, limit: payload.limit} );
-    let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {list,totalCounts} });
-    };
+/**
+* Function to fetch user by particular challenge
+*/
+challengeController.getChallengesByUser = async (payload) => {
+  let criteria = {
+    userId: payload.id
+  }
+  let list = await SERVICES.challengeService.getChallengesByUser(payload, { skip: payload.skip, limit: payload.limit });
+  let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { list, totalCounts } });
+};
 
 /* export challengeController */
 module.exports = challengeController;
