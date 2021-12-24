@@ -53,5 +53,7 @@ module.exports = {
     PAYMENT_REJECTED: 'Payment rejected',
     PAYMENT_LIST_FETCHED_SUCCESSFULLY: 'Payment List Fetched successfully',
     INVALID_CHALLENGE_TYPE: 'Challenge is invalid',
-    PAYMENT_ALREADY_COMPLETED: 'Payment already completed'
+    PAYMENT_ALREADY_COMPLETED: 'Payment already completed',
+    PAYMENT_ALREADY_APPROVED:'Payment already approved',
+    PAYMENT_ALREADY_REJECTED:'Payment already rejected'
 };
