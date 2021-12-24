@@ -22,6 +22,12 @@ paymentController.approveOrRejectPayment = async (payload) => {
   if (!paymentData) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
   }
+  if (paymentData.status == TRANSACTION_STATUS.APPROVE) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.PAYMENT_ALREADY_APPROVED, ERROR_TYPES.DATA_NOT_FOUND);
+  }
+  else if (paymentData.status == TRANSACTION_STATUS.REJECT) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.PAYMENT_ALREADY_REJECTED, ERROR_TYPES.DATA_NOT_FOUND);
+  }
   if (payload.status == TRANSACTION_STATUS.APPROVE) {
     await SERVICES.paymentService.updatePayment({ _id: paymentData._id }, { status: TRANSACTION_STATUS.APPROVE })
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_APPROVED));
@@ -30,7 +36,6 @@ paymentController.approveOrRejectPayment = async (payload) => {
     await SERVICES.paymentService.updatePayment({ _id: paymentData._id }, { status: TRANSACTION_STATUS.REJECT })
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_REJECTED));
   }
-
 };
 
 paymentController.acceptPayment = async (payload) => {
@@ -73,7 +78,7 @@ paymentController.acceptPayment = async (payload) => {
 
 
 paymentController.getPaymentList = async (payload) => {
-  let paymentDetails = await SERVICES.paymentService.getPaymentDetails({skip: payload.skip, limit: payload.limit,search: payload.searchKey,sortKey:payload.sortKey, sortDirection: payload.sortDirection})
+  let paymentDetails = await SERVICES.paymentService.getPaymentDetails({ skip: payload.skip, limit: payload.limit, search: payload.searchKey, sortKey: payload.sortKey, sortDirection: payload.sortDirection })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_LIST_FETCHED_SUCCESSFULLY), { data: paymentDetails });
 }
 /* export challengeController */
