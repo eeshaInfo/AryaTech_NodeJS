@@ -80,7 +80,7 @@ userController.loginUser = async (payload) => {
       await SERVICES.sessionService.updateSession({ userId: user._id }, { token });
       return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user, isNewUser: false });
     }
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_DOESNOT_EXIST), { isNewUser: false });
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_DOESNOT_EXIST), { isNewUser: true });
   }
 };
 
