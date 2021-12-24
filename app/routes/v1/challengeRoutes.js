@@ -148,21 +148,8 @@ let routes = [
                 id: Joi.string().objectId().required().description('Challenge Id.')
             },
             group: 'Challenge',
-            description: 'Route to get Challenge by id',
+            description: 'Route to get Challenge by id for guest',
             model: 'GetChallengeByIdforGuest'
-        },
-        handler: challengeController.getChallengeById
-    },
-    {
-        method: 'GET',
-        path: '/v1/challenge/getChallengeByIdForGuest',
-        joiSchemaForSwagger: {
-            query: {
-                id: Joi.string().objectId().required().description('Challenge Id.')
-            },
-            group: 'Challenge',
-            description: 'Route to get Challenge by id',
-            model: 'GetChallengeById'
         },
         handler: challengeController.getChallengeById
     },

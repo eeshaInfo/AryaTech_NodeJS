@@ -51,5 +51,7 @@ module.exports = {
     COIN_AMOUNT_NOT_MATCHED: 'Coin Amount Not matched with Challenge Details',
     PAYMENT_APPROVED: 'Payment approved',
     PAYMENT_REJECTED: 'Payment rejected',
-    PAYMENT_LIST_FETCHED_SUCCESSFULLY: 'Payment List Fetched successfully'
+    PAYMENT_LIST_FETCHED_SUCCESSFULLY: 'Payment List Fetched successfully',
+    INVALID_CHALLENGE_TYPE: 'Challenge is invalid',
+    PAYMENT_ALREADY_COMPLETED: 'Payment already completed'
 };

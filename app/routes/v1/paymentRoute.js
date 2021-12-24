@@ -38,7 +38,7 @@ let routes = [
             body: {
 
                 challengeId: Joi.string().description('Challenge Id').required(),
-                transactionID: Joi.string().description('Transactions Id').required()
+                transactionID: Joi.string().description('Transactions Id')
             },
             group: 'Payment',
             description: 'Route to accept Payment .',

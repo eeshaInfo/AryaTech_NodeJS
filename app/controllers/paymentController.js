@@ -18,40 +18,56 @@ let paymentController = {};
  * Function to approve or reject payment
  */
 paymentController.approveOrRejectPayment = async (payload) => {
-  let paymentData = await SERVICES.paymentService.getPayment({ _id: payload.id})
+  let paymentData = await SERVICES.paymentService.getPayment({ _id: payload.id })
   if (!paymentData) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
   }
-    if (payload.status == TRANSACTION_STATUS.APPROVE) {
-      await SERVICES.paymentService.updatePayment({ _id: paymentData._id }, { status: TRANSACTION_STATUS.APPROVE })
-      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_APPROVED));
-    }
-    else {
-      await SERVICES.paymentService.updatePayment({ _id: paymentData._id }, { status: TRANSACTION_STATUS.REJECT })
-      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_REJECTED));
-    }
+  if (payload.status == TRANSACTION_STATUS.APPROVE) {
+    await SERVICES.paymentService.updatePayment({ _id: paymentData._id }, { status: TRANSACTION_STATUS.APPROVE })
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_APPROVED));
+  }
+  else {
+    await SERVICES.paymentService.updatePayment({ _id: paymentData._id }, { status: TRANSACTION_STATUS.REJECT })
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_REJECTED));
+  }
 
 };
 
 paymentController.acceptPayment = async (payload) => {
-  let criteria = {
-    _id: payload.challengeId,
+
+  // if transection id is not there
+  if (!payload.transactionID) {
+    let paymentData = await SERVICES.paymentService.getPayment({challengeId: payload.challengeId , userId: payload.user._id, status: { $ne: TRANSACTION_STATUS.REJECT } });
+    if(paymentData) {
+      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.TRANSACTION_ALREADY_COMPLETED), {isTransactionFound: true} );
+    }
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.NOT_FOUND), {isTransactionFound: false} );
   }
 
-  let challengeDetails = await SERVICES.challengeService.getChallenge(criteria)
+  // if there is transection id
+  let criteria = {
+    _id: payload.challengeId,
+    challengeType: CHALLENGES_TYPES.UNPAID
+  }
+
+  let challengeDetails = await SERVICES.challengeService.getChallenge(criteria);
+  if (challengeDetails) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_CHALLENGE_TYPE, ERROR_TYPES.BAD_REQUEST);
+  }
+
+  let data = await SERVICES.paymentService.getPayment({challengeId: payload.challengeId ,transactionID: payload.transactionID, userId: payload.user._id, status: { $ne: TRANSACTION_STATUS.REJECT } });
+  if( data ) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.PAYMENT_ALREADY_COMPLETED, ERROR_TYPES.BAD_REQUEST);
+  }
+  
   let transactionDetails = {
     challengeId: payload.challengeId,
-    coin: payload.coin,
     userId: payload.user._id,
     transactionID: payload.transactionID,
     status: CONSTANTS.TRANSACTION_STATUS.PENDING,
   }
-
-  if (transactionDetails.coin === challengeDetails.amount) {
-    let paymentDetails = await SERVICES.paymentService.updatePaymentDetails(transactionDetails)
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_SUCCESSFULLY_COMPLETED));
-  }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.COIN_AMOUNT_NOT_MATCHED, ERROR_TYPES.DATA_NOT_FOUND);
+  await SERVICES.paymentService.updatePaymentDetails(transactionDetails)
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_SUCCESSFULLY_COMPLETED));
 
 }
 

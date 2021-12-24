@@ -2,7 +2,7 @@
 const path = require('path');
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
-const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES, CHALLENGES_TYPES, CHALLENGE_PROJECTION } = require('../utils/constants');
+const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES, CHALLENGES_TYPES, CHALLENGE_PROJECTION , TRANSACTION_STATUS } = require('../utils/constants');
 const SERVICES = require('../services');
 const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
@@ -73,19 +73,13 @@ challengeController.updateChallenge = async (payload) => {
  */
 challengeController.deleteChallenge = async (payload) => {
   let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
-  let paidChallenge = await SERVICES.paymentService.getPayment({ challengeId: payload.id })
-  if (!challenge) {
-    // || paidChallenge.status ==  TRANSACTION_STATUS.APPROVE
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_NOT_FOUND, ERROR_TYPES.BAD_REQUEST);
-  }
+  let paidChallenge = await SERVICES.paymentService.getPayment({ challengeId: payload.id, status: { $ne: TRANSACTION_STATUS.REJECT } })
   
-  else if(challenge.completed==0 || paidChallenge.status !=  TRANSACTION_STATUS.APPROVE){
+  if((challenge && !challenge.completed ) && !paidChallenge ) {
     await SERVICES.challengeService.update({ _id: payload.id }, { isDeleted: true });
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_DELETED_SUCCESSFULLY));
   }
-  else {
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_CANNOT_DELETED, ERROR_TYPES.BAD_REQUEST);
-  }
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_CANNOT_DELETED, ERROR_TYPES.BAD_REQUEST);
 }
 
 /**
