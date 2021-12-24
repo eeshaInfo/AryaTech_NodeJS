@@ -92,8 +92,8 @@ challengeController.list = async (payload) => {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { recentChallenges, totalCounts } });
   }
   else {
-    let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false, ...(payload.searchKey && { challengeName: { $regex: payload.searchKey, $options: 'i' } }) }, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }), sortKey: payload.sortKey, sortDirection: payload.sortDirection });
-    let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false, ...(payload.searchKey && { challengeName: { $regex: payload.searchKey, $options: 'i' } }) });
+    let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false, ...(payload.searchKey && { challengeNameString: { $regex: payload.searchKey, $options: 'i' } }) }, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }), sortKey: payload.sortKey, sortDirection: payload.sortDirection });
+    let totalCounts = await SERVICES.challengeService.listCountForDashboard({ isDeleted: false, ...(payload.searchKey && { challengeNameString: { $regex: payload.searchKey, $options: 'i' } }) });
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, totalCounts } });
   }
 };

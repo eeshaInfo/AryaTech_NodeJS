@@ -37,7 +37,52 @@ challengeService.getUserChallengeBasedOnCriteria = async (criteria) => {
  * function to get all challenges.
  */
 challengeService.getAllChallenges = async (criteria, pagination) => {
-    return await challengeModel.find(criteria).sort([[pagination.sortKey, pagination.sortDirection]]).skip(pagination.skip).limit(pagination.limit).lean();
+    let sort = {};
+    sort[pagination.sortKey] = pagination.sortDirection;
+    let query = [
+        {
+            $addFields : {
+            challengeNameString: {
+              $toString: '$challengeName'
+            }
+          },
+        },
+        {
+            $match: criteria,
+        },
+        {
+            $sort: sort
+        },
+        {
+            $skip: pagination.skip
+        },
+        {
+            $limit: pagination.limit
+        },
+    ]
+    return await challengeModel.aggregate(query);
+};
+
+/**
+ * function to get all challenges.
+ */
+challengeService.listCountForDashboard = async (criteria, pagination) => {
+    //let sort = {};
+    //sort[pagination.sortKey] = pagination.sortDirection;
+    let query = [
+        {
+            $addFields : {
+            challengeNameString: {
+              $toString: '$challengeName'
+            }
+          },
+        },
+        {
+            $match: criteria,
+        }
+    ]
+    let data =await challengeModel.aggregate(query);
+    return data.length;
 };
 /**
  * function to  get count based on criteria
@@ -252,9 +297,6 @@ challengeService.getChallengeListForUser = async (criteria) => {
             // }
             $addFields: {
                 isChallengeCompleted: { $cond: { if: { $in: ["$_id", criteria.user.challenges ] }, then: 1, else:0 }}}
-            // $cond: { 
-            //     if: { $eq: ["$permissions.publicRead", true] }, then: true, else: false 
-            //   }
         },
         {
             $project: {
