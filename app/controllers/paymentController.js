@@ -39,7 +39,7 @@ paymentController.acceptPayment = async (payload) => {
   if (!payload.transactionID) {
     let paymentData = await SERVICES.paymentService.getPayment({challengeId: payload.challengeId , userId: payload.user._id, status: { $ne: TRANSACTION_STATUS.REJECT } });
     if(paymentData) {
-      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.TRANSACTION_ALREADY_COMPLETED), {isTransactionFound: true} );
+      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.TRANSACTION_ALREADY_COMPLETED), {isTransactionFound: true, data: paymentData} );
     }
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.NOT_FOUND), {isTransactionFound: false} );
   }
