@@ -155,9 +155,9 @@ challengeController.getChallengesByUser = async (payload) => {
  * Function to fetch list challenge list for user
  */
   challengeController.challengeListForUser= async (payload) => {
-    let list = await SERVICES.challengeService.getChallengeListForUser(payload);
+    let challenges = await SERVICES.challengeService.getChallengeListForUser(payload);
     //let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {list} });
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {challenges} });
 };
 
 /* export challengeController */
