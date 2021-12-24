@@ -89,6 +89,7 @@ challengeService.getUserByChallenges = async (criteria) => {
                 $or: [
                     { "userData.firstName": { $regex: criteria.searchKey, $options: 'i' } },
                     { 'userData.lastName': { $regex: criteria.searchKey, $options: 'i' } },
+                    { 'userData.mobileNumber': { $regex: criteria.searchKey, $options: 'i' } },
                     { 'avgSpeed': { $regex: criteria.searchKey, $options: 'i' } },
                     { 'maxSpeed': { $regex: criteria.searchKey, $options: 'i' } },
                     { 'timeTaken': { $regex: criteria.searchKey, $options: 'i' } }
@@ -108,7 +109,8 @@ challengeService.getUserByChallenges = async (criteria) => {
                 "completingDate": 1,
                 "userData.firstName": 1,
                 "userData.lastName": 1,
-                "userData.imagePath": 1
+                "userData.imagePath": 1,
+                "userData.mobileNumber": 1
 
             }
         },
@@ -132,7 +134,8 @@ challengeService.getUserByChallenges = async (criteria) => {
                 "completingDate": 1,
                 "userData.firstName": 1,
                 "userData.lastName": 1,
-                "userData.imagePath": 1
+                "userData.imagePath": 1,
+                "userData.mobileNumber": 1
 
             }
         }
