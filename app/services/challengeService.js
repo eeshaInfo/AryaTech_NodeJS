@@ -38,7 +38,11 @@ challengeService.getUserChallengeBasedOnCriteria = async (criteria) => {
  */
 challengeService.getAllChallenges = async (criteria, pagination) => {
     let sort = {};
-    sort[pagination.sortKey] = pagination.sortDirection;
+    if (pagination.sortKey) {
+        sort[pagination.sortKey] = pagination.sortDirection;   
+    } else {
+        sort['createdAt'] = -1;
+    }
     let query = [
         {
             $addFields : {
