@@ -67,6 +67,29 @@ challengeService.getAllChallenges = async (criteria, pagination) => {
     return await challengeModel.aggregate(query);
 };
 
+challengeService.getAllGuestChallenges = async (criteria) => {
+    let sort = {};
+    sort['createdAt'] = -1;
+    let query = [
+        // {
+    //         $addFields: {
+    //             challengeNameString: {
+    //                 $toString: '$challengeName'
+    //             }
+    //         },
+        // },
+        {
+            $match: criteria,
+        },
+        {
+            $sort: sort
+        }
+        
+    ]
+    return await challengeModel.aggregate(query);
+};
+
+
 /**
  * function to get all challenges.
  */
