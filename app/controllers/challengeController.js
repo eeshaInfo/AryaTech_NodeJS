@@ -2,7 +2,7 @@
 const path = require('path');
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
-const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES, CHALLENGES_TYPES, CHALLENGE_PROJECTION , TRANSACTION_STATUS } = require('../utils/constants');
+const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES, CHALLENGES_TYPES, CHALLENGE_PROJECTION, TRANSACTION_STATUS } = require('../utils/constants');
 const SERVICES = require('../services');
 const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
@@ -74,8 +74,8 @@ challengeController.updateChallenge = async (payload) => {
 challengeController.deleteChallenge = async (payload) => {
   let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
   let paidChallenge = await SERVICES.paymentService.getPayment({ challengeId: payload.id, status: { $ne: TRANSACTION_STATUS.REJECT } })
-  
-  if((challenge && !challenge.completed ) && !paidChallenge ) {
+
+  if ((challenge && !challenge.completed) && !paidChallenge) {
     await SERVICES.challengeService.update({ _id: payload.id }, { isDeleted: true });
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_DELETED_SUCCESSFULLY));
   }
@@ -126,8 +126,8 @@ challengeController.completedChallenge = async (payload) => {
   payload.completingDate = new Date();
   await SERVICES.challengeService.createUserChallenge(payload);
   //let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
-    await SERVICES.challengeService.update({ _id: payload.id }, { $inc: { completed: 1 } });
-    await SERVICES.userService.updateUser({ _id: payload.user._id }, { $inc: { challengeCompleted: 1 } ,$addToSet: { challenges: payload.id }});
+  await SERVICES.challengeService.update({ _id: payload.id }, { $inc: { completed: 1 } });
+  await SERVICES.userService.updateUser({ _id: payload.user._id }, { $inc: { challengeCompleted: 1 }, $addToSet: { challenges: payload.id } });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_COMPLETED_SUCCESSFULLY));
   //}
   //throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_COMPLETED, ERROR_TYPES.BAD_REQUEST);
@@ -158,13 +158,13 @@ challengeController.getChallengesByUser = async (payload) => {
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { list, totalCounts } });
 };
 
-       /**
- * Function to fetch list challenge list for user
- */
-  challengeController.challengeListForUser= async (payload) => {
-    let challenges = await SERVICES.challengeService.getChallengeListForUser(payload);
-    //let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: {challenges} });
+/**
+* Function to fetch list challenge list for user
+*/
+challengeController.challengeListForUser = async (payload) => {
+  let challenges = await SERVICES.challengeService.getChallengeListForUser(payload);
+  //let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges } });
 };
 
 /* export challengeController */
