@@ -42,11 +42,11 @@ paymentController.acceptPayment = async (payload) => {
 
   // if transection id is not there
   if (!payload.transactionID) {
-    let paymentData = await SERVICES.paymentService.getPayment({challengeId: payload.challengeId , userId: payload.user._id, status: { $ne: TRANSACTION_STATUS.REJECT } });
-    if(paymentData) {
-      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.TRANSACTION_ALREADY_COMPLETED), {isTransactionFound: true, data: paymentData} );
+    let paymentData = await SERVICES.paymentService.getPayment({ challengeId: payload.challengeId, userId: payload.user._id });
+    if (paymentData) {
+      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_FOUND), { isTransactionFound: true, data: paymentData });
     }
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.NOT_FOUND), {isTransactionFound: false} );
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.NOT_FOUND), { isTransactionFound: false });
   }
 
   // if there is transection id
@@ -60,11 +60,11 @@ paymentController.acceptPayment = async (payload) => {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_CHALLENGE_TYPE, ERROR_TYPES.BAD_REQUEST);
   }
 
-  let data = await SERVICES.paymentService.getPayment({challengeId: payload.challengeId ,transactionID: payload.transactionID, userId: payload.user._id, status: { $ne: TRANSACTION_STATUS.REJECT } });
-  if( data ) {
+  let data = await SERVICES.paymentService.getPayment({ challengeId: payload.challengeId, transactionID: payload.transactionID, userId: payload.user._id, status: { $ne: TRANSACTION_STATUS.REJECT } });
+  if (data) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.PAYMENT_ALREADY_COMPLETED, ERROR_TYPES.BAD_REQUEST);
   }
-  
+
   let transactionDetails = {
     challengeId: payload.challengeId,
     userId: payload.user._id,

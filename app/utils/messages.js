@@ -48,6 +48,7 @@ module.exports = {
     CHALLENGE_NOT_FOUND: 'Challenge not found',
     //Payment
     PAYMENT_SUCCESSFULLY_COMPLETED: 'Payment Successfully Completed',
+    PAYMENT_FOUND: 'Payment Found',
     COIN_AMOUNT_NOT_MATCHED: 'Coin Amount Not matched with Challenge Details',
     PAYMENT_APPROVED: 'Payment approved',
     PAYMENT_REJECTED: 'Payment rejected',
