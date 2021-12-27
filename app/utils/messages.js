@@ -31,10 +31,11 @@ module.exports = {
     USER_DOESNOT_EXIST: 'User does not Exist,please register',
     USER_FETCHED_SUCCESSFULLY: 'User List fetched Successfully',
     USER_BLOCKED_SUCCESSFULLY: 'User blocked Successfully',
-    USER_ALREADY_BLOCKED: 'User Already Blocked Successfully',
+    USER_ALREADY_BLOCKED: 'User Already Blocked',
     USER_ACTIVE_SUCCESSFULLY: 'User Active Successfully',
     USER_ALREADY_ACTIVE:  'User Already Active',
-
+    DATA_FETCHED_SUCCESSFULLY:'User Data Fetched Successfully',
+    USER_UNBLOCKED_SUCCESSFULLY:'User Unblocked Successfully',
     //challenges
     CHALLENGE_CREATED_SUCCESSFULLY: 'Challenge created successfully.',
     CHALLENGE_UPDATED_SUCCESSFULLY: 'Challenge Updated successfully.',

@@ -228,9 +228,9 @@ userController.list = async (payload) => {
   let criteria = {
     userType: CONSTANTS.USER_TYPES.USER
   }
-  let userList = await SERVICES.userService.getUsersList(criteria, payload.skip, payload.limit)
-  let userCount = await SERVICES.userService.getCountOfUsers(criteria);
-  // console.log("UserList:==>", userList)
+
+  let userList = await SERVICES.userService.getUsersList(criteria, { skip: payload.skip, limit: payload.limit, searchKey: payload.searchKey, sortKey: payload.sortKey, sortDirection: payload.sortDirection })
+  let userCount = await SERVICES.userService.getCountOfUsers(criteria, { searchKey: payload.searchKey });
   let data = {
     list: userList,
     userCount: userCount
@@ -246,16 +246,25 @@ userController.blockUser = async (payload) => {
     userType: CONSTANTS.USER_TYPES.USER
   }
 
-  let user = await SERVICES.userService.getUser(criteria, NORMAL_PROJECTION)
-    ;
+  let user = await SERVICES.userService.getUser(criteria, NORMAL_PROJECTION);
   if (user) {
-    if (user.status === CONSTANTS.STATUS.BLOCK) {
-      throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_ALREADY_BLOCKED, ERROR_TYPES.BAD_REQUEST);
+    if (user.status === payload.status) {
+      throw HELPERS.responseHelper.createErrorResponse(`${payload.status === CONSTANTS.STATUS.BLOCK ? MESSAGES.USER_ALREADY_BLOCKED : MESSAGES.USER_ALREADY_ACTIVE}`, ERROR_TYPES.BAD_REQUEST);
     }
-    await SERVICES.userService.updateUser(criteria, { status: CONSTANTS.STATUS.BLOCK })
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_BLOCKED_SUCCESSFULLY), { user })
+
+    await SERVICES.userService.updateUser(criteria, { status: payload.status })
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(`${payload.status === CONSTANTS.STATUS.BLOCK ? MESSAGES.USER_BLOCKED_SUCCESSFULLY : MESSAGES.USER_UNBLOCKED_SUCCESSFULLY}`), { user })
   }
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
 }
+
+userController.userDetails = async (payload) => {
+  let user = await SERVICES.userService.getUserDetails(payload.id)
+  if (user.length == 0) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NO_USER_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  }
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { user })
+}
+
 /* export userController */
 module.exports = userController;
