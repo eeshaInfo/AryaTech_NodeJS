@@ -222,10 +222,6 @@ let routes = [
         method: 'GET',
         path: '/v1/challenge/listForGuestUSer',
         joiSchemaForSwagger: {
-            query: {
-                skip: Joi.number().default(0).description('skip'),
-                limit: Joi.number().default(10).description('limit'),
-            },
             group: 'Challenge',
             description: 'Route to get challenge list for GUEST',
             model: 'GetChallengeListForGuest'
