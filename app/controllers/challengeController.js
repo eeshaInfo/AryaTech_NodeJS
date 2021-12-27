@@ -86,7 +86,7 @@ challengeController.deleteChallenge = async (payload) => {
  * Function to fetch list of chaalenges
  */
 challengeController.list = async (payload) => {
-  if (payload.userType == CONSTANTS.USER_TYPES.ADMIN) {
+  if (payload.user.userType == CONSTANTS.USER_TYPES.ADMIN) {
     if (payload.isRecentKey) {
       let recentChallenges = await SERVICES.challengeService.listChallenge({ isDeleted: false }, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }), sortKey: payload.sortKey, sortDirection: payload.sortDirection });
       let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false });
