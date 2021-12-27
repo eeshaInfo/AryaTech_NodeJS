@@ -85,7 +85,7 @@ challengeService.getAllGuestChallenges = async (criteria) => {
             $sort: sort
         },
         {
-            $project: {
+            $addFields: {
                 completed:0
             }
         }
