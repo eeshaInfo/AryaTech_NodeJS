@@ -344,4 +344,14 @@ challengeService.getChallengeListForUser = async (criteria) => {
     return await challengeModel.aggregate(query);
 };
 
+
+
+challengeService.getHistory = async (criteria) => {
+    let query = [
+        {
+            $match:criteria
+        }
+    ]
+    return await userChallengesModel.aggregate(query);
+};
 module.exports = challengeService;

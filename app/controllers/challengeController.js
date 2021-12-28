@@ -167,5 +167,29 @@ challengeController.challengeListForUser = async (payload) => {
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges } });
 };
 
+
+
+//challenge history for a particular user
+
+
+challengeController.history = async (payload) => {
+ 
+  let criteria = {
+    userId:payload.user._id
+  }
+
+  let challengeHistoryData = await SERVICES.challengeService.getHistory(criteria)
+
+  
+  if (challengeHistoryData.length)
+  {
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challengeHistoryData } }); 
+  }
+
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NO_CHALLENGES_COMPLETED, ERROR_TYPES.DATA_NOT_FOUND);
+  
+
+}
+
 /* export challengeController */
 module.exports = challengeController;

@@ -164,10 +164,10 @@ let routes = [
                 id: Joi.string().objectId().required().description('Challenge Id.'),
             },
             body: {
-                timeTaken: Joi.string().required().description('Time taken by the user'),
+                timeTaken: Joi.number().required().description('Time taken by the user'),
                 caloriesBurned: Joi.number().required().description('Calories Burned'),
-                avgSpeed: Joi.string().required().description(`Average Speed`),
-                maxSpeed: Joi.string().required().description('Maximum Speed'),
+                avgSpeed: Joi.number().required().description(`Average Speed`),
+                maxSpeed: Joi.number().required().description('Maximum Speed'),
             },
             group: 'Challenge',
             description: 'Route to Completed Challenge',
@@ -231,7 +231,7 @@ let routes = [
 
 
     {
-        method: 'GET',
+        method: 'POST',
         path: '/v1/challenge/history',
         joiSchemaForSwagger: {
             headers: {
@@ -241,10 +241,12 @@ let routes = [
                 date:Joi.string().optional().description(`Date for challenge History`)
             },
             group: 'Challenge',
-            description: 'Route to get challenge list for GUEST',
-            model: 'GetChallengeListForGuest'
+            description: 'Route to get challenge history',
+            model: 'ChallengeHistory'
         },
-        handler: challengeController.history
+        handler: challengeController.history,
+        auth: AVAILABLE_AUTHS.USER,
+
     },
 ];
 

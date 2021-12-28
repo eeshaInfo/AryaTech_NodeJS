@@ -4,7 +4,7 @@ const BCRYPT = require("bcrypt");
 const JWT = require("jsonwebtoken");
 const CONFIG = require('../../config');
 const awsSms = require('aws-sns-sms');
-const fs = require('fs');
+const fs = require('');
 const XLSX = require('xlsx');
 
 const awsSnsConfig = {
