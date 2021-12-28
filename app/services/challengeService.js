@@ -124,6 +124,13 @@ challengeService.listChallenge = async (criteria, pagination) => {
 };
 
 /**
+ * function to  get completed challenge based on criteria
+ */
+challengeService.listUserChallenge = async (criteria) => {
+    return await userChallengesModel.find(criteria).lean();
+};
+
+/**
  * function to  get user by challanges
  */
 challengeService.getUserByChallenges = async (criteria) => {
@@ -226,15 +233,16 @@ challengeService.getUserByChallenges = async (criteria) => {
 /**
  * function to  get challenges by user
  */
-challengeService.getChallengesByUser = async (criteria, pagination) => {
-    let query = criteria.searchKey ? [
+challengeService.getChallengesByUser = async (payload, pagination) => {
+    console.log(payload);
+    let query = payload.searchKey ? [
      {
-     $match: criteria ,
+     $match: { userId: payload.id} ,
      },
      {
         $lookup: {
             from: 'users',
-            let: { userId: '$userId',searchKey: criteria.searchKey },
+            let: { userId: '$userId',searchKey: payload.searchKey },
             pipeline: [
                 {
                     $match: {
@@ -270,7 +278,7 @@ challengeService.getChallengesByUser = async (criteria, pagination) => {
      }
     ] : [
         {
-        $match: { challengeId: convertIdToMongooseId(criteria.id)},
+            $match: { userId: payload.id} ,
         },
         { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
         { $unwind: "$userData" },
