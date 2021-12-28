@@ -14,7 +14,7 @@ paymentService.updatePayment = async (criteria, dataToUpdate) => {
  * function to get payment detail.
  */
 paymentService.getPayment = async (criteria) => {
-    return await paymentModel.findOne(criteria).lean();
+    return await paymentModel.findOne(criteria, null, { sort: { createdAt: -1 } }).lean();
 };
 
 /**
