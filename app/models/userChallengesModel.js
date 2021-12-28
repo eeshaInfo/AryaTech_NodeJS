@@ -12,10 +12,16 @@ const userChallengesSchema = new Schema(
         userId: { type: Schema.Types.ObjectId, ref: 'users' },
         challengeId: { type: Schema.Types.ObjectId, ref: 'challenges' },
         completingDate: { type: Date },
-        timeTaken: { type: String },
-        caloriesBurned: { type: String },
-        avgSpeed: { type: String },
-        maxSpeed: { type: String },
+        timeTaken: { type: Number },
+        caloriesBurned: { type: Number },
+        avgSpeed: { type: Number },
+        maxSpeed: { type: Number },
+        trackingPoints: {
+            type:[
+                { lat: {type:Number,default:undefined}, lng: {type:Number,default:undefined} }
+            ],
+            default:undefined
+        }
     },
     { versionKey: false, timestamps: true }
 );
