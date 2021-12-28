@@ -34,6 +34,7 @@ module.exports = {
     USER_ALREADY_BLOCKED: 'User Already Blocked Successfully',
     USER_ACTIVE_SUCCESSFULLY: 'User Active Successfully',
     USER_ALREADY_ACTIVE:  'User Already Active',
+    USER_DELETED_SUCCESSFULLY:'User deleted successfully',
 
     //challenges
     CHALLENGE_CREATED_SUCCESSFULLY: 'Challenge created successfully.',

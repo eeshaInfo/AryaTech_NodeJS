@@ -1,5 +1,5 @@
 'use strict';
-const { userModel } = require('../models');
+const { userModel,userChallengesModel } = require('../models');
 const utils = require('../utils/utils');
 
 let userService = {};
@@ -56,6 +56,14 @@ userService.getCountOfUsers = async (criteria) => {
 userService.getUsers = async (criteria) => {
   return await userModel.find(criteria);
 };
+
+/**
+ * Function for delete user
+ */
+userService.deleteUser = async (criteria)=>{
+  await userChallengesModel.deleteMany({userId:criteria._id});
+  return await userModel.deleteOne(criteria);
+}
 
 
 module.exports = userService;

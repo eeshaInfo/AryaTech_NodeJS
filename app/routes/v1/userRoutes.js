@@ -128,6 +128,23 @@ let routes = [
         },
         auth: AVAILABLE_AUTHS.ADMIN,
         handler: userController.list
+    },
+    {
+        method: 'DELETE',
+        path: '/v1/user',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            query: {
+                _id: Joi.string().required().description('_id of user'),
+            },
+            group: 'User',
+            description: 'Route to delete user.',
+            model: 'DeleteUser'
+        },
+        auth: AVAILABLE_AUTHS.USER,
+        handler: userController.deleteUser
     }
 ]
 

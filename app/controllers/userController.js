@@ -257,5 +257,13 @@ userController.blockUser = async (payload) => {
   }
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
 }
+
+
+userController.deleteUser = async (payload)=>{
+  let data = await SERVICES.userService.deleteUser({_id:payload._id});
+  if(data){
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_DELETED_SUCCESSFULLY));
+  }
+}
 /* export userController */
 module.exports = userController;
