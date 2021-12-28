@@ -164,10 +164,17 @@ let routes = [
                 id: Joi.string().objectId().required().description('Challenge Id.'),
             },
             body: {
+<<<<<<< HEAD
                 timeTaken: Joi.number().required().description('Time taken by the user'),
                 caloriesBurned: Joi.number().required().description('Calories Burned'),
                 avgSpeed: Joi.number().required().description(`Average Speed`),
                 maxSpeed: Joi.number().required().description('Maximum Speed'),
+=======
+                timeTaken: Joi.number().required().description('Time taken by the user in miliseconds'),
+                caloriesBurned: Joi.number().required().description('Calories Burned in calories'),
+                avgSpeed: Joi.number().required().description(`Average Speed in km/h`),
+                maxSpeed: Joi.number().required().description('Maximum Speed in km/h'),
+>>>>>>> 6083a8b7849afc07f5e9f7dcd6a0f4c2cc5d3a85
             },
             group: 'Challenge',
             description: 'Route to Completed Challenge',
@@ -210,6 +217,9 @@ let routes = [
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
                 id: Joi.string().objectId().required().description('User Id.'),
+                searchKey: Joi.string().allow(""),
+                sortKey: Joi.string().optional().description('sort key'),
+                sortDirection: Joi.number().default(-1).optional().description('sort direction'),
             },
 			group: 'Challenge',
 			description: 'Route to get challenge by user',

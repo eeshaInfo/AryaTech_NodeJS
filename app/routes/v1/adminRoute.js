@@ -84,17 +84,18 @@ let routesAdmin = [
     },
 
     {
-        method: 'POST',
-        path: '/v1/user/block',
+        method: 'PUT',
+        path: '/v1/user/blockUnblockUser',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
-            query: {
-                id: Joi.string().objectId().required().description('User Id.')
+            body: {
+                id: Joi.string().objectId().required().description('User Id.'),
+                status:Joi.number().required().description('User Status')
             },
             group: 'Admin',
-            description: 'Route to block user',
+            description: 'Route to block/unblock user',
             model: 'blockUser'
         },
         auth: AVAILABLE_AUTHS.ADMIN,

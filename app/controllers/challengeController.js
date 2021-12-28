@@ -162,6 +162,9 @@ challengeController.getChallengesByUser = async (payload) => {
 * Function to fetch list challenge list for user
 */
 challengeController.challengeListForUser = async (payload) => {
+  let userData = await SERVICES.challengeService.listUserChallenge({userId: payload.user._id});
+  payload.user.challenges = userData.map(data => data._id);
+  console.log(payload.user.challenges);
   let challenges = await SERVICES.challengeService.getChallengeListForUser(payload);
   //let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges } });
