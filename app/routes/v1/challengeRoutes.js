@@ -228,6 +228,24 @@ let routes = [
         },
         handler: challengeController.list
     },
+
+
+    {
+        method: 'GET',
+        path: '/v1/challenge/history',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            body: {
+                date:Joi.string().optional().description(`Date for challenge History`)
+            },
+            group: 'Challenge',
+            description: 'Route to get challenge list for GUEST',
+            model: 'GetChallengeListForGuest'
+        },
+        handler: challengeController.history
+    },
 ];
 
 module.exports = routes;
