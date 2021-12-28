@@ -161,6 +161,7 @@ challengeService.getUserByChallenges = async (criteria) => {
             }
         },
         { $unwind: "$userData" },
+        //{ $addFields: { "challengeDataAmount": { $substr: ["$challengeData.amount", 0, -1] } } },
         {
             $match: {
                 $or: [
@@ -318,7 +319,7 @@ challengeService.getUserCountByChallenge = async (criteria) => {
  * function to  get challenge list for user
  */
 challengeService.getChallengeListForUser = async (criteria) => {
-    console.log(criteria)
+   
     let query = [
         {
         $match: { isDeleted: false },

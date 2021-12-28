@@ -121,6 +121,9 @@ let routes = [
             query: {
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
+                searchKey: Joi.string().allow(""),
+                sortKey: Joi.string().default("createdAt").optional().description('sort key'),
+                sortDirection: Joi.number().default(-1).optional().description('sort direction'),
             },
             group: 'User',
             description: 'Route to get userList',
@@ -128,7 +131,26 @@ let routes = [
         },
         auth: AVAILABLE_AUTHS.ADMIN,
         handler: userController.list
+    },
+
+    {
+        method: 'GET',
+        path: '/v1/user/details',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            query: {
+                id: Joi.string().objectId().required().description("User's Id"),
+            },
+            group: 'User',
+            description: 'Route to get userDetails',
+            model: 'GetUserDetails'
+        },
+        auth: AVAILABLE_AUTHS.ADMIN,
+        handler: userController.userDetails
     }
+   
 ]
 
 module.exports = routes;
