@@ -127,7 +127,7 @@ challengeController.completedChallenge = async (payload) => {
   await SERVICES.challengeService.createUserChallenge(payload);
   //let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
   await SERVICES.challengeService.update({ _id: payload.id }, { $inc: { completed: 1 } });
-  await SERVICES.userService.updateUser({ _id: payload.user._id }, { $inc: { challengeCompleted: 1 }, $addToSet: { challenges: payload.id } });
+  await SERVICES.userService.updateUser({ _id: payload.user._id }, { $inc: { challengeCompleted: 1 } });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_COMPLETED_SUCCESSFULLY));
   //}
   //throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_COMPLETED, ERROR_TYPES.BAD_REQUEST);
@@ -164,7 +164,6 @@ challengeController.getChallengesByUser = async (payload) => {
 challengeController.challengeListForUser = async (payload) => {
   let userData = await SERVICES.challengeService.listUserChallenge({userId: payload.user._id});
   payload.user.challenges = userData.map(data => data._id);
-  console.log(payload.user.challenges);
   let challenges = await SERVICES.challengeService.getChallengeListForUser(payload);
   //let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges } });

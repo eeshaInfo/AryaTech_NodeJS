@@ -167,7 +167,6 @@ userService.deleteUser = async (criteria)=>{
 }
 
 userService.getUserDetails = async (criteria) => {
-  console.log("id", convertIdToMongooseId(criteria))
   let query = [
     { $match: { _id: convertIdToMongooseId(criteria) } },
 

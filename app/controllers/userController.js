@@ -28,7 +28,6 @@ userController.registerNewUser = async (payload) => {
     payload.status = STATUS.ACTIVE;
     payload.userType = USER_TYPES.USER
     let newRegisteredUser = await SERVICES.userService.registerUser(payload);
-    // console.log("New RegistredUser:.....",newRegisteredUser, newRegisteredUser._id)
     const dataForJwt = {
       id: newRegisteredUser._id,
       date: Date.now()
