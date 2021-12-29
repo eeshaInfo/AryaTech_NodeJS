@@ -9,7 +9,7 @@ const CONSTANTS = require('../../utils/constants');
 let routes = [
     {
         method: 'PUT',
-        path: '/v1/payment/approveOrReject',
+        path: '/v1/payment/approve-reject',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -49,7 +49,7 @@ let routes = [
     },
     {
         method: 'GET',
-        path: '/v1/payment/getPaymentList',
+        path: '/v1/payment/payment-list',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
