@@ -1,5 +1,6 @@
 'use strict';
 const { userModel, userChallengesModel } = require('../models');
+const CONSTANTS = require('../utils/constants');
 const utils = require('../utils/utils');
 const { convertIdToMongooseId } = require(`../utils/utils`);
 let userService = {};
@@ -31,33 +32,33 @@ userService.getUser = async (criteria, projection) => {
 };
 
 
-userService.getUsersList = async (criteria,payload, pagination) => {
+userService.getUsersList = async (criteria, payload, pagination) => {
   let sort = {};
   sort[payload.sortKey] = payload.sortDirection;
   let query = [
-      {
-        $match: criteria
-      },
-      {
-        $sort: sort
-      },
-      {
-        $skip: pagination.skip
-      },
-      {
-        $limit: pagination.limit
-      },
-      {
-        $project: {
-          "firstName": 1,
-          "lastName": 1,
-          "imagePath": 1,
-          "mobileNumber": 1,
-          'challengeCompleted': 1,
-          "status": 1
-        }
-      },
-    ]
+    {
+      $match: criteria
+    },
+    {
+      $sort: sort
+    },
+    {
+      $skip: pagination.skip
+    },
+    {
+      $limit: pagination.limit
+    },
+    {
+      $project: {
+        "firstName": 1,
+        "lastName": 1,
+        "imagePath": 1,
+        "mobileNumber": 1,
+        'challengeCompleted': 1,
+        "status": 1
+      }
+    },
+  ]
   return await userModel.aggregate(query);
 };
 
@@ -74,7 +75,7 @@ userService.createUser = async (payload) => {
  */
 userService.getCountOfUsers = async (criteria) => {
    
-   return await userModel.countDocuments( criteria )
+   return await userModel.countDocuments( criteria)
   }
 
 
@@ -98,27 +99,42 @@ userService.deleteUser = async (criteria) => {
   return await userModel.deleteOne(criteria);
 }
 
-userService.getUserDetails = async (criteria) => {
+userService.getUserStats = async (criteria) => {
   let query = [
-    { $match: { _id: convertIdToMongooseId(criteria) } },
-
+    { $match: criteria },
+    { $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
+    { $unwind: "$challengeData" },
+    // { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
+    // { $unwind: "$userData" },
+    {
+      $addFields: {
+        distanceTravelledInMeter: { $cond: { if: { $eq: ["$challengeData.distanceType", CONSTANTS.DISTANCE_TYPE.KM] }, then: { $multiply: ["$challengeData.challengeName", 1000] }, else: "$challengeData.challengeName" } }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        totalCalories: {
+          $sum: "$caloriesBurned"
+        },
+        totalTime: {
+          $sum: "$timeTaken"
+        },
+        totalDistance: {
+          $sum: "$distanceTravelledInMeter"
+        }
+      }
+    },
     {
       $project: {
-        "_id": 0,
-        "firstName": 1,
-        "lastName": 1,
-        "imagePath": 1,
-        "mobileNumber": 1,
-        "country": 1,
-        "state": 1,
-        "city": 1,
-        "zipCode": 1,
-        "gender": 1,
-        "dob": 1,
+        totalCalories: 1,
+        totalTime: 1,
+        totalDistance: 1,
+        _id:0
       }
     }
   ]
-  return await userModel.aggregate(query);
+  return await userChallengesModel.aggregate(query);
 };
 
 module.exports = userService;
