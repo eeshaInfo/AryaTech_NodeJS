@@ -164,7 +164,7 @@ let routes = [
                 id: Joi.string().objectId().required().description('Challenge Id.'),
             },
             body: {
-                timeTaken: Joi.number().required().description('Time taken by the user in miliseconds'),
+                timeTaken: Joi.number().required().description('Time taken by the user in seconds'),
                 caloriesBurned: Joi.number().required().description('Calories Burned in calories'),
                 avgSpeed: Joi.number().required().description(`Average Speed in km/h`),
                 maxSpeed: Joi.number().required().description('Maximum Speed in km/h'),
