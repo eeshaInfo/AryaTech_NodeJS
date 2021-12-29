@@ -49,6 +49,7 @@ module.exports = {
     CHALLENGE_ALREADY_COMPLETED: 'Challenge already completed.',
     CHALLENGE_CANNOT_DELETED: 'Challenge cannot be deleted',
     CHALLENGE_NOT_FOUND: 'Challenge not found',
+    NO_CHALLENGES_COMPLETED:'No Challenges Completed',
     //Payment
     PAYMENT_SUCCESSFULLY_COMPLETED: 'Payment Successfully Completed',
     PAYMENT_FOUND: 'Payment Found',

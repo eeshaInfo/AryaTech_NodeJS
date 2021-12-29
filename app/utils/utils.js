@@ -5,7 +5,6 @@ const JWT = require("jsonwebtoken");
 const CONFIG = require('../../config');
 const awsSms = require('aws-sns-sms');
 const fs = require('fs');
-const XLSX = require('xlsx');
 
 const awsSnsConfig = {
   accessKeyId: CONFIG.AWS.accessKeyId,

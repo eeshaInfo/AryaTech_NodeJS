@@ -164,7 +164,11 @@ let routes = [
                 id: Joi.string().objectId().required().description('Challenge Id.'),
             },
             body: {
-                timeTaken: Joi.number().required().description('Time taken by the user in seconds'),
+                timeTaken: Joi.number().required().description('Time taken by the user'),
+                caloriesBurned: Joi.number().required().description('Calories Burned'),
+                avgSpeed: Joi.number().required().description(`Average Speed`),
+                maxSpeed: Joi.number().required().description('Maximum Speed'),
+                timeTaken: Joi.number().required().description('Time taken by the user in miliseconds'),
                 caloriesBurned: Joi.number().required().description('Calories Burned in calories'),
                 avgSpeed: Joi.number().required().description(`Average Speed in km/h`),
                 maxSpeed: Joi.number().required().description('Maximum Speed in km/h'),
@@ -230,6 +234,26 @@ let routes = [
             model: 'GetChallengeListForGuest'
         },
         handler: challengeController.list
+    },
+
+
+    {
+        method: 'POST',
+        path: '/v1/challenge/history',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            body: {
+                date:Joi.string().optional().description(`Date for challenge History`)
+            },
+            group: 'Challenge',
+            description: 'Route to get challenge history',
+            model: 'ChallengeHistory'
+        },
+        handler: challengeController.history,
+        auth: AVAILABLE_AUTHS.USER,
+
     },
 ];
 
