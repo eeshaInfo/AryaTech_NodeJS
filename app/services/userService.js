@@ -31,33 +31,33 @@ userService.getUser = async (criteria, projection) => {
 };
 
 
-userService.getUsersList = async (criteria,payload, pagination) => {
+userService.getUsersList = async (criteria, payload, pagination) => {
   let sort = {};
   sort[payload.sortKey] = payload.sortDirection;
   let query = [
-      {
-        $match: criteria
-      },
-      {
-        $sort: sort
-      },
-      {
-        $skip: pagination.skip
-      },
-      {
-        $limit: pagination.limit
-      },
-      {
-        $project: {
-          "firstName": 1,
-          "lastName": 1,
-          "imagePath": 1,
-          "mobileNumber": 1,
-          'challengeCompleted': 1,
-          "status": 1
-        }
-      },
-    ]
+    {
+      $match: criteria
+    },
+    {
+      $sort: sort
+    },
+    {
+      $skip: pagination.skip
+    },
+    {
+      $limit: pagination.limit
+    },
+    {
+      $project: {
+        "firstName": 1,
+        "lastName": 1,
+        "imagePath": 1,
+        "mobileNumber": 1,
+        'challengeCompleted': 1,
+        "status": 1
+      }
+    },
+  ]
   return await userModel.aggregate(query);
 };
 
@@ -73,9 +73,9 @@ userService.createUser = async (payload) => {
  * function to fetch count of users from the system based on criteria.
  */
 userService.getCountOfUsers = async (criteria) => {
-   
-   return await userModel.countDocuments( criteria )
-  }
+
+  return await userModel.countDocuments(criteria)
+}
 
 
 //   let data = await userModel.aggregate(query);
@@ -101,6 +101,33 @@ userService.deleteUser = async (criteria) => {
 userService.getUserDetails = async (criteria) => {
   let query = [
     { $match: { _id: convertIdToMongooseId(criteria) } },
+    {
+      $lookup: {
+        from: "userchallenges",
+        let: { id: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $and: [{ $eq: ['$userId', '$$id'] }] }
+            },
+          },
+        ],
+        as: "userData"
+      }
+    }, {
+      $unwind: "$userData"
+    },
+    {
+      $lookup: {
+        from: "challenges",
+        localField: "userData.challengeId",
+        foreignField: "_id",
+        as: "challengeData"
+      }
+    },
+    {
+      $unwind: "$challengeData"
+    },
 
     {
       $project: {
@@ -115,8 +142,16 @@ userService.getUserDetails = async (criteria) => {
         "zipCode": 1,
         "gender": 1,
         "dob": 1,
-      }
+        "userData": 1,
+        challengeName: {
+          $cond: { if: { $eq: ["$challengeData.distanceType", 2] }, then:{$multiply:["$challengeData.challengeName",1000]}, else: "$challengeData.challengeName" }
+        },
+        // totalDistance: { $sum: "$challengeData.challengeName", }     
+        // "userData.timeTaken": 1,
+        // "userData.caloriesBurned": 1,
+        // "userData.challengeData.challengeName": 1
     }
+  }
   ]
   return await userModel.aggregate(query);
 };
