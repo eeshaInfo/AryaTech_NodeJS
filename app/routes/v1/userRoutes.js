@@ -10,7 +10,7 @@ let routes = [
         method: 'GET',
         path: '/v1/serverResponse/',
         joiSchemaForSwagger: {
-            group: 'User',
+            group: 'Test',
             description: 'Route to get server response (Is server working fine or not?).',
             model: 'SERVER'
         },

@@ -56,7 +56,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                id: Joi.string().objectId().required().description('Challenge Id.'),
+            challengeId: Joi.string().objectId().required().description('Challenge Id.'),
             },
             group: 'Challenge',
             description: 'Route to delete a challenge.',
@@ -130,7 +130,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                id: Joi.string().objectId().required().description('Challenge Id.')
+                challengeId: Joi.string().objectId().required().description('Challenge Id.')
             },
             group: 'Challenge',
             description: 'Route to get Challenge by id',
@@ -145,7 +145,7 @@ let routes = [
         path: '/v1/challenge/getChallengeByIdForGuest',
         joiSchemaForSwagger: {
             query: {
-                id: Joi.string().objectId().required().description('Challenge Id.')
+                challengeId: Joi.string().objectId().required().description('Challenge Id.')
             },
             group: 'Challenge',
             description: 'Route to get Challenge by id for guest',
@@ -161,7 +161,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                id: Joi.string().objectId().required().description('Challenge Id.'),
+                challengeId: Joi.string().objectId().required().description('Challenge Id.'),
             },
             body: {
                 timeTaken: Joi.number().required().description('Time taken by the user'),
@@ -191,7 +191,7 @@ let routes = [
             query: {
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
-                id: Joi.string().objectId().required().description('Challenge Id.'),
+                challengeId: Joi.string().objectId().required().description('Challenge Id.'),
                 searchKey: Joi.string().allow(""),
                 sortKey: Joi.string().optional().description('sort key'),
                 sortDirection: Joi.number().default(-1).optional().description('sort direction'),
@@ -213,7 +213,7 @@ let routes = [
             query: {
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
-                id: Joi.string().objectId().required().description('User Id.'),
+                userId: Joi.string().objectId().required().description('User Id.'),
                 searchKey: Joi.string().allow(""),
                 sortKey: Joi.string().optional().description('sort key'),
                 sortDirection: Joi.number().default(-1).optional().description('sort direction'),

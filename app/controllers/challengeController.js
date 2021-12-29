@@ -79,11 +79,11 @@ challengeController.updateChallenge = async (payload) => {
  * Function to delete a challenge.
  */
 challengeController.deleteChallenge = async (payload) => {
-  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
-  let paidChallenge = await SERVICES.paymentService.getPayment({ challengeId: payload.id, status: { $ne: TRANSACTION_STATUS.REJECT } })
+  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId });
+  let paidChallenge = await SERVICES.paymentService.getPayment({ challengeId: payload.challengeId, status: { $ne: TRANSACTION_STATUS.REJECT } })
 
   if ((challenge && !challenge.completed) && !paidChallenge) {
-    await SERVICES.challengeService.update({ _id: payload.id }, { isDeleted: true });
+    await SERVICES.challengeService.update({ _id: payload.challengeId }, { isDeleted: true });
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_DELETED_SUCCESSFULLY));
   }
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_CANNOT_DELETED, ERROR_TYPES.BAD_REQUEST);
@@ -118,7 +118,7 @@ challengeController.list = async (payload) => {
  */
 challengeController.getChallengeById = async (payload) => {
   // get challenge by particular challenge id.
-  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
+  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenge } });
 };
 
@@ -149,7 +149,7 @@ challengeController.completedChallenge = async (payload) => {
 */
 challengeController.getUserByChallenges = async (payload) => {
   let criteria = {
-    challengeId: payload.id
+    challengeId: payload.challengeId
   }
   // get user list by particular challenge
   let list = await SERVICES.challengeService.getUserByChallenges(payload);
@@ -163,7 +163,7 @@ challengeController.getUserByChallenges = async (payload) => {
 challengeController.getChallengesByUser = async (payload) => {
   // criteria by which challenge to be fetched
   let criteria = {
-    userId: payload.id
+    userId: payload.userId
   }
   // get all challenge by particular user
   let list = await SERVICES.challengeService.getChallengesByUser(payload, { skip: payload.skip, limit: payload.limit });

@@ -70,6 +70,9 @@ userController.loginUser = async (payload) => {
   }
   else {
     let user = await SERVICES.userService.getUser({ mobileNumber: payload.mobileNumber }, { ...NORMAL_PROJECTION });
+    if(user.status==CONSTANTS.STATUS.BLOCK){
+      throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_ALREADY_BLOCKED, ERROR_TYPES.BAD_REQUEST);
+    }
     if (user) {
       const dataForJwt = {
         id: user._id,

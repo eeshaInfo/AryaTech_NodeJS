@@ -14,7 +14,7 @@ let routesAdmin = [
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
-            group: 'Admin',
+            group: 'Test',
             description: 'Route to user auth example',
             model: 'Admin_Auth'
         },
