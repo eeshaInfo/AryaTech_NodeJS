@@ -16,7 +16,7 @@ let challengeController = {};
 /**
  * function to check server.
  */
-challengeController.getServerResponse = async (payload) => {
+challengeController.getServerResponse = async () => {
   throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS);
 }
 
@@ -24,12 +24,14 @@ challengeController.getServerResponse = async (payload) => {
  * function to create a chaalenge.
  */
 challengeController.createChallenge = async (payload) => {
+  //check if challenge exists wit same name or not
   let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName, isDeleted: false });
   if (!isChallengeExists) {
     if (payload.challengeType === CHALLENGES_TYPES.UNPAID) {
       payload.amount = 0;
     }
     payload.completed = 0;
+    //create challenge
     let data = await SERVICES.challengeService.create(payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_CREATED_SUCCESSFULLY), { data });
   }
@@ -40,9 +42,13 @@ challengeController.createChallenge = async (payload) => {
  * function to get a dashboard data.
  */
 challengeController.dashBoardData = async (payload) => {
+  //get count of total challenges
   let totalChallenge = await SERVICES.challengeService.listCount({ isDeleted: false });
+  //get count of total user
   let totalUser = await SERVICES.userService.getCountOfUsers({ userType: USER_TYPES.USER });
+  // get count of paid challenges
   let paidChallenge = await SERVICES.challengeService.listCount({ isDeleted: false, challengeType: CHALLENGES_TYPES.PAID });
+  // get count of block user
   let blockUser = await SERVICES.userService.getCountOfUsers({ userType: USER_TYPES.USER, status: STATUS.BLOCK });
   let data = { totalChallenge, totalUser, paidChallenge, blockUser }
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DASHBOARD_DATA_FETCHED), { data });
@@ -53,6 +59,7 @@ challengeController.dashBoardData = async (payload) => {
  * function to update a challenge.
  */
 challengeController.updateChallenge = async (payload) => {
+  //check if challenge exist or not
   let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId });
   let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName, _id: { $ne: payload.challengeId } });
   if (!isChallengeExists) {
@@ -110,6 +117,7 @@ challengeController.list = async (payload) => {
  * Function to fetch list of users completed task
  */
 challengeController.getChallengeById = async (payload) => {
+  // get challenge by particular challenge id.
   let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.id });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenge } });
 };
@@ -119,13 +127,15 @@ challengeController.getChallengeById = async (payload) => {
 */
 
 challengeController.completedChallenge = async (payload) => {
-  let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
+  //let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
   //if (!challenge) {
   payload.userId = payload.user._id;
   payload.challengeId = payload.id;
   payload.completingDate = new Date();
+  // complete a challenge for particular user
   await SERVICES.challengeService.createUserChallenge(payload);
   //let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
+  // update completed counter for both user and challenges
   await SERVICES.challengeService.update({ _id: payload.id }, { $inc: { completed: 1 } });
   await SERVICES.userService.updateUser({ _id: payload.user._id }, { $inc: { challengeCompleted: 1 } });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_COMPLETED_SUCCESSFULLY));
@@ -141,6 +151,7 @@ challengeController.getUserByChallenges = async (payload) => {
   let criteria = {
     challengeId: payload.id
   }
+  // get user list by particular challenge
   let list = await SERVICES.challengeService.getUserByChallenges(payload);
   let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { list, totalCounts } });
@@ -150,9 +161,11 @@ challengeController.getUserByChallenges = async (payload) => {
 * Function to fetch user by particular challenge
 */
 challengeController.getChallengesByUser = async (payload) => {
+  // criteria by which challenge to be fetched
   let criteria = {
     userId: payload.id
   }
+  // get all challenge by particular user
   let list = await SERVICES.challengeService.getChallengesByUser(payload, { skip: payload.skip, limit: payload.limit });
   let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { list, totalCounts } });
@@ -162,8 +175,10 @@ challengeController.getChallengesByUser = async (payload) => {
 * Function to fetch list challenge list for user
 */
 challengeController.challengeListForUser = async (payload) => {
+  // get challenge for specific user
   let userData = await SERVICES.challengeService.listUserChallenge({userId: payload.user._id});
-  payload.user.challenges = userData.map(data => data._id);
+  payload.user.challenges = userData.map(data => data.challengeId);
+  // get challenge list for particular user
   let challenges = await SERVICES.challengeService.getChallengeListForUser(payload);
   //let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges } });
