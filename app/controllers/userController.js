@@ -28,7 +28,6 @@ userController.registerNewUser = async (payload) => {
     payload.status = STATUS.ACTIVE;
     payload.userType = USER_TYPES.USER
     let newRegisteredUser = await SERVICES.userService.registerUser(payload);
-    // console.log("New RegistredUser:.....",newRegisteredUser, newRegisteredUser._id)
     const dataForJwt = {
       id: newRegisteredUser._id,
       date: Date.now()
@@ -258,6 +257,13 @@ userController.blockUser = async (payload) => {
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
 }
 
+
+userController.deleteUser = async (payload)=>{
+  let data = await SERVICES.userService.deleteUser({_id:payload._id});
+  if(data){
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_DELETED_SUCCESSFULLY));
+  }
+}
 userController.userDetails = async (payload) => {
   let user = await SERVICES.userService.getUserDetails(payload.id)
   if (user.length == 0) {

@@ -124,10 +124,16 @@ challengeService.listChallenge = async (criteria, pagination) => {
 };
 
 /**
+ * function to  get completed challenge based on criteria
+ */
+challengeService.listUserChallenge = async (criteria) => {
+    return await userChallengesModel.find(criteria).lean();
+};
+
+/**
  * function to  get user by challanges
  */
 challengeService.getUserByChallenges = async (criteria) => {
-   console.log(criteria);
     let sort = {}
     if (criteria.sortKey === "firstName" || criteria.sortKey === "lastName") {
         criteria.sortKey = `userData.${criteria.sortKey}`
@@ -226,15 +232,23 @@ challengeService.getUserByChallenges = async (criteria) => {
 /**
  * function to  get challenges by user
  */
-challengeService.getChallengesByUser = async (criteria, pagination) => {
-    let query = criteria.searchKey ? [
+challengeService.getChallengesByUser = async (payload, pagination) => {
+    let sort = {}
+    if (payload.sortKey === "firstName" || payload.sortKey === "lastName") {
+        payload.sortKey = `userData.${payload.sortKey}`
+        sort[payload.sortKey] = payload.sortDirection;
+    }
+    else {
+        sort[payload.sortKey] = payload.sortDirection;
+    }
+    let query = payload.searchKey ? [
      {
-     $match: criteria ,
+     $match: { userId: payload.id} ,
      },
      {
         $lookup: {
             from: 'users',
-            let: { userId: '$userId',searchKey: criteria.searchKey },
+            let: { userId: '$userId',searchKey: payload.searchKey },
             pipeline: [
                 {
                     $match: {
@@ -245,12 +259,25 @@ challengeService.getChallengesByUser = async (criteria, pagination) => {
                         },
                     },
                 },
-                    { $match: {firstName: {$regex: criteria.searchKey, $options: 'i'}}},
+                    //{ $match: {firstName: {$regex: criteria.searchKey, $options: 'i'}}},
             ],
             as: "userData"
         }
     },
     { $unwind: "$userData" },
+    {
+        $match: {
+            $or: [
+                { "userData.firstName": { $regex: payload.searchKey, $options: 'i' } },
+                { 'userData.lastName': { $regex: payload.searchKey, $options: 'i' } },
+                { 'userData.mobileNumber': { $regex: payload.searchKey, $options: 'i' } },
+                { 'avgSpeed': { $regex: payload.searchKey, $options: 'i' } },
+                { 'maxSpeed': { $regex: payload.searchKey, $options: 'i' } },
+                { 'timeTaken': { $regex: payload.searchKey, $options: 'i' } }
+            ]
+        }
+    },
+    { $sort: sort },
     { $skip: pagination.skip },
     { $limit: pagination.limit },
      //{ $match: {'userData.firstName': {$regex: criteria.searchKey, $options: 'i'}}},
@@ -270,10 +297,11 @@ challengeService.getChallengesByUser = async (criteria, pagination) => {
      }
     ] : [
         {
-        $match: { challengeId: convertIdToMongooseId(criteria.id)},
+            $match: { userId: payload.id} ,
         },
         { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
         { $unwind: "$userData" },
+        { $sort: sort },
         { $skip: pagination.skip },
         { $limit: pagination.limit },
         {

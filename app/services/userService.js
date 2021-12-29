@@ -158,8 +158,15 @@ userService.getUsers = async (criteria) => {
   return await userModel.find(criteria);
 };
 
+/**
+ * Function for delete user
+ */
+userService.deleteUser = async (criteria)=>{
+  await userChallengesModel.deleteMany({userId:criteria._id});
+  return await userModel.deleteOne(criteria);
+}
+
 userService.getUserDetails = async (criteria) => {
-  console.log("id", convertIdToMongooseId(criteria))
   let query = [
     { $match: { _id: convertIdToMongooseId(criteria) } },
 

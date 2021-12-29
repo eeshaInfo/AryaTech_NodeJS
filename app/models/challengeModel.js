@@ -14,7 +14,7 @@ const challengeSchema = new Schema(
         distanceType: { type: Number, enum: [DISTANCE_TYPE.METER, DISTANCE_TYPE.KM] },
         amount: { type: Number ,default: 0 },
         completed:{type:Number, default: 0 },
-        isDeleted: { type: Boolean, default: false },
+        isDeleted: { type: Boolean, default: false }
     },
     { versionKey: false, timestamps: true }
 );
