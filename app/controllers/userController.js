@@ -228,8 +228,11 @@ userController.list = async (payload) => {
     userType: CONSTANTS.USER_TYPES.USER
   }
 
-  let userList = await SERVICES.userService.getUsersList(criteria, { skip: payload.skip, limit: payload.limit, searchKey: payload.searchKey, sortKey: payload.sortKey, sortDirection: payload.sortDirection })
-  let userCount = await SERVICES.userService.getCountOfUsers(criteria, { searchKey: payload.searchKey });
+  let userList = await SERVICES.userService.getUsersList(criteria, payload, { skip: payload.skip, limit: payload.limit })
+
+
+  
+  let userCount = await SERVICES.userService.getCountOfUsers(criteria,payload.searchKey);
   let data = {
     list: userList,
     userCount: userCount
@@ -258,9 +261,9 @@ userController.blockUser = async (payload) => {
 }
 
 
-userController.deleteUser = async (payload)=>{
-  let data = await SERVICES.userService.deleteUser({_id:payload._id});
-  if(data){
+userController.deleteUser = async (payload) => {
+  let data = await SERVICES.userService.deleteUser({ _id: payload._id });
+  if (data) {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_DELETED_SUCCESSFULLY));
   }
 }
