@@ -39,17 +39,17 @@ challengeService.getUserChallengeBasedOnCriteria = async (criteria) => {
 challengeService.getAllChallenges = async (criteria, pagination) => {
     let sort = {};
     if (pagination.sortKey) {
-        sort[pagination.sortKey] = pagination.sortDirection;   
+        sort[pagination.sortKey] = pagination.sortDirection;
     } else {
         sort['createdAt'] = -1;
     }
     let query = [
         {
-            $addFields : {
-            challengeNameString: {
-              $toString: '$challengeName'
-            }
-          },
+            $addFields: {
+                challengeNameString: {
+                    $toString: '$challengeName'
+                }
+            },
         },
         {
             $match: criteria,
@@ -72,11 +72,11 @@ challengeService.getAllGuestChallenges = async (criteria) => {
     sort['createdAt'] = -1;
     let query = [
         // {
-    //         $addFields: {
-    //             challengeNameString: {
-    //                 $toString: '$challengeName'
-    //             }
-    //         },
+        //         $addFields: {
+        //             challengeNameString: {
+        //                 $toString: '$challengeName'
+        //             }
+        //         },
         // },
         {
             $match: criteria,
@@ -86,10 +86,10 @@ challengeService.getAllGuestChallenges = async (criteria) => {
         },
         {
             $addFields: {
-                completed:0
+                completed: 0
             }
         }
-        
+
     ]
     return await challengeModel.aggregate(query);
 };
@@ -103,17 +103,17 @@ challengeService.listCountForDashboard = async (criteria, pagination) => {
     //sort[pagination.sortKey] = pagination.sortDirection;
     let query = [
         {
-            $addFields : {
-            challengeNameString: {
-              $toString: '$challengeName'
-            }
-          },
+            $addFields: {
+                challengeNameString: {
+                    $toString: '$challengeName'
+                }
+            },
         },
         {
             $match: criteria,
         }
     ]
-    let data =await challengeModel.aggregate(query);
+    let data = await challengeModel.aggregate(query);
     return data.length;
 };
 /**
@@ -134,7 +134,6 @@ challengeService.listUserChallenge = async (criteria) => {
  * function to  get user by challanges
  */
 challengeService.getUserByChallenges = async (criteria) => {
-   console.log(criteria);
     let sort = {}
     if (criteria.sortKey === "firstName" || criteria.sortKey === "lastName") {
         criteria.sortKey = `userData.${criteria.sortKey}`
@@ -148,7 +147,7 @@ challengeService.getUserByChallenges = async (criteria) => {
         {
             $match: { challengeId: convertIdToMongooseId(criteria.id) },
         },
-        
+
         {
             $lookup: {
                 from: 'users',
@@ -175,9 +174,9 @@ challengeService.getUserByChallenges = async (criteria) => {
                     { "userData.firstName": { $regex: criteria.searchKey, $options: 'i' } },
                     { 'userData.lastName': { $regex: criteria.searchKey, $options: 'i' } },
                     { 'userData.mobileNumber': { $regex: criteria.searchKey, $options: 'i' } },
-                    { 'avgSpeed': { $regex: criteria.searchKey, $options: 'i' } },
-                    { 'maxSpeed': { $regex: criteria.searchKey, $options: 'i' } },
-                    { 'timeTaken': { $regex: criteria.searchKey, $options: 'i' } }
+                    //  { 'avgSpeed': { $regex: criteria.searchKey, $options: 'i' } },
+                    //  { 'maxSpeed': { $regex: criteria.searchKey, $options: 'i' } },
+                    //  { 'timeTaken': { $regex: criteria.searchKey, $options: 'i' } }
                 ]
             }
         },
@@ -234,71 +233,103 @@ challengeService.getUserByChallenges = async (criteria) => {
  * function to  get challenges by user
  */
 challengeService.getChallengesByUser = async (payload, pagination) => {
-    console.log(payload);
+    let sort = {}
+    if (payload.sortKey === "challengeName") {
+        payload.sortKey = `challengeData.${payload.sortKey}`
+        sort[payload.sortKey] = payload.sortDirection;
+    }
+    else {
+        sort[payload.sortKey] = payload.sortDirection;
+    }
     let query = payload.searchKey ? [
-     {
-     $match: { userId: payload.id} ,
-     },
-     {
-        $lookup: {
-            from: 'users',
-            let: { userId: '$userId',searchKey: payload.searchKey },
-            pipeline: [
-                {
-                    $match: {
-                        $expr: {
-                            $and: [
-                                { $eq: ['$$userId', '$_id'] },
-                            ]
+        {
+            $match: { userId: payload.id },
+        },
+        {
+            $addFields: {
+                completedChallenge: {
+                    $substr: ['$challengeCompleted', 0, -1]
+                }
+            }
+        },
+        {
+            $lookup: {
+                from: 'challenges',
+                let: { challengeId: '$challengeId', searchKey: payload.searchKey },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ['$$challengeId', '$_id'] },
+                                ]
+                            },
                         },
                     },
-                },
-                    { $match: {firstName: {$regex: criteria.searchKey, $options: 'i'}}},
-            ],
-            as: "userData"
+                    //{ $match: {firstName: {$regex: criteria.searchKey, $options: 'i'}}},
+                ],
+                as: "challengeData"
+            }
+        },
+        { $unwind: "$challengeData" },
+        {
+            $addFields: {
+                challengeNameString: {
+                    $toString: '$challengeData.challengeName'
+                }
+            },
+        },
+        {
+            $match: {
+                $or: [
+                    { "challengeNameString": { $regex: payload.searchKey, $options: 'i' } },
+                    //{ 'challengeData.distanceType': { $regex: payload.searchKey, $options: 'i' } },
+                    //  { 'challengeData.mobileNumber': { $regex: payload.searchKey, $options: 'i' } },
+                    //{ 'avgSpeed': { $regex: payload.searchKey, $options: 'i' } },
+                    //{ 'maxSpeed': { $regex: payload.searchKey, $options: 'i' } },
+                    //{ 'timeTaken': { $regex: payload.searchKey, $options: 'i' } }
+                ]
+            }
+        },
+        { $sort: sort },
+        { $skip: pagination.skip },
+        { $limit: pagination.limit },
+        //{ $match: {'challengeData.firstName': {$regex: criteria.searchKey, $options: 'i'}}},
+        {
+            $project: {
+                "date": 1,
+                "timeTaken": 1,
+                "caloriesBurned": 1,
+                "avgSpeed": 1,
+                "maxSpeed": 1,
+                "completingDate": 1,
+                "challengeData.challengeName": 1,
+                "challengeData.distanceType": 1
+            }
         }
-    },
-    { $unwind: "$userData" },
-    { $skip: pagination.skip },
-    { $limit: pagination.limit },
-     //{ $match: {'userData.firstName': {$regex: criteria.searchKey, $options: 'i'}}},
-     {
-         $project: {
-             "date":1 ,
-             "timeTaken":1 ,
-             "caloriesBurned":1 ,
-             "avgSpeed":1 ,
-             "maxSpeed":1 ,
-             "completingDate": 1,
-             "userData.firstName": 1,
-             "userData.lastName": 1,
-             "userData.imagePath": 1
-
-         }
-     }
     ] : [
         {
-            $match: { userId: payload.id} ,
+            $match: { userId: payload.id },
         },
-        { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
-        { $unwind: "$userData" },
+        { $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
+        { $unwind: "$challengeData" },
+        { $sort: sort },
         { $skip: pagination.skip },
         { $limit: pagination.limit },
         {
             $project: {
-                "date":1 ,
-                "timeTaken":1 ,
-                "caloriesBurned":1 ,
-                "avgSpeed":1 ,
-                "maxSpeed":1 ,
+                "date": 1,
+                "timeTaken": 1,
+                "caloriesBurned": 1,
+                "avgSpeed": 1,
+                "maxSpeed": 1,
                 "completingDate": 1,
-                "userData.firstName": 1,
-                "userData.lastName": 1,
-                "userData.imagePath": 1
-   
+                "challengeData.challengeName": 1,
+                "challengeData.distanceType": 1
+
             }
         }
-       ]
+    ]
     return await userChallengesModel.aggregate(query);
 };
 
@@ -327,29 +358,30 @@ challengeService.getUserCountByChallenge = async (criteria) => {
  * function to  get challenge list for user
  */
 challengeService.getChallengeListForUser = async (criteria) => {
-   
+
     let query = [
         {
-        $match: { isDeleted: false },
+            $match: { isDeleted: false },
         },
         {
             // $addFields: {
             //     isChallengeCompleted: { $cond: [{ $in: [criteria.user.challenges, '$challenges._id'] }, 1, 0] }
             // }
             $addFields: {
-                isChallengeCompleted: { $cond: { if: { $in: ["$_id", criteria.user.challenges ] }, then: 1, else:0 }}}
+                isChallengeCompleted: { $cond: { if: { $in: ["$_id", criteria.user.challenges] }, then: 1, else: 0 } }
+            }
         },
         {
             $project: {
-                "challengeName":1 ,
-                "challengeType":1 ,
-                "distanceType":1 ,
-                "amount":1 ,
-                isChallengeCompleted:1 ,
-   
+                "challengeName": 1,
+                "challengeType": 1,
+                "distanceType": 1,
+                "amount": 1,
+                isChallengeCompleted: 1,
+
             }
         }
-       ]
+    ]
     return await challengeModel.aggregate(query);
 };
 
@@ -358,7 +390,8 @@ challengeService.getChallengeListForUser = async (criteria) => {
 challengeService.getHistory = async (criteria) => {
     let query = [
         {
-            $match:criteria
+            $match: criteria,
+
         }
     ]
     return await userChallengesModel.aggregate(query);

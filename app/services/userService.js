@@ -31,73 +31,33 @@ userService.getUser = async (criteria, projection) => {
 };
 
 
-userService.getUsersList = async (criteria, pagination) => {
+userService.getUsersList = async (criteria,payload, pagination) => {
   let sort = {};
-  sort[pagination.sortKey] = pagination.sortDirection;
-  let query = pagination.searchKey ? [
-    {
-      $match: criteria
-    },
-    {
-      $addFields: {
-        completedChallenge: {
-          $substr: ['$challengeCompleted', 0, -1]
+  sort[payload.sortKey] = payload.sortDirection;
+  let query = [
+      {
+        $match: criteria
+      },
+      {
+        $sort: sort
+      },
+      {
+        $skip: pagination.skip
+      },
+      {
+        $limit: pagination.limit
+      },
+      {
+        $project: {
+          "firstName": 1,
+          "lastName": 1,
+          "imagePath": 1,
+          "mobileNumber": 1,
+          'challengeCompleted': 1,
+          "status": 1
         }
-      }
-    },
-    {
-      $match: {
-        $or: [
-          { "firstName": { $regex: pagination.searchKey, $options: 'i' } },
-          { "lastName": { $regex: pagination.searchKey, $options: 'i' } },
-          { "completedChallenge": { $regex: pagination.searchKey, $options: 'i' } },
-          { "mobileNumber": { $regex: pagination.searchKey, $options: 'i' } },
-        ]
-      }
-    },
-    {
-      $sort: sort
-    },
-    {
-      $skip: pagination.skip
-    },
-    {
-      $limit: pagination.limit
-    },
-    {
-      $project: {
-        "firstName": 1,
-        "lastName": 1,
-        "imagePath": 1,
-        "mobileNumber": 1,
-        'challengeCompleted': 1,
-        "status": 1
-      }
-    },
-  ] : [
-    {
-      $match: criteria
-    },
-    {
-      $sort: sort
-    },
-    {
-      $skip: pagination.skip
-    },
-    {
-      $limit: pagination.limit
-    },
-    {
-      $project: {
-        "firstName": 1,
-        "lastName": 1,
-        "imagePath": 1,
-        "mobileNumber": 1,
-        'challengeCompleted': 1,
-        "status": 1
-      }
-    },
-  ]
+      },
+    ]
   return await userModel.aggregate(query);
 };
 
@@ -112,44 +72,16 @@ userService.createUser = async (payload) => {
 /**
  * function to fetch count of users from the system based on criteria.
  */
-userService.getCountOfUsers = async (criteria, pagination) => {
-  let query;
-  if (pagination) {
-
-    query = [
-      {
-        $match: criteria
-      },
-      {
-        $addFields: {
-          completedChallenge: {
-            $substr: ['$challengeCompleted', 0, -1]
-          }
-        }
-      },
-      {
-        $match: {
-          $or: [
-            { "firstName": { $regex: pagination.searchKey, $options: 'i' } },
-            { "lastName": { $regex: pagination.searchKey, $options: 'i' } },
-            { "completedChallenge": { $regex: pagination.searchKey, $options: 'i' } },
-            { "mobileNumber": { $regex: pagination.searchKey, $options: 'i' } },
-          ]
-        }
-      }
-    ]
-  } else {
-    query = [
-      {
-        $match: criteria
-      },
-    ]
+userService.getCountOfUsers = async (criteria) => {
+   
+   return await userModel.countDocuments( criteria )
   }
 
 
-  let data = await userModel.aggregate(query);
-  return data.length;
-};
+//   let data = await userModel.aggregate(query);
+//   return data.length
+//   // return await userModel.find(criteria);
+// };
 
 /**
  * function to fetch users from the system based on criteria.
@@ -158,8 +90,15 @@ userService.getUsers = async (criteria) => {
   return await userModel.find(criteria);
 };
 
+/**
+ * Function for delete user
+ */
+userService.deleteUser = async (criteria) => {
+  await userChallengesModel.deleteMany({ userId: criteria._id });
+  return await userModel.deleteOne(criteria);
+}
+
 userService.getUserDetails = async (criteria) => {
-  console.log("id", convertIdToMongooseId(criteria))
   let query = [
     { $match: { _id: convertIdToMongooseId(criteria) } },
 

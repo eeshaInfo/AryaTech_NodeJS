@@ -33,8 +33,6 @@ let validateUser = async (request,auth) => {
 
     try {
         let decodedToken = JWT.verify(request.headers.authorization, SECURITY.JWT_SIGN_KEY);
-        // console.log(decodedToken);
-        // console.log(decodedToken);
         if (!decodedToken) {
             return false;
         }
