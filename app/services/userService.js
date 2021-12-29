@@ -31,47 +31,10 @@ userService.getUser = async (criteria, projection) => {
 };
 
 
-userService.getUsersList = async (criteria, payload, pagination) => {
+userService.getUsersList = async (criteria,payload, pagination) => {
   let sort = {};
   sort[payload.sortKey] = payload.sortDirection;
-  let query
-  if (payload.searchKey) {
-    query = [
-      {
-        $match: criteria
-      },
-      {
-        $match: {
-          $or: [
-            { "firstName": { $regex: payload.searchKey, $options: 'i' } },
-            { "lastName": { $regex: payload.searchKey, $options: 'i' } },
-            { "mobileNumber": { $regex: payload.searchKey, $options: 'i' } },
-          ]
-        }
-      },
-      {
-        $sort: sort
-      },
-      {
-        $skip: pagination.skip
-      },
-      {
-        $limit: pagination.limit
-      },
-      {
-        $project: {
-          "firstName": 1,
-          "lastName": 1,
-          "imagePath": 1,
-          "mobileNumber": 1,
-          'challengeCompleted': 1,
-          "status": 1
-        }
-      },
-    ]
-  }
-  else {
-    query = [
+  let query = [
       {
         $match: criteria
       },
@@ -95,7 +58,6 @@ userService.getUsersList = async (criteria, payload, pagination) => {
         }
       },
     ]
-  }
   return await userModel.aggregate(query);
 };
 
@@ -110,9 +72,9 @@ userService.createUser = async (payload) => {
 /**
  * function to fetch count of users from the system based on criteria.
  */
-userService.getCountOfUsers = async (criteria,search) => {
-  let regex = new RegExp(search,'i');
-   return await userModel.find({ $and: [ { $or: [{firstName: regex },{lastName: regex},{mobileNumber: regex}] }, criteria ] }).count()
+userService.getCountOfUsers = async (criteria) => {
+   
+   return await userModel.countDocuments( criteria )
   }
 
 

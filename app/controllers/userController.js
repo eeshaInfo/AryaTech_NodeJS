@@ -224,15 +224,13 @@ userController.getAdminProfile = async (payload) => {
 
 
 userController.list = async (payload) => {
+  let regex = new RegExp(payload.searchKey, 'i');
   let criteria = {
-    userType: CONSTANTS.USER_TYPES.USER
+    $and: [{ $or: [{ firstName: regex }, { lastName: regex }, { mobileNumber: regex }] }, { userType: CONSTANTS.USER_TYPES.USER }]
   }
 
   let userList = await SERVICES.userService.getUsersList(criteria, payload, { skip: payload.skip, limit: payload.limit })
-
-
-  
-  let userCount = await SERVICES.userService.getCountOfUsers(criteria,payload.searchKey);
+  let userCount = await SERVICES.userService.getCountOfUsers(criteria);
   let data = {
     list: userList,
     userCount: userCount
