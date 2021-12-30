@@ -23,7 +23,7 @@ const userChallengesSchema = new Schema(
             default:undefined
         }
     },
-    { versionKey: false, timestamps: true }
+    { versionKey: false, timestamps: true, collection: 'userChallenges' }
 );
 
 module.exports = MONGOOSE.model("userChallenges", userChallengesSchema);

@@ -14,7 +14,7 @@ const paymentSchema = new Schema(
         transactionID: { type: String }, // transection Id of payment
         status: { type: Number ,enum: [TRANSACTION_STATUS.APPROVE, TRANSACTION_STATUS.PENDING, TRANSACTION_STATUS.REJECT]} // status of payment i.e approve,pending ,reject
     },
-    { versionKey: false, timestamps: true }
+    { versionKey: false, timestamps: true, collection: 'transactions' }
 );
 
 
