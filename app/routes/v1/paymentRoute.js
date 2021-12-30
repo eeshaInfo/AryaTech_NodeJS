@@ -15,7 +15,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body: {
-                id: Joi.string().required().description('Payment id'),
+                paymentId: Joi.string().required().description('Payment id'),
                 status: Joi.number().required().description('1 => APPROVE, 2=> REJECT ,3=> PENDING')
             },
             group: 'Payment',

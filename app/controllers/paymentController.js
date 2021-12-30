@@ -18,7 +18,7 @@ let paymentController = {};
  * Function to approve or reject payment
  */
 paymentController.approveOrRejectPayment = async (payload) => {
-  let paymentData = await SERVICES.paymentService.getPayment({ _id: payload.id })
+  let paymentData = await SERVICES.paymentService.getPayment({ _id: payload.paymentId })
   if (!paymentData) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
   }
