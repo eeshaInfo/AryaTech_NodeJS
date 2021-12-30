@@ -391,8 +391,19 @@ challengeService.getHistory = async (criteria) => {
     let query = [
         {
             $match: criteria,
-
-        }
+        },
+        { $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
+       { $unwind: "$challengeData" },
+        {
+            $group: {
+              _id: '$challengeId',
+              challengeCompletedCount: {
+                $sum: 1
+              },
+              "challengeName": { "$first": "$challengeData.challengeName" },
+              "distanceType": { "$first": "$challengeData.distanceType" }
+            }
+          },
     ]
     return await userChallengesModel.aggregate(query);
 };

@@ -1,5 +1,6 @@
 'use strict';
 const { userModel, userChallengesModel } = require('../models');
+const CONSTANTS = require('../utils/constants');
 const utils = require('../utils/utils');
 const { convertIdToMongooseId } = require(`../utils/utils`);
 let userService = {};
@@ -73,7 +74,6 @@ userService.createUser = async (payload) => {
  * function to fetch count of users from the system based on criteria.
  */
 userService.getCountOfUsers = async (criteria) => {
-
   return await userModel.countDocuments(criteria)
 }
 
@@ -98,62 +98,43 @@ userService.deleteUser = async (criteria) => {
   return await userModel.deleteOne(criteria);
 }
 
-userService.getUserDetails = async (criteria) => {
+userService.getUserStats = async (criteria) => {
   let query = [
-    { $match: { _id: convertIdToMongooseId(criteria) } },
+    { $match: criteria },
+    { $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
+    { $unwind: "$challengeData" },
+    // { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
+    // { $unwind: "$userData" },
     {
-      $lookup: {
-        from: "userchallenges",
-        let: { id: "$_id" },
-        pipeline: [
-          {
-            $match: {
-              $expr: { $and: [{ $eq: ['$userId', '$$id'] }] }
-            },
-          },
-        ],
-        as: "userData"
-      }
-    }, {
-      $unwind: "$userData"
-    },
-    {
-      $lookup: {
-        from: "challenges",
-        localField: "userData.challengeId",
-        foreignField: "_id",
-        as: "challengeData"
+      $addFields: {
+        distanceTravelledInMeter: { $cond: { if: { $eq: ["$challengeData.distanceType", CONSTANTS.DISTANCE_TYPE.KM] }, then: { $multiply: ["$challengeData.challengeName", 1000] }, else: "$challengeData.challengeName" } }
       }
     },
     {
-      $unwind: "$challengeData"
+      $group: {
+        _id: null,
+        totalCalories: {
+          $sum: "$caloriesBurned"
+        },
+        totalTime: {
+          $sum: "$timeTaken"
+        },
+        totalDistance: {
+          $sum: "$distanceTravelledInMeter"
+        }
+      }
     },
-
     {
       $project: {
-        "_id": 0,
-        "firstName": 1,
-        "lastName": 1,
-        "imagePath": 1,
-        "mobileNumber": 1,
-        "country": 1,
-        "state": 1,
-        "city": 1,
-        "zipCode": 1,
-        "gender": 1,
-        "dob": 1,
-        "userData": 1,
-        challengeName: {
-          $cond: { if: { $eq: ["$challengeData.distanceType", 2] }, then:{$multiply:["$challengeData.challengeName",1000]}, else: "$challengeData.challengeName" }
-        },
-        // totalDistance: { $sum: "$challengeData.challengeName", }     
-        // "userData.timeTaken": 1,
-        // "userData.caloriesBurned": 1,
-        // "userData.challengeData.challengeName": 1
+        totalCalories: 1,
+        totalTime: 1,
+        totalDistance: 1,
+        _id:0
+      }
     }
   }
   ]
-  return await userModel.aggregate(query);
+  return await userChallengesModel.aggregate(query);
 };
 
 module.exports = userService;

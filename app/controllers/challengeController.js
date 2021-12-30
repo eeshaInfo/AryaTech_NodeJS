@@ -8,6 +8,7 @@ const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetup
 const CONSTANTS = require('../utils/constants');
 const { CHALLENGE_ALREADY_EXISTS } = require('../utils/messages');
 
+const moment = require('moment-timezone');
 /**************************************************
  ***************** challenges controller ***************
  **************************************************/
@@ -192,15 +193,18 @@ challengeController.challengeListForUser = async (payload) => {
 challengeController.history = async (payload) => {
  
   let criteria = {
-    userId:payload.user._id
+    userId:payload.user._id,
+    ...(payload.completingDate && { completingDate: { 
+      $lte: new Date(moment(payload.completingDate).startOf('day')), 
+      $gte: new Date(moment(payload.completingDate).endOf('day'))
+    } }),
   }
 
   let challengeHistoryData = await SERVICES.challengeService.getHistory(criteria)
-
-  
+  let userStat = await SERVICES.userService.getUserStats(criteria)
   if (challengeHistoryData.length)
   {
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challengeHistoryData } }); 
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challengeHistoryData, userStat: userStat[0] } }); 
   }
 
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NO_CHALLENGES_COMPLETED, ERROR_TYPES.DATA_NOT_FOUND);
