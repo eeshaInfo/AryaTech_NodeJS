@@ -29,7 +29,7 @@ let routes = [
 
     {
         method: 'POST',
-        path: '/v1/payment/acceptPayment',
+        path: '/v1/payment/accept',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
