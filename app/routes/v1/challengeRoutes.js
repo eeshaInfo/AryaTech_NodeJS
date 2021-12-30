@@ -89,7 +89,7 @@ let routes = [
     },
     {
         method: 'GET',
-        path: '/v1/challenge/listForUser',
+        path: '/v1/challenge/list-user',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -124,7 +124,7 @@ let routes = [
     },
     {
         method: 'GET',
-        path: '/v1/challenge/getChallengeById',
+        path: '/v1/challenge/id',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -142,7 +142,7 @@ let routes = [
 
     {
         method: 'GET',
-        path: '/v1/challenge/getChallengeByIdForGuest',
+        path: '/v1/challenge/id/guest',
         joiSchemaForSwagger: {
             query: {
                 id: Joi.string().objectId().required().description('Challenge Id.')
@@ -179,7 +179,7 @@ let routes = [
 
     {
         method: 'GET',
-        path: '/v1/challenge/getUserByChallenges',
+        path: '/v1/challenge/id/user',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -201,7 +201,7 @@ let routes = [
     },
     {
         method: 'GET',
-        path: '/v1/challenge/getChallengeByUser',
+        path: '/v1/challenge/user/id',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -223,7 +223,7 @@ let routes = [
     },
     {
         method: 'GET',
-        path: '/v1/challenge/listForGuestUSer',
+        path: '/v1/challenge/list-guest',
         joiSchemaForSwagger: {
             group: 'Challenge',
             description: 'Route to get challenge list for GUEST',
