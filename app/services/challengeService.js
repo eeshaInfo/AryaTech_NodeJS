@@ -145,7 +145,7 @@ challengeService.getUserByChallenges = async (criteria) => {
 
     let query = criteria.searchKey ? [
         {
-            $match: { challengeId: convertIdToMongooseId(criteria.id) },
+            $match: { challengeId: convertIdToMongooseId(criteria.challengeId) },
         },
 
         {
@@ -243,7 +243,7 @@ challengeService.getChallengesByUser = async (payload, pagination) => {
     }
     let query = payload.searchKey ? [
         {
-            $match: { userId: payload.id },
+            $match: { userId: payload.challengeId },
         },
         {
             $addFields: {

@@ -74,9 +74,8 @@ userService.createUser = async (payload) => {
  * function to fetch count of users from the system based on criteria.
  */
 userService.getCountOfUsers = async (criteria) => {
-   
-   return await userModel.countDocuments( criteria)
-  }
+  return await userModel.countDocuments(criteria)
+}
 
 
 //   let data = await userModel.aggregate(query);
@@ -133,6 +132,7 @@ userService.getUserStats = async (criteria) => {
         _id:0
       }
     }
+  }
   ]
   return await userChallengesModel.aggregate(query);
 };
