@@ -131,7 +131,7 @@ challengeController.completedChallenge = async (payload) => {
   //let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
   //if (!challenge) {
   payload.userId = payload.user._id;
-  payload.challengeId = payload.id;
+  payload.challengeId = payload.challengeId;
   payload.completingDate = new Date();
   // complete a challenge for particular user
   await SERVICES.challengeService.createUserChallenge(payload);
