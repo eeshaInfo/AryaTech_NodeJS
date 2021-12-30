@@ -157,7 +157,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                id: Joi.string().objectId().required().description("User's Id"),
+                userId: Joi.string().objectId().required().description("User's Id"),
             },
             group: 'User',
             description: 'Route to get userDetails',

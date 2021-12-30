@@ -132,7 +132,6 @@ userService.getUserStats = async (criteria) => {
         _id:0
       }
     }
-  }
   ]
   return await userChallengesModel.aggregate(query);
 };

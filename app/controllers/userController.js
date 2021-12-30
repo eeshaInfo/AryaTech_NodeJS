@@ -268,16 +268,17 @@ userController.deleteUser = async (payload) => {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_DELETED_SUCCESSFULLY));
   }
 }
+
 userController.userDetails = async (payload) => {
   let criteria = {
-    userId: payload.id
+    userId: payload.userId
   } , userStatData= {
     totalCalories: 0,
     totalTime: 0,
     totalDistance: 0
   };
   let userStat = await SERVICES.userService.getUserStats(criteria, NORMAL_PROJECTION);
-  let userData = await SERVICES.userService.getUser({ _id: payload.id });
+  let userData = await SERVICES.userService.getUser({ _id: payload.userId });
  if(userStat[0]) {
    userStatData = userStat[0];
  }

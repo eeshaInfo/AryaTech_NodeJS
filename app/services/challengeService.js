@@ -201,7 +201,7 @@ challengeService.getUserByChallenges = async (criteria) => {
         //   {$sort:{"pagination.sortKey":pagination.sortDirection}},
     ] : [
         {
-            $match: { challengeId: convertIdToMongooseId(criteria.id) },
+            $match: { challengeId: convertIdToMongooseId(criteria.challengeId) },
         },
         { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
         { $unwind: "$userData" },
@@ -243,7 +243,7 @@ challengeService.getChallengesByUser = async (payload, pagination) => {
     }
     let query = payload.searchKey ? [
         {
-            $match: { userId: payload.challengeId },
+            $match: { userId: payload.userId },
         },
         {
             $addFields: {
@@ -309,7 +309,7 @@ challengeService.getChallengesByUser = async (payload, pagination) => {
         }
     ] : [
         {
-            $match: { userId: payload.id },
+            $match: { userId: payload.userId },
         },
         { $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
         { $unwind: "$challengeData" },
