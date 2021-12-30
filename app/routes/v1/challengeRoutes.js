@@ -15,10 +15,10 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body: {
-                challengeName: Joi.number().required().description('Challenge name.'),
-                challengeType: Joi.number().required().valid(...Object.values(CHALLENGES_TYPES)).description('Challenge type i.e 1=> PAID, 2=> UNPAID.'),
+                distance: Joi.number().required().description('Distance.'),
+                type: Joi.number().required().valid(...Object.values(CHALLENGES_TYPES)).description('Challenge type i.e 1=> PAID, 2=> UNPAID.'),
                 distanceType: Joi.number().required().valid(...Object.values(DISTANCE_TYPE)).description('Challenge distace  type.'),
-                amount: Joi.alternatives().conditional('challengeType', { is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1), otherwise: Joi.number().optional() }),
+                amount: Joi.alternatives().conditional('type', { is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1), otherwise: Joi.number().optional() }),
             },
             group: 'Challenge',
             description: 'Route to create a challenge.',
@@ -36,10 +36,10 @@ let routes = [
             },
             body: {
                 challengeId: Joi.string().objectId().required().description('Challenge Id.'),
-                challengeName: Joi.number().description('Challenge name.'),
-                challengeType: Joi.number().valid(...Object.values(CHALLENGES_TYPES)).description('Challenge type i.e 1=> PAID, 2=> UNPAID.'),
+                distance: Joi.number().description('Distance.'),
+                type: Joi.number().valid(...Object.values(CHALLENGES_TYPES)).description('Challenge type i.e 1=> PAID, 2=> UNPAID.'),
                 distanceType: Joi.number().valid(...Object.values(DISTANCE_TYPE)).description('Challenge distance type. i.e Meter or KM'),
-                amount: Joi.alternatives().conditional('challengeType', { is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1), otherwise: Joi.number().optional() })
+                amount: Joi.alternatives().conditional('type', { is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1), otherwise: Joi.number().optional() })
             },
             group: 'Challenge',
             description: 'Route to update a challenge.',

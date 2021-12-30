@@ -35,7 +35,7 @@ paymentService.getPaymentDetails = async (criteria) => {
         criteria.sortKey = `userData.${criteria.sortKey}`
         sort[criteria.sortKey] = criteria.sortDirection;
     }
-    else if (criteria.sortKey === "challengeName" || criteria.sortKey === "amount") {
+    else if (criteria.sortKey === "distance" || criteria.sortKey === "amount") {
         criteria.sortKey = `challengeData.${criteria.sortKey}`
         sort[criteria.sortKey] = criteria.sortDirection;
     }
@@ -71,7 +71,7 @@ paymentService.getPaymentDetails = async (criteria) => {
                     { "userData.firstName": { $regex: criteria.search, $options: 'i' } },
                     { "userData.mobileNumber": { $regex: criteria.search, $options: 'i' } },
                     { 'userData.lastName': { $regex: criteria.search, $options: 'i' } },
-                    { 'challengeData.challengeName': { $regex: criteria.search, $options: 'i' } },
+                    { 'challengeData.distance': { $regex: criteria.search, $options: 'i' } },
                     { 'transactionID': { $regex: criteria.search, $options: 'i' } },
                     // { 'status': { $regex: criteria.search, $options: 'i' } },
                     // { 'challengeDataAmount': { $regex: criteria.search, $options: 'i' } },
@@ -92,7 +92,7 @@ paymentService.getPaymentDetails = async (criteria) => {
                 "userData.imagePath": 1,
                 "userData.mobileNumber": 1,
                 "userData._id": 1,
-                "challengeData.challengeName": 1,
+                "challengeData.distance": 1,
                 "challengeData.amount": 1,
                 "challengeData.distanceType": 1
             }
@@ -135,7 +135,7 @@ paymentService.getPaymentDetails = async (criteria) => {
                 "userData.imagePath": 1,
                 "userData.mobileNumber": 1,
                 "userData._id": 1,
-                "challengeData.challengeName": 1,
+                "challengeData.distance": 1,
                 "challengeData.amount": 1,
                 "challengeData.distanceType": 1
             }

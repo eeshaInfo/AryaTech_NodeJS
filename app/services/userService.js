@@ -107,7 +107,7 @@ userService.getUserStats = async (criteria) => {
     // { $unwind: "$userData" },
     {
       $addFields: {
-        distanceTravelledInMeter: { $cond: { if: { $eq: ["$challengeData.distanceType", CONSTANTS.DISTANCE_TYPE.KM] }, then: { $multiply: ["$challengeData.challengeName", 1000] }, else: "$challengeData.challengeName" } }
+        distanceTravelledInMeter: { $cond: { if: { $eq: ["$challengeData.distanceType", CONSTANTS.DISTANCE_TYPE.KM] }, then: { $multiply: ["$challengeData.distance", 1000] }, else: "$challengeData.distance" } }
       }
     },
     {
