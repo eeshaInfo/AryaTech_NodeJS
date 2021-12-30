@@ -14,7 +14,7 @@ let routesAdmin = [
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
-            group: 'Admin',
+            group: 'Test',
             description: 'Route to user auth example',
             model: 'Admin_Auth'
         },
@@ -23,7 +23,7 @@ let routesAdmin = [
     },
     {
         method: 'POST',
-        path: '/v1/admin/forgotPassword',
+        path: '/v1/admin/forget-passsword',
         joiSchemaForSwagger: {
             body: {
                 email: Joi.string().email().lowercase().required().messages({ "string.email": "Whoops, invalid email. Please try again." }).description('User\'s email Id.'),
@@ -69,7 +69,7 @@ let routesAdmin = [
     },
     {
         method: 'GET',
-        path: '/v1/admin/getAdminProfile',
+        path: '/v1/admin/profile',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("Admin's JWT token.")
@@ -85,14 +85,14 @@ let routesAdmin = [
 
     {
         method: 'PUT',
-        path: '/v1/user/blockUnblockUser',
+        path: '/v1/user/block-unblock',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body: {
                 id: Joi.string().objectId().required().description('User Id.'),
-                status:Joi.number().required().description('User Status')
+                status: Joi.number().required().description('User Status')
             },
             group: 'Admin',
             description: 'Route to block/unblock user',

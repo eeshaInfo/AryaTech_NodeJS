@@ -10,7 +10,7 @@ let routes = [
         method: 'GET',
         path: '/v1/serverResponse/',
         joiSchemaForSwagger: {
-            group: 'User',
+            group: 'Test',
             description: 'Route to get server response (Is server working fine or not?).',
             model: 'SERVER'
         },
@@ -157,7 +157,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                id: Joi.string().objectId().required().description("User's Id"),
+                userId: Joi.string().objectId().required().description("User's Id"),
             },
             group: 'User',
             description: 'Route to get userDetails',
