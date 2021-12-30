@@ -21,7 +21,7 @@ let routes = [
                 amount: Joi.alternatives().conditional('type', { is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1), otherwise: Joi.number().optional() }),
             },
             group: 'Challenge',
-            description: 'Route to create a challenge.',
+            description: 'Route to create a challenge for admin',
             model: 'CreateChallenge'
         },
         auth: AVAILABLE_AUTHS.ADMIN,
@@ -42,7 +42,7 @@ let routes = [
                 amount: Joi.alternatives().conditional('type', { is: CONSTANTS.CHALLENGES_TYPES.PAID, then: Joi.number().min(1), otherwise: Joi.number().optional() })
             },
             group: 'Challenge',
-            description: 'Route to update a challenge.',
+            description: 'Route to update a challenge for admin',
             model: 'UpdateChallenge'
         },
         auth: AVAILABLE_AUTHS.ADMIN,
@@ -59,7 +59,7 @@ let routes = [
             challengeId: Joi.string().objectId().required().description('Challenge Id.'),
             },
             group: 'Challenge',
-            description: 'Route to delete a challenge.',
+            description: 'Route to delete a challenge for admin',
             model: 'DeleteChallenge'
         },
         auth: AVAILABLE_AUTHS.ADMIN,
@@ -81,7 +81,7 @@ let routes = [
                 sortDirection: Joi.number().default(-1).optional().description('sort direction'),
             },
             group: 'Challenge',
-            description: 'Route to get challenges',
+            description: 'Route to get challenges for admin/user',
             model: 'GetChallenges'
         },
         auth: AVAILABLE_AUTHS.COMMON,
@@ -89,7 +89,7 @@ let routes = [
     },
     {
         method: 'GET',
-        path: '/v1/challenge/list-user',
+        path: '/v1/user/challenge/list',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -110,13 +110,13 @@ let routes = [
     },
     {
         method: 'GET',
-        path: '/v1/challenge/dashBoardData',
+        path: '/v1/challenge/dashboardData',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             group: 'Challenge',
-            description: 'Route to get dashboard data',
+            description: 'Route to get dashboard data for admin',
             model: 'GetDashboardData'
         },
         auth: AVAILABLE_AUTHS.ADMIN,
@@ -124,7 +124,7 @@ let routes = [
     },
     {
         method: 'GET',
-        path: '/v1/challenge/id',
+        path: '/v1/challenge',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -133,7 +133,7 @@ let routes = [
                 challengeId: Joi.string().objectId().required().description('Challenge Id.')
             },
             group: 'Challenge',
-            description: 'Route to get Challenge by id',
+            description: 'Route to get Challenge by id for user/admin',
             model: 'GetChallengeById'
         },
         auth: AVAILABLE_AUTHS.COMMON,
@@ -142,7 +142,7 @@ let routes = [
 
     {
         method: 'GET',
-        path: '/v1/challenge/id/guest',
+        path: '/v1/guest/challenge',
         joiSchemaForSwagger: {
             query: {
                 challengeId: Joi.string().objectId().required().description('Challenge Id.')
@@ -168,9 +168,12 @@ let routes = [
                 caloriesBurned: Joi.number().required().description('Calories Burned in calories'),
                 avgSpeed: Joi.number().required().description(`Average Speed in km/h`),
                 maxSpeed: Joi.number().required().description('Maximum Speed in km/h'),
+                trackingPoints: Joi.array().items(
+                    Joi.object({ lat: Joi.number().description('latitude'), lng: Joi.number().description('longitude.') })).required().description('Tracking Point'),
+                
             },
             group: 'Challenge',
-            description: 'Route to Completed Challenge',
+            description: 'Route to Completed Challenge for user',
             model: 'CompletedChallenge'
         },
         handler: challengeController.completedChallenge,
@@ -179,7 +182,7 @@ let routes = [
 
     {
         method: 'GET',
-        path: '/v1/challenge/id/user',
+        path: '/v1/challenge/users',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -193,7 +196,7 @@ let routes = [
                 sortDirection: Joi.number().default(-1).optional().description('sort direction'),
             },
             group: 'Challenge',
-            description: 'Route to get users by challenges',
+            description: 'Route to get users by challenge for admin',
             model: 'GetUserByChallenges'
         },
         auth: AVAILABLE_AUTHS.ADMIN,
@@ -201,7 +204,7 @@ let routes = [
     },
     {
         method: 'GET',
-        path: '/v1/challenge/user/id',
+        path: '/v1/user/challenges',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -215,7 +218,7 @@ let routes = [
                 sortDirection: Joi.number().default(-1).optional().description('sort direction'),
             },
             group: 'Challenge',
-            description: 'Route to get challenge by user',
+            description: 'Route to get challenge by user for admin',
             model: 'GetChallengeByUser'
         },
         auth: AVAILABLE_AUTHS.ADMIN,
@@ -223,7 +226,7 @@ let routes = [
     },
     {
         method: 'GET',
-        path: '/v1/challenge/list-guest',
+        path: ' /v1/guest/challenge/list ',
         joiSchemaForSwagger: {
             group: 'Challenge',
             description: 'Route to get challenge list for GUEST',

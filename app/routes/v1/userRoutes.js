@@ -50,7 +50,7 @@ let routes = [
                 password: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().required(), otherwise: Joi.string().optional() }),
             },
             group: 'User',
-            description: 'Route to login a user.',
+            description: 'Route to login a user/admin.',
             model: 'Login'
         },
         handler: userController.loginUser
@@ -63,7 +63,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             group: 'User',
-            description: 'Route to logout user auth',
+            description: 'Route to logout user/admin auth',
             model: 'UserAuth'
         },
         auth: AVAILABLE_AUTHS.COMMON,
@@ -79,14 +79,14 @@ let routes = [
                 file: Joi.file({ name: "image", description: "Single image file" }),
             },
             group: "File",
-            description: "Route to upload profile image",
+            description: "Route to upload profile image for user",
             model: "UploadFiles",
         },
         handler: userController.uploadFile,
     },
     {
         method: 'PUT',
-        path: '/v1/user/updateProfile',
+        path: '/v1/user',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -104,7 +104,7 @@ let routes = [
                 imagePath: Joi.string().optional().description('Url of image.')
             },
             group: 'User',
-            description: 'Route to edit user profile.',
+            description: 'Route to edit user profile for user/admin',
             model: 'UpdateProfile'
         },
         auth: AVAILABLE_AUTHS.COMMON,
@@ -126,7 +126,7 @@ let routes = [
                 sortDirection: Joi.number().default(-1).optional().description('sort direction'),
             },
             group: 'User',
-            description: 'Route to get userList',
+            description: 'Route to get userList for admin',
             model: 'GetUserList'
         },
         auth: AVAILABLE_AUTHS.ADMIN,
@@ -143,10 +143,10 @@ let routes = [
                 _id: Joi.string().required().description('_id of user'),
             },
             group: 'User',
-            description: 'Route to delete user.',
+            description: 'Route to delete user for admin .',
             model: 'DeleteUser'
         },
-        auth: AVAILABLE_AUTHS.USER,
+        auth: AVAILABLE_AUTHS.ADMIN,
         handler: userController.deleteUser
     },
     {
@@ -160,7 +160,7 @@ let routes = [
                 userId: Joi.string().objectId().required().description("User's Id"),
             },
             group: 'User',
-            description: 'Route to get userDetails',
+            description: 'Route to get userDetails for admin',
             model: 'GetUserDetails'
         },
         auth: AVAILABLE_AUTHS.ADMIN,
