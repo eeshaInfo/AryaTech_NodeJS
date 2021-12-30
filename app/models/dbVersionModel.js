@@ -12,7 +12,7 @@ const dbVersionSchema = new Schema(
       unique: true,
     },
   },
-  { versionKey: false, timestamps: true }
+  { versionKey: false, timestamps: true, collection: 'dbVersions' }
 );
 
 module.exports = MONGOOSE.model("dbVersions", dbVersionSchema);

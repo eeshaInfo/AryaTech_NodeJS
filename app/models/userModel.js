@@ -25,7 +25,7 @@ const userSchema = new Schema(
         status: { type: Number },
         challengeCompleted: { type: Number ,default: 0 }
     },
-    { versionKey: false, timestamps: true }
+    { versionKey: false, timestamps: true,collection: 'users' }
 );
 
 module.exports = MONGOOSE.model("users", userSchema);
