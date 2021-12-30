@@ -15,17 +15,10 @@ const moment = require('moment-timezone');
 let challengeController = {};
 
 /**
- * function to check server.
- */
-challengeController.getServerResponse = async () => {
-  throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS);
-}
-
-/**
  * function to create a chaalenge.
  */
 challengeController.createChallenge = async (payload) => {
-  //check if challenge exists wit same name or not
+  //check if challenge exists with same name or not
   let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName, isDeleted: false });
   if (!isChallengeExists) {
     if (payload.challengeType === CHALLENGES_TYPES.UNPAID) {
@@ -60,17 +53,19 @@ challengeController.dashBoardData = async (payload) => {
  * function to update a challenge.
  */
 challengeController.updateChallenge = async (payload) => {
-  //check if challenge exist or not
-  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId });
+  //check if challengeId is valid  or not
+  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId, isDeleted: false });
+  if(!challenge) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  }
+  //check if challenge Name already exists or not
   let isChallengeExists = await SERVICES.challengeService.getChallenge({ challengeName: payload.challengeName, _id: { $ne: payload.challengeId } });
   if (!isChallengeExists) {
-    if (challenge) {
       if (payload.challengeType === CHALLENGES_TYPES.UNPAID) {
         payload.amount = 0;
       }
       await SERVICES.challengeService.update({ _id: payload.challengeId }, payload);
       return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_UPDATED_SUCCESSFULLY));
-    }
   }
 
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.DATA_NOT_FOUND);
@@ -80,9 +75,13 @@ challengeController.updateChallenge = async (payload) => {
  * Function to delete a challenge.
  */
 challengeController.deleteChallenge = async (payload) => {
-  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId });
+  // check if challenge id is valid or not
+  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId, isDeleted: false });
+  if(!challenge) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  }
   let paidChallenge = await SERVICES.paymentService.getPayment({ challengeId: payload.challengeId, status: { $ne: TRANSACTION_STATUS.REJECT } })
-
+  // challenge with completed field and payments cannot be deleted
   if ((challenge && !challenge.completed) && !paidChallenge) {
     await SERVICES.challengeService.update({ _id: payload.challengeId }, { isDeleted: true });
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_DELETED_SUCCESSFULLY));
@@ -118,8 +117,12 @@ challengeController.list = async (payload) => {
  * Function to fetch list of users completed task
  */
 challengeController.getChallengeById = async (payload) => {
-  // get challenge by particular challenge id.
-  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId });
+  // check if challenge id is valid or not
+  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId , isDeleted: false });
+  if(!challenge) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  }
+
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenge } });
 };
 
@@ -137,7 +140,7 @@ challengeController.completedChallenge = async (payload) => {
   await SERVICES.challengeService.createUserChallenge(payload);
   //let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
   // update completed counter for both user and challenges
-  await SERVICES.challengeService.update({ _id: payload.id }, { $inc: { completed: 1 } });
+  await SERVICES.challengeService.update({ _id: payload.challengeId }, { $inc: { completed: 1 } });
   await SERVICES.userService.updateUser({ _id: payload.user._id }, { $inc: { challengeCompleted: 1 } });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_COMPLETED_SUCCESSFULLY));
   //}
@@ -188,10 +191,7 @@ challengeController.challengeListForUser = async (payload) => {
 
 
 //challenge history for a particular user
-
-
 challengeController.history = async (payload) => {
- 
   let criteria = {
     userId:payload.user._id,
     ...(payload.completingDate && { completingDate: { 
@@ -199,8 +199,9 @@ challengeController.history = async (payload) => {
       $gte: new Date(moment(payload.completingDate).endOf('day'))
     } }),
   }
-
-  let challengeHistoryData = await SERVICES.challengeService.getHistory(criteria)
+  //get challenge history data
+  let challengeHistoryData = await SERVICES.challengeService.getHistory(criteria);
+  //get user stats
   let userStat = await SERVICES.userService.getUserStats(criteria)
   if (challengeHistoryData.length)
   {

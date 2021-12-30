@@ -91,6 +91,7 @@ paymentService.getPaymentDetails = async (criteria) => {
                 "userData.mobileNumber": 1,
                 "userData.imagePath": 1,
                 "userData.mobileNumber": 1,
+                "userData._id": 1,
                 "challengeData.challengeName": 1,
                 "challengeData.amount": 1,
                 "challengeData.distanceType": 1
@@ -133,6 +134,7 @@ paymentService.getPaymentDetails = async (criteria) => {
                 "userData.mobileNumber": 1,
                 "userData.imagePath": 1,
                 "userData.mobileNumber": 1,
+                "userData._id": 1,
                 "challengeData.challengeName": 1,
                 "challengeData.amount": 1,
                 "challengeData.distanceType": 1

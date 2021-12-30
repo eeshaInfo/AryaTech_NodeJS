@@ -194,8 +194,8 @@ challengeService.getUserByChallenges = async (criteria) => {
                 "userData.firstName": 1,
                 "userData.lastName": 1,
                 "userData.imagePath": 1,
-                "userData.mobileNumber": 1
-
+                "userData.mobileNumber": 1,
+                "userData._id": 1,
             }
         },
         //   {$sort:{"pagination.sortKey":pagination.sortDirection}},
@@ -219,7 +219,8 @@ challengeService.getUserByChallenges = async (criteria) => {
                 "userData.firstName": 1,
                 "userData.lastName": 1,
                 "userData.imagePath": 1,
-                "userData.mobileNumber": 1
+                "userData.mobileNumber": 1,
+                "userData._id": 1,
 
             }
         }
@@ -304,7 +305,9 @@ challengeService.getChallengesByUser = async (payload, pagination) => {
                 "maxSpeed": 1,
                 "completingDate": 1,
                 "challengeData.challengeName": 1,
-                "challengeData.distanceType": 1
+                "challengeData.distanceType": 1,
+                "challengeData._id": 1
+
             }
         }
     ] : [
@@ -325,7 +328,8 @@ challengeService.getChallengesByUser = async (payload, pagination) => {
                 "maxSpeed": 1,
                 "completingDate": 1,
                 "challengeData.challengeName": 1,
-                "challengeData.distanceType": 1
+                "challengeData.distanceType": 1,
+                "challengeData._id": 1
 
             }
         }
