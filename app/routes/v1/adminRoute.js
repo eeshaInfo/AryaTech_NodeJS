@@ -14,13 +14,8 @@ let routesAdmin = [
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
-<<<<<<< Updated upstream
             group: 'Test',
-            description: 'Route to user auth example',
-=======
-            group: 'Admin',
-            description: 'Route to user/Admin auth example',
->>>>>>> Stashed changes
+            description: 'Route to user/admin auth example',
             model: 'Admin_Auth'
         },
         auth: AVAILABLE_AUTHS.COMMON,
