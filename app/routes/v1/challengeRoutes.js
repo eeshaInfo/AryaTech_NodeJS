@@ -168,6 +168,9 @@ let routes = [
                 caloriesBurned: Joi.number().required().description('Calories Burned in calories'),
                 avgSpeed: Joi.number().required().description(`Average Speed in km/h`),
                 maxSpeed: Joi.number().required().description('Maximum Speed in km/h'),
+                trackingPoints: Joi.array().items(
+                    Joi.object({ lat: Joi.number().description('latitude'), lng: Joi.number().description('longitude.') })).required().description('Tracking Point'),
+                
             },
             group: 'Challenge',
             description: 'Route to Completed Challenge for user',
@@ -179,7 +182,7 @@ let routes = [
 
     {
         method: 'GET',
-        path: '/v1/users/challenge',
+        path: '/v1/challenge/users',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -201,7 +204,7 @@ let routes = [
     },
     {
         method: 'GET',
-        path: '/v1/challenges/user',
+        path: '/v1/user/challenges',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")

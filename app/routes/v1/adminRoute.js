@@ -85,7 +85,7 @@ let routesAdmin = [
 
     {
         method: 'PUT',
-        path: '/v1/user',
+        path: '/v1/user/blockStatus',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")

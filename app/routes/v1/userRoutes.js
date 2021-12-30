@@ -86,7 +86,7 @@ let routes = [
     },
     {
         method: 'PUT',
-        path: '/v1/user/update',
+        path: '/v1/user',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
