@@ -101,6 +101,38 @@ let routesAdmin = [
         auth: AVAILABLE_AUTHS.ADMIN,
         handler: userController.blockUser
     },
+
+    {
+        method: 'PUT',
+        path: '/v1/admin/wallet',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            body: {
+                "walletAddress": Joi.string().required().description("Wallet Address")
+            },
+            group: 'Admin',
+            description: 'Route to update wallet address for admin',
+            model: 'AdminUpdateWalletAddress'
+        },
+        auth: AVAILABLE_AUTHS.ADMIN,
+        handler: userController.updateWalletAddress
+    },
+    {
+        method: 'GET',
+        path: '/v1/admin/wallet',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            group: 'Admin',
+            description: 'Route to get wallet address ',
+            model: 'AdminGetWalletAddress'
+        },
+        auth: AVAILABLE_AUTHS.COMMON,
+        handler: userController.getWalletAddress
+    },
 ];
 
 module.exports = routesAdmin;

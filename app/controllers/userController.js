@@ -71,7 +71,7 @@ userController.loginUser = async (payload) => {
   else {
     let user = await SERVICES.userService.getUser({ mobileNumber: payload.mobileNumber }, { ...NORMAL_PROJECTION });
     //check if user is bocked or not
-    if(user && user.status==CONSTANTS.STATUS.BLOCK){
+    if (user && user.status == CONSTANTS.STATUS.BLOCK) {
       throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_ALREADY_BLOCKED, ERROR_TYPES.BAD_REQUEST);
     }
     if (user) {
@@ -91,7 +91,7 @@ userController.loginUser = async (payload) => {
  * Function to fetch user's profile from the system.
  */
 userController.getUserProfile = async (payload) => {
-//get user data 
+  //get user data 
   let user = await SERVICES.userService.getUser({ _id: payload.user._id }, { ...NORMAL_PROJECTION, password: 0 });
   if (user) {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: user });
@@ -131,7 +131,7 @@ userController.forgotPassword = async (payload) => {
 
 let createUserSession = async (criteriaForSession, userId, payload) => {
   payload.userId = userId;
-//create session for user when he login
+  //create session for user when he login
   await SERVICES.sessionService.updateSession(criteriaForSession, payload);
 };
 
@@ -143,7 +143,7 @@ userController.logout = async (payload) => {
   let criteria = {
     token: payload.user.token,
   };
-//remove session of user
+  //remove session of user
   await SERVICES.sessionService.removeSession(criteria);
 
   return HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_OUT_SUCCESSFULLY);
@@ -153,7 +153,7 @@ userController.logout = async (payload) => {
  * function to update user's profile
  */
 userController.updateProfile = async (payload) => {
-//update user's profile'
+  //update user's profile'
   let updatedUser = await SERVICES.userService.updateUser({ _id: payload.user._id }, payload, { ...NORMAL_PROJECTION, password: 0, passwordToken: 0 });
   if (updatedUser) {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_UPDATE_SUCCESSFULLY), { data: updatedUser });
@@ -184,7 +184,7 @@ userController.uploadFile = async (payload) => {
  */
 userController.resetPassword = async (payload) => {
   let decodedObj = decryptJwt(payload.token);
-//check wheather password is valid
+  //check wheather password is valid
   if (!decodedObj) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.UNAUTHORIZED, ERROR_TYPES.UNAUTHORIZED);
   }
@@ -206,7 +206,7 @@ userController.resetPassword = async (payload) => {
 
  */
 userController.updatePassword = async (payload) => {
-//check if old  password given by user is correct
+  //check if old  password given by user is correct
   if (!compareHash(payload.oldPassword, payload.user.password)) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.OLD_PASSWORD_INVALID, ERROR_TYPES.BAD_REQUEST);
   }
@@ -221,7 +221,7 @@ userController.updatePassword = async (payload) => {
  * Function to get admin data.
  */
 userController.getAdminProfile = async (payload) => {
-//get user profile
+  //get user profile
   let admin = await SERVICES.userService.getUser({ _id: payload.user._id }, { ...NORMAL_PROJECTION, password: 0, challengeCompleted: 0 })
   if (admin) {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: admin });
@@ -237,7 +237,7 @@ userController.list = async (payload) => {
   let criteria = {
     $and: [{ $or: [{ firstName: regex }, { lastName: regex }, { mobileNumber: regex }] }, { userType: CONSTANTS.USER_TYPES.USER }]
   }
-//get user list with search and sort
+  //get user list with search and sort
   let userList = await SERVICES.userService.getUsersList(criteria, payload, { skip: payload.skip, limit: payload.limit })
   //count users in database
   let userCount = await SERVICES.userService.getCountOfUsers(criteria);
@@ -255,15 +255,15 @@ userController.blockUser = async (payload) => {
     _id: payload.id,
     userType: CONSTANTS.USER_TYPES.USER
   }
-//get user from database 
+  //get user from database 
   let user = await SERVICES.userService.getUser(criteria, NORMAL_PROJECTION);
-//if user is present then update its status
+  //if user is present then update its status
   if (user) {
-//check if user is already active or already blocked
+    //check if user is already active or already blocked
     if (user.status === payload.status) {
       throw HELPERS.responseHelper.createErrorResponse(`${payload.status === CONSTANTS.STATUS.BLOCK ? MESSAGES.USER_ALREADY_BLOCKED : MESSAGES.USER_ALREADY_ACTIVE}`, ERROR_TYPES.BAD_REQUEST);
     }
-//if not then update the status of user to block/unblock
+    //if not then update the status of user to block/unblock
     await SERVICES.userService.updateUser(criteria, { status: payload.status })
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(`${payload.status === CONSTANTS.STATUS.BLOCK ? MESSAGES.USER_BLOCKED_SUCCESSFULLY : MESSAGES.USER_UNBLOCKED_SUCCESSFULLY}`), { user })
   }
@@ -272,9 +272,9 @@ userController.blockUser = async (payload) => {
 
 
 userController.deleteUser = async (payload) => {
-//get data of user
+  //get data of user
   let data = await SERVICES.userService.deleteUser({ _id: payload._id });
-//if present then delete the user
+  //if present then delete the user
   if (data) {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_DELETED_SUCCESSFULLY));
   }
@@ -283,20 +283,37 @@ userController.deleteUser = async (payload) => {
 userController.userDetails = async (payload) => {
   let criteria = {
     userId: payload.userId
-  } , userStatData= {
+  }, userStatData = {
     totalCalories: 0,
     totalTime: 0,
     totalDistance: 0
   };
-//get challenge details completed by a user
+  //get challenge details completed by a user
   let userStat = await SERVICES.userService.getUserStats(criteria, NORMAL_PROJECTION);
-//get user data
+  //get user data
   let userData = await SERVICES.userService.getUser({ _id: payload.userId });
- if(userStat[0]) {
-   userStatData = userStat[0];
- }
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { user: {...userStatData, ...userData} })
+  if (userStat[0]) {
+    userStatData = userStat[0];
+  }
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { user: { ...userStatData, ...userData } })
 }
 
+userController.updateWalletAddress = async (payload) => {
+
+  let address = await SERVICES.userService.updateAddress(payload.walletAddress)
+  if (!address) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  }
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY))
+}
+
+userController.getWalletAddress = async () => {
+
+  let address = await SERVICES.userService.getAddress()
+  if (!address) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  }
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { address })
+}
 /* export userController */
 module.exports = userController;

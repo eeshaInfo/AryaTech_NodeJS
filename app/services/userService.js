@@ -1,5 +1,5 @@
 'use strict';
-const { userModel, userChallengesModel } = require('../models');
+const { userModel, userChallengesModel,walletAddressModel } = require('../models');
 const CONSTANTS = require('../utils/constants');
 const utils = require('../utils/utils');
 const { convertIdToMongooseId } = require(`../utils/utils`);
@@ -135,5 +135,12 @@ userService.getUserStats = async (criteria) => {
   ]
   return await userChallengesModel.aggregate(query);
 };
+
+userService.updateAddress = async (criteria) => {
+return await walletAddressModel.findOneAndUpdate({},{walletAddress:criteria},{new:true}).lean()
+}
+userService. getAddress=async () => {
+return await walletAddressModel.findOne({}).lean()
+}
 
 module.exports = userService;
