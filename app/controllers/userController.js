@@ -71,7 +71,7 @@ userController.loginUser = async (payload) => {
   else {
     let user = await SERVICES.userService.getUser({ mobileNumber: payload.mobileNumber }, { ...NORMAL_PROJECTION });
     //check if user is bocked or not
-    if(user && user.status==CONSTANTS.STATUS.BLOCK){
+    if (user && user.status == CONSTANTS.STATUS.BLOCK) {
       throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_ALREADY_BLOCKED, ERROR_TYPES.BAD_REQUEST);
     }
     if (user) {
@@ -283,7 +283,7 @@ userController.deleteUser = async (payload) => {
 userController.userDetails = async (payload) => {
   let criteria = {
     userId: payload.userId
-  } , userStatData= {
+  }, userStatData = {
     totalCalories: 0,
     totalTime: 0,
     totalDistance: 0
@@ -292,7 +292,7 @@ userController.userDetails = async (payload) => {
   let userStat = await SERVICES.userService.getUserStats(criteria, NORMAL_PROJECTION);
   //get user data
   let userData = await SERVICES.userService.getUser({ _id: payload.userId });
-  if(userStat[0]) {
+  if (userStat[0]) {
     userStatData = userStat[0];
   }
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { user: { ...userStatData, ...userData } })
@@ -310,7 +310,7 @@ userController.updateWalletAddress = async (payload) => {
 userController.getWalletAddress = async () => {
 
   let address = await SERVICES.userService.getAddress()
-  if (!address.length) {
+  if (!address) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
   }
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { address })

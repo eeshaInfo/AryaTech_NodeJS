@@ -139,8 +139,8 @@ userService.getUserStats = async (criteria) => {
 userService.updateAddress = async (criteria) => {
 return await walletAddressModel.findOneAndUpdate({},{walletAddress:criteria},{new:true}).lean()
 }
-userService.getAddress=async () => {
-return await walletAddressModel.find({}).lean()
+userService. getAddress=async () => {
+return await walletAddressModel.findOne({}).lean()
 }
 
 module.exports = userService;
