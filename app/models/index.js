@@ -11,4 +11,5 @@ module.exports = {
   challengeModel:require(`../models/challengeModel`),
   userChallengesModel:require(`../models/userChallengesModel`),
   paymentModel:require(`./paymentModel`),
+  walletAddressModel:require(`../models/walletAddressModel`)
 };
