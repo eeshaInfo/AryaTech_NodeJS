@@ -71,7 +71,7 @@ userController.loginUser = async (payload) => {
   else {
     let user = await SERVICES.userService.getUser({ mobileNumber: payload.mobileNumber }, { ...NORMAL_PROJECTION });
     //check if user is bocked or not
-    if(user.status==CONSTANTS.STATUS.BLOCK){
+    if(user && user.status==CONSTANTS.STATUS.BLOCK){
       throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_ALREADY_BLOCKED, ERROR_TYPES.BAD_REQUEST);
     }
     if (user) {
