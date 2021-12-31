@@ -137,7 +137,7 @@ userService.getUserStats = async (criteria) => {
 };
 
 userService.updateAddress = async (criteria) => {
-return await walletAddressModel.findOneAndUpdate({},{walletAddress:criteria},{new:true}).lean()
+return await walletAddressModel.findOneAndUpdate({},{walletAddress:criteria},{upsert: true, new:true}).lean()
 }
 userService. getAddress=async () => {
 return await walletAddressModel.findOne({}).lean()

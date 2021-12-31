@@ -404,4 +404,74 @@ challengeService.getHistory = async (criteria) => {
     ]
     return await userChallengesModel.aggregate(query);
 };
+
+/**
+ * function to get leaderboard data
+ */
+ challengeService.getLeaderboardList = async (criteria, payload , userCriteria = {})  => {
+     console.log(payload);
+     let query = [
+         {
+             $match: criteria
+         },
+         {
+             $group: {
+                 _id: '$userId',
+                 'timeTaken': {$max: '$timeTaken'},
+             }
+         },
+         {
+             $sort: {timeTaken: 1}
+         },
+         {
+            $lookup: {
+                from: 'users',
+                let: { userId: '$_id' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ['$$userId', '$_id'] },
+                                    userCriteria
+                                ]
+                            },
+                        },
+                    },
+                ],
+                as: "userData"
+            }
+        },
+        //{ $unwind:  { "path": "$userData", "includeArrayIndex": "userData.rank" }},
+        {
+            $setWindowFields: {
+               //partitionBy: "$state",
+               sortBy: { timeTaken: 1 },
+               output: {
+                  rankQuantityForState: {
+                     $denseRank: {}
+                  }
+               }
+            }
+         },
+       // {$addFields: {order: {$cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 }}}},
+       // {$sort: { order: 1 } },
+        // {
+        //     $project: {
+        //         timeTaken: 1,
+        //         "userData.firstName": 1,
+        //         "userData.lastName": 1,
+        //         "userData.imagePath": 1,
+        //         "userData.mobileNumber": 1,
+        //         "userData.country": 1,
+        //         "userData.state": 1,
+        //         "userData.city": 1,
+
+
+        //     }
+        // }
+     ]
+    return await userChallengesModel.aggregate(query);
+};
+
 module.exports = challengeService;

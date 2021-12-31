@@ -2,7 +2,7 @@
 const path = require('path');
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
-const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES, CHALLENGES_TYPES, TRANSACTION_STATUS } = require('../utils/constants');
+const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES, CHALLENGES_TYPES, TRANSACTION_STATUS, LEADERBOARD_CATEGORY } = require('../utils/constants');
 const SERVICES = require('../services');
 const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
@@ -131,15 +131,10 @@ challengeController.getChallengeById = async (payload) => {
 */
 
 challengeController.completedChallenge = async (payload) => {
-  //let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
-  //if (!challenge) {
   payload.userId = payload.user._id;
-  payload.challengeId = payload.challengeId;
   payload.completingDate = new Date();
   // complete a challenge for particular user
   await SERVICES.challengeService.createUserChallenge(payload);
-  //let challenge = await SERVICES.challengeService.getUserChallengeBasedOnCriteria({ userId: payload.user._id, challengeId: payload.id });
-  // update completed counter for both user and challenges
   await SERVICES.challengeService.update({ _id: payload.challengeId }, { $inc: { completedByUser: 1 } });
   await SERVICES.userService.updateUser({ _id: payload.user._id }, { $inc: { challengeCompleted: 1 } });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_COMPLETED_SUCCESSFULLY));
@@ -212,6 +207,27 @@ challengeController.history = async (payload) => {
   
 
 }
+
+
+/**
+* Function to fetch leaderboard list
+*/
+challengeController.leaderboardList = async (payload) => {
+    //...(payload.limit && { limit: payload.limit })
+     let criteria = {
+       challengeId: payload.challengeId
+     }
+     let userCriteria = {
+     ...(payload.leaderboardCategory == LEADERBOARD_CATEGORY.COUNTRY && { $eq: [payload.user.country, '$country']} ),
+     ...(payload.leaderboardCategory == LEADERBOARD_CATEGORY.FRIEND) && { $in: ['$mobileNumber',payload.user.contacts]}
+      }
+   console.log(userCriteria);
+     let dashboardData = await SERVICES.challengeService.getLeaderboardList(criteria, payload , userCriteria);
+     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { dashboardData } });
+     
+   
+  
+};
 
 /* export challengeController */
 module.exports = challengeController;

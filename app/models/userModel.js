@@ -23,7 +23,8 @@ const userSchema = new Schema(
         imagePath: { type: String },
         password: { type: String },
         status: { type: Number },
-        challengeCompleted: { type: Number ,default: 0 }
+        challengeCompleted: { type: Number ,default: 0 },
+        contacts: { type: Array }  // array of user contacts mobile number
     },
     { versionKey: false, timestamps: true,collection: 'users' }
 );
