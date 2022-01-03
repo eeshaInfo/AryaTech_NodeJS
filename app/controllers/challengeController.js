@@ -190,10 +190,11 @@ challengeController.history = async (payload) => {
   let criteria = {
     userId:payload.user._id,
     ...(payload.completingDate && { completingDate: { 
-      $lte: new Date(moment(payload.completingDate).startOf('day')), 
-      $gte: new Date(moment(payload.completingDate).endOf('day'))
+      $gte: new Date(moment(payload.completingDate).startOf('day')), 
+      $lte: new Date(moment(payload.completingDate).endOf('day'))
     } }),
   }
+
   //get challenge history data
   let challengeHistoryData = await SERVICES.challengeService.getHistory(criteria);
   //get user stats
