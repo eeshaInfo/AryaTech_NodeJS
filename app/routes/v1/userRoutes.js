@@ -167,8 +167,25 @@ let routes = [
         },
         auth: AVAILABLE_AUTHS.ADMIN,
         handler: userController.userDetails
+    },
+    {
+        method: 'POST',
+        path: '/v1/user/contacts',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            body: {
+                contacts: Joi.array().items(Joi.number()).required().description("User's contact list"),
+            },
+            group: 'User',
+            description: 'Route to post user contacts ',
+            model: 'GetUserContacts'
+        },
+        auth: AVAILABLE_AUTHS.USER,
+        handler: userController.userContacts
     }
-   
+
 ]
 
 module.exports = routes;

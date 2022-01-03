@@ -120,7 +120,7 @@ challengeService.listChallenge = async (criteria, pagination) => {
  * function to  get completed challenge based on criteria
  */
 challengeService.listUserChallenge = async (criteria) => {
-    return await userChallengesModel.find(criteria).lean();
+    return await userChallengesModel.find(criteria).sort({updatedAt: -1}).lean();
 };
 
 /**
@@ -390,17 +390,17 @@ challengeService.getHistory = async (criteria) => {
             $match: criteria,
         },
         { $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
-       { $unwind: "$challengeData" },
+        { $unwind: "$challengeData" },
         {
             $group: {
-              _id: '$challengeId',
-              challengeCompletedCount: {
-                $sum: 1
-              },
-              "distance": { "$first": "$challengeData.distance" },
-              "distanceType": { "$first": "$challengeData.distanceType" }
+                _id: '$challengeId',
+                challengeCompletedCount: {
+                    $sum: 1
+                },
+                "distance": { "$first": "$challengeData.distance" },
+                "distanceType": { "$first": "$challengeData.distanceType" }
             }
-          },
+        },
     ]
     return await userChallengesModel.aggregate(query);
 };
@@ -408,22 +408,22 @@ challengeService.getHistory = async (criteria) => {
 /**
  * function to get leaderboard data
  */
- challengeService.getLeaderboardList = async (criteria, payload , userCriteria = {})  => {
-     console.log(payload);
-     let query = [
-         {
-             $match: criteria
-         },
-         {
-             $group: {
-                 _id: '$userId',
-                 'timeTaken': {$max: '$timeTaken'},
-             }
-         },
-         {
-             $sort: {timeTaken: 1}
-         },
-         {
+challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {}) => {
+    console.log(payload);
+    let query = [
+        {
+            $match: criteria
+        },
+        {
+            $group: {
+                _id: '$userId',
+                'timeTaken': { $max: '$timeTaken' },
+            }
+        },
+        {
+            $sort: { timeTaken: 1 }
+        },
+        {
             $lookup: {
                 from: 'users',
                 let: { userId: '$_id' },
@@ -445,17 +445,17 @@ challengeService.getHistory = async (criteria) => {
         //{ $unwind:  { "path": "$userData", "includeArrayIndex": "userData.rank" }},
         {
             $setWindowFields: {
-               //partitionBy: "$state",
-               sortBy: { timeTaken: 1 },
-               output: {
-                  rankQuantityForState: {
-                     $denseRank: {}
-                  }
-               }
+                //partitionBy: "$state",
+                sortBy: { timeTaken: 1 },
+                output: {
+                    rankQuantityForState: {
+                        $denseRank: {}
+                    }
+                }
             }
-         },
-       // {$addFields: {order: {$cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 }}}},
-       // {$sort: { order: 1 } },
+        },
+        // {$addFields: {order: {$cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 }}}},
+        // {$sort: { order: 1 } },
         // {
         //     $project: {
         //         timeTaken: 1,
@@ -470,7 +470,7 @@ challengeService.getHistory = async (criteria) => {
 
         //     }
         // }
-     ]
+    ]
     return await userChallengesModel.aggregate(query);
 };
 

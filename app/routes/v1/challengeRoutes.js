@@ -56,7 +56,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-            challengeId: Joi.string().objectId().required().description('Challenge Id.'),
+                challengeId: Joi.string().objectId().required().description('Challenge Id.'),
             },
             group: 'Challenge',
             description: 'Route to delete a challenge for admin',
@@ -130,7 +130,9 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                challengeId: Joi.string().objectId().required().description('Challenge Id.')
+                challengeId: Joi.string().objectId().required().description('Challenge Id.'),
+                isRecentDataKey: Joi.boolean().optional().default(false).description('Recent data key'),
+                userId: Joi.string().objectId().optional().description('User Id.'),
             },
             group: 'Challenge',
             description: 'Route to get Challenge by id for user/admin',
@@ -170,7 +172,7 @@ let routes = [
                 maxSpeed: Joi.number().required().description('Maximum Speed in km/h'),
                 trackingPoints: Joi.array().items(
                     Joi.object({ lat: Joi.number().description('latitude'), lng: Joi.number().description('longitude.') })).required().description('Tracking Point'),
-                
+
             },
             group: 'Challenge',
             description: 'Route to Completed Challenge for user',

@@ -38,6 +38,7 @@ module.exports = {
     DATA_UPDATED_SUCCESSFULLY: 'Data Updated Successfully',
     DATA_FETCHED_SUCCESSFULLY: 'User Data Fetched Successfully',
     USER_UNBLOCKED_SUCCESSFULLY: 'User Unblocked Successfully',
+    CONTACTS_ADDED_SUCCESSFULLY: 'User contacts added successfully',
     //challenges
     CHALLENGE_CREATED_SUCCESSFULLY: 'Challenge created successfully.',
     CHALLENGE_UPDATED_SUCCESSFULLY: 'Challenge Updated successfully.',
