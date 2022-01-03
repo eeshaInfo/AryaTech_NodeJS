@@ -33,11 +33,11 @@ module.exports = {
     USER_BLOCKED_SUCCESSFULLY: 'User blocked Successfully',
     USER_ALREADY_BLOCKED: 'User Already Blocked',
     USER_ACTIVE_SUCCESSFULLY: 'User Active Successfully',
-    USER_ALREADY_ACTIVE:  'User Already Active',
-    USER_DELETED_SUCCESSFULLY:'User deleted successfully',
-    DATA_UPDATED_SUCCESSFULLY:'User Data Updated Successfully',
-    DATA_FETCHED_SUCCESSFULLY:'User Data Fetched Successfully',
-    USER_UNBLOCKED_SUCCESSFULLY:'User Unblocked Successfully',
+    USER_ALREADY_ACTIVE: 'User Already Active',
+    USER_DELETED_SUCCESSFULLY: 'User deleted successfully',
+    DATA_UPDATED_SUCCESSFULLY: 'Data Updated Successfully',
+    DATA_FETCHED_SUCCESSFULLY: 'User Data Fetched Successfully',
+    USER_UNBLOCKED_SUCCESSFULLY: 'User Unblocked Successfully',
     //challenges
     CHALLENGE_CREATED_SUCCESSFULLY: 'Challenge created successfully.',
     CHALLENGE_UPDATED_SUCCESSFULLY: 'Challenge Updated successfully.',
@@ -49,7 +49,7 @@ module.exports = {
     CHALLENGE_ALREADY_COMPLETED: 'Challenge already completed.',
     CHALLENGE_CANNOT_DELETED: 'Challenge cannot be deleted',
     CHALLENGE_NOT_FOUND: 'Challenge not found',
-    NO_CHALLENGES_COMPLETED:'No Challenges Completed',
+    NO_CHALLENGES_COMPLETED: 'No Challenges Completed',
     //Payment
     PAYMENT_SUCCESSFULLY_COMPLETED: 'Payment Successfully Completed',
     PAYMENT_FOUND: 'Payment Found',
@@ -59,6 +59,6 @@ module.exports = {
     PAYMENT_LIST_FETCHED_SUCCESSFULLY: 'Payment List Fetched successfully',
     INVALID_CHALLENGE_TYPE: 'Challenge is invalid',
     PAYMENT_ALREADY_COMPLETED: 'Payment already completed',
-    PAYMENT_ALREADY_APPROVED:'Payment already approved',
-    PAYMENT_ALREADY_REJECTED:'Payment already rejected'
+    PAYMENT_ALREADY_APPROVED: 'Payment already approved',
+    PAYMENT_ALREADY_REJECTED: 'Payment already rejected'
 };
