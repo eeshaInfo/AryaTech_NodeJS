@@ -52,10 +52,14 @@ userService.getUsersList = async (criteria, payload, pagination) => {
       $project: {
         "firstName": 1,
         "lastName": 1,
+        "gender": 1,
+        "country": 1,
+        "state": 1,
+        "city":1,
         "imagePath": 1,
         "mobileNumber": 1,
         'challengeCompleted': 1,
-        "status": 1
+        "status": 1,
       }
     },
   ]
