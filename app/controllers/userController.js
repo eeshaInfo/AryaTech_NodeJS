@@ -33,7 +33,9 @@ userController.registerNewUser = async (payload) => {
       date: Date.now()
     };
     let token = await encryptJwt(dataForJwt);
-    await SERVICES.sessionService.updateSession({ userId: newRegisteredUser._id }, { token });
+    let data = { userId: newRegisteredUser._id, token: token, deviceToken: payload.deviceToken }
+        // create session for particular user
+    await SERVICES.sessionService.createSession(data);
 
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser, token });
   }
@@ -58,7 +60,7 @@ userController.loginUser = async (payload) => {
         delete user.password;
         let token = await encryptJwt(dataForJwt);
         let data = { userId: user._id, token: token }
-
+        // create session for particular user
         await SERVICES.sessionService.createSession(data);
 
         return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
@@ -80,7 +82,8 @@ userController.loginUser = async (payload) => {
         date: Date.now()
       };
       let token = await encryptJwt(dataForJwt);
-      await SERVICES.sessionService.updateSession({ userId: user._id }, { token });
+      let data = { userId: user._id, token, deviceToken: payload.deviceToken }
+      await SERVICES.sessionService.createSession(data);
       return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user, isNewUser: false });
     }
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_DOESNOT_EXIST), { isNewUser: true });

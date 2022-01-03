@@ -31,7 +31,8 @@ let routes = [
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
                 gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3 for other.`),
                 dob: Joi.date().max(new Date()).description('User date of birth.'),
-                imagePath: Joi.string().default("").allow('').optional().description('Url of image.')
+                imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
+                deviceToken: Joi.string().description('device token'),
             },
             group: 'User',
             description: 'Route to register a user.',
@@ -48,6 +49,7 @@ let routes = [
                 mobileNumber: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().optional(), otherwise: Joi.string().required() }),
                 email: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().required(), otherwise: Joi.string().optional() }),
                 password: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().required(), otherwise: Joi.string().optional() }),
+                deviceToken: Joi.alternatives().conditional('isAdminRole', { is: false, then: Joi.string().required(), otherwise: Joi.string().optional() }),
             },
             group: 'User',
             description: 'Route to login a user/admin.',

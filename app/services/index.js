@@ -11,5 +11,6 @@ module.exports = {
     sessionService: require('./sessionService'),
     challengeService: require('./challengeService'),
     fileUploadService: require('./fileUploadService'),
-    paymentService: require('./paymentService')
+    paymentService: require('./paymentService'),
+    fcmNotificationService: require('./fcmNotificationService')
 };
