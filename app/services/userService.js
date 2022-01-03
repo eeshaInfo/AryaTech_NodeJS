@@ -97,7 +97,9 @@ userService.deleteUser = async (criteria) => {
   await userChallengesModel.deleteMany({ userId: criteria._id });
   return await userModel.deleteOne(criteria);
 }
-
+/**
+ * Function to get challenge information completed by user 
+ */
 userService.getUserStats = async (criteria) => {
   let query = [
     { $match: criteria },
@@ -136,9 +138,16 @@ userService.getUserStats = async (criteria) => {
   return await userChallengesModel.aggregate(query);
 };
 
+/**
+ * Function to update admin wallet address
+ */
 userService.updateAddress = async (criteria) => {
 return await walletAddressModel.findOneAndUpdate({},{walletAddress:criteria},{upsert: true, new:true}).lean()
 }
+
+/**
+ * Function to get  wallet address
+ */
 userService. getAddress=async () => {
 return await walletAddressModel.findOne({}).lean()
 }

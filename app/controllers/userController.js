@@ -229,9 +229,9 @@ userController.getAdminProfile = async (payload) => {
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
 };
 
-
-
-
+/**
+ * Function to get user data 
+ */
 userController.list = async (payload) => {
   let regex = new RegExp(payload.searchKey, 'i');
   let criteria = {
@@ -248,7 +248,9 @@ userController.list = async (payload) => {
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { data })
 }
 
-
+/**
+ * Function to block-unblock user.
+ */
 
 userController.blockUser = async (payload) => {
   let criteria = {
@@ -270,7 +272,9 @@ userController.blockUser = async (payload) => {
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
 }
 
-
+/**
+ * Function to delete user
+ */
 userController.deleteUser = async (payload) => {
   //get data of user
   let data = await SERVICES.userService.deleteUser({ _id: payload._id });
@@ -298,8 +302,11 @@ userController.userDetails = async (payload) => {
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { user: { ...userStatData, ...userData } })
 }
 
+/**
+ * Function to update wallet address.
+ */
 userController.updateWalletAddress = async (payload) => {
-
+  //find and update user address 
   let address = await SERVICES.userService.updateAddress(payload.walletAddress)
   if (!address) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
@@ -307,7 +314,11 @@ userController.updateWalletAddress = async (payload) => {
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY))
 }
 
+/**
+ * Function to get wallet address.
+ */
 userController.getWalletAddress = async () => {
+  //get user wallet address 
 
   let address = await SERVICES.userService.getAddress()
   if (!address) {
