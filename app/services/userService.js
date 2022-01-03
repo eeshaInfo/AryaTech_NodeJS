@@ -142,7 +142,7 @@ userService.getUserStats = async (criteria) => {
  * Function to update admin wallet address
  */
 userService.updateAddress = async (criteria) => {
-return await walletAddressModel.findOneAndUpdate({},{walletAddress:criteria},{upsert:true}).lean()
+return await walletAddressModel.findOneAndUpdate({},{walletAddress:criteria},{upsert: true, new:true}).lean()
 }
 
 /**
