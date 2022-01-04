@@ -228,7 +228,7 @@ let routes = [
     },
     {
         method: 'GET',
-        path: ' /v1/guest/challenge/list ',
+        path: '/v1/guest/challenge/list',
         joiSchemaForSwagger: {
             group: 'Challenge',
             description: 'Route to get challenge list for GUEST',
