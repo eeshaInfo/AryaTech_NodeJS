@@ -131,7 +131,6 @@ let routes = [
             },
             query: {
                 challengeId: Joi.string().objectId().required().description('Challenge Id.'),
-                isRecentDataKey: Joi.boolean().optional().default(false).description('Recent data key'),
                 userId: Joi.string().objectId().optional().description('User Id.'),
             },
             group: 'Challenge',
@@ -228,7 +227,7 @@ let routes = [
     },
     {
         method: 'GET',
-        path: ' /v1/guest/challenge/list ',
+        path: '/v1/guest/challenge/list',
         joiSchemaForSwagger: {
             group: 'Challenge',
             description: 'Route to get challenge list for GUEST',
