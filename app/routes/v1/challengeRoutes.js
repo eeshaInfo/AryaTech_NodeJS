@@ -245,7 +245,8 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body: {
-                completingDate:Joi.date().optional().description(`Date for challenge History`)
+                completingDate:Joi.date().optional().description(`Date for challenge History`),
+                userId: Joi.string().objectId().optional().description('User Id.'),
             },
             group: 'Challenge',
             description: 'Route to get challenge history',
