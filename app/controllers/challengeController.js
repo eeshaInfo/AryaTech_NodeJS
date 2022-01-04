@@ -124,6 +124,7 @@ challengeController.getChallengeById = async (payload) => {
   }
 
   challenge.completedData = await SERVICES.challengeService.listUserChallenge({ challengeId: payload.challengeId, ...(payload.userId ? { userId: payload.userId } : {userId: payload.user._id}), });
+  challenge.completedData = await SERVICES.challengeService.listUserChallenge({ challengeId: payload.challengeId, ...(payload.userId ? { userId: payload.userId } : {userId: payload.user._id}) });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenge } });
 };
 
@@ -189,7 +190,7 @@ challengeController.challengeListForUser = async (payload) => {
 //challenge history for a particular user
 challengeController.history = async (payload) => {
   let criteria = {
-    userId:payload.user._id,
+    ...(payload.userId ? { userId: payload.userId } : {userId: payload.user._id}),
     ...(payload.completingDate && { completingDate: { 
       $gte: new Date(moment(payload.completingDate).startOf('day')), 
       $lte: new Date(moment(payload.completingDate).endOf('day'))
