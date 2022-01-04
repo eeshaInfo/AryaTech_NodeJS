@@ -131,7 +131,6 @@ let routes = [
             },
             query: {
                 challengeId: Joi.string().objectId().required().description('Challenge Id.'),
-                isRecentDataKey: Joi.boolean().optional().default(false).description('Recent data key'),
                 userId: Joi.string().objectId().optional().description('User Id.'),
             },
             group: 'Challenge',

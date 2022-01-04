@@ -117,22 +117,13 @@ challengeController.list = async (payload) => {
  * Function to fetch list of users completed task
  */
 challengeController.getChallengeById = async (payload) => {
-  let  challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId, isDeleted: false });
- challenge.completedChallenge
-  if (payload.user.userType == CONSTANTS.USER_TYPES.USER) {
-    if (!payload.userId) {
-      challenge.completedChallenge = await SERVICES.challengeService.listUserChallenge({ challengeId: payload.challengeId, userId: payload.user._id });
-      if (payload.isRecentDataKey == true) {
-        challenge.completedChallenge = challenge.completedChallenge[0]
-      }
-    }
-    else {
-      challenge.completedChallenge = await SERVICES.challengeService.listUserChallenge({ challengeId: payload.challengeId, userId: payload.userId });
-    }
+  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId, isDeleted: false });
+  // get challenge data for admin
+  if ((payload.user && payload.user.userType == CONSTANTS.USER_TYPES.ADMIN) || !Object.keys(payload.user).length) {
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenge } });
   }
-  if (!challenge) {
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
-  }
+
+  challenge.completedData = await SERVICES.challengeService.listUserChallenge({ challengeId: payload.challengeId, ...(payload.userId ? { userId: payload.userId } : {userId: payload.user._id}), });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenge } });
 };
 
