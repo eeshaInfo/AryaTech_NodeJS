@@ -197,10 +197,8 @@ let routes = [
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
                 searchKey: Joi.string().allow(""),
-                sortKey: Joi.string().default("createdAt").optional().description('sort key'),
-                sortDirection: Joi.number().default(-1).optional().description('sort direction'),
             },
-            
+
             group: 'User',
             description: 'Route to get Frineds list ',
             model: 'GetFrinedList'

@@ -165,7 +165,6 @@ return await walletAddressModel.findOne({}).lean()
 
 
 userService.friends = async (criteria) => {
-  // console.log(criteria)
   return await userModel.find(criteria, {firstName: 1, lastName: 1,imagePath:1})
 
 }
