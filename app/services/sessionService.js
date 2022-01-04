@@ -39,4 +39,8 @@ sessionService.removeSession = async (criteria) => {
     return await sessionModel.deleteOne(criteria);
 };
 
+sessionService.removeAllSession = async (criteria) => {
+    return await sessionModel.deleteMany(criteria);
+}
+
 module.exports = sessionService;
