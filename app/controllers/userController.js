@@ -334,5 +334,19 @@ userController.getWalletAddress = async () => {
   }
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { address })
 }
+
+/**
+ * Function to post user contacts.
+ */
+userController.userContacts = async (payload) => {
+let dataToUpdate= {"$addToSet": {"contacts": {"$each": payload.contacts}}, contactSyncTime: Date.now()}
+//find user and add contacts
+  let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, dataToUpdate)
+  if (data) {
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CONTACTS_ADDED_SUCCESSFULLY), { data })
+  }
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NO_USER_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+
+}
 /* export userController */
 module.exports = userController;

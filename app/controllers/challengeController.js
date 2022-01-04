@@ -61,11 +61,11 @@ challengeController.updateChallenge = async (payload) => {
   //check if challenge Name already exists or not
   let isChallengeExists = await SERVICES.challengeService.getChallenge({ distance: payload.distance, _id: { $ne: payload.challengeId } });
   if (!isChallengeExists) {
-      if (payload.type === CHALLENGES_TYPES.UNPAID) {
-        payload.amount = 0;
-      }
-      await SERVICES.challengeService.update({ _id: payload.challengeId }, payload);
-      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_UPDATED_SUCCESSFULLY));
+    if (payload.type === CHALLENGES_TYPES.UNPAID) {
+      payload.amount = 0;
+    }
+    await SERVICES.challengeService.update({ _id: payload.challengeId }, payload);
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_UPDATED_SUCCESSFULLY));
   }
 
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.DATA_NOT_FOUND);
@@ -117,12 +117,22 @@ challengeController.list = async (payload) => {
  * Function to fetch list of users completed task
  */
 challengeController.getChallengeById = async (payload) => {
-  // check if challenge id is valid or not
-  let challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId , isDeleted: false });
-  if(!challenge) {
+  let  challenge = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId, isDeleted: false });
+ challenge.completedChallenge
+  if (payload.user.userType == CONSTANTS.USER_TYPES.USER) {
+    if (!payload.userId) {
+      challenge.completedChallenge = await SERVICES.challengeService.listUserChallenge({ challengeId: payload.challengeId, userId: payload.user._id });
+      if (payload.isRecentDataKey == true) {
+        challenge.completedChallenge = challenge.completedChallenge[0]
+      }
+    }
+    else {
+      challenge.completedChallenge = await SERVICES.challengeService.listUserChallenge({ challengeId: payload.challengeId, userId: payload.userId });
+    }
+  }
+  if (!challenge) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
   }
-
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenge } });
 };
 
@@ -199,13 +209,13 @@ challengeController.history = async (payload) => {
   let challengeHistoryData = await SERVICES.challengeService.getHistory(criteria);
   //get user stats
   let userStat = await SERVICES.userService.getUserStats(criteria)
-  if (challengeHistoryData.length)
-  {
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challengeHistoryData, userStat: userStat[0] } }); 
+  if (challengeHistoryData.length) 
+{
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challengeHistoryData, userStat: userStat[0] } });
   }
 
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NO_CHALLENGES_COMPLETED, ERROR_TYPES.DATA_NOT_FOUND);
-  
+
 
 }
 
@@ -214,20 +224,20 @@ challengeController.history = async (payload) => {
 * Function to fetch leaderboard list
 */
 challengeController.leaderboardList = async (payload) => {
-    //...(payload.limit && { limit: payload.limit })
-     let criteria = {
-       challengeId: payload.challengeId
-     }
-     let userCriteria = {
-     ...(payload.leaderboardCategory == LEADERBOARD_CATEGORY.COUNTRY && { $eq: [payload.user.country, '$country']} ),
-     ...(payload.leaderboardCategory == LEADERBOARD_CATEGORY.FRIEND) && { $in: ['$mobileNumber',payload.user.contacts]}
-      }
-   console.log(userCriteria);
-     let dashboardData = await SERVICES.challengeService.getLeaderboardList(criteria, payload , userCriteria);
-     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { dashboardData } });
-     
-   
-  
+  //...(payload.limit && { limit: payload.limit })
+  let criteria = {
+    challengeId: payload.challengeId
+  }
+  let userCriteria = {
+    ...(payload.leaderboardCategory == LEADERBOARD_CATEGORY.COUNTRY && { $eq: [payload.user.country, '$country']} ),
+    ...(payload.leaderboardCategory == LEADERBOARD_CATEGORY.FRIEND) && { $in: ['$mobileNumber',payload.user.contacts]}
+  }
+  console.log(userCriteria);
+  let dashboardData = await SERVICES.challengeService.getLeaderboardList(criteria, payload , userCriteria);
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { dashboardData } });
+
+
+
 };
 
 /* export challengeController */

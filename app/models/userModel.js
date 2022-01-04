@@ -24,7 +24,8 @@ const userSchema = new Schema(
         password: { type: String },
         status: { type: Number },
         challengeCompleted: { type: Number ,default: 0 },
-        contacts: { type: Array }  // array of user contacts mobile number
+        contacts: { type: Array },  // array of user contacts mobile number
+        contactSyncTime: { type: Date }
     },
     { versionKey: false, timestamps: true,collection: 'users' }
 );
