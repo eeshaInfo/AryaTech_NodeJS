@@ -59,7 +59,7 @@ userController.loginUser = async (payload) => {
         };
         delete user.password;
         let token = await encryptJwt(dataForJwt);
-        let data = { userId: user._id, token: token }
+        let data = { userId: user._id, token: token, userType: CONSTANTS.USER_TYPES.ADMIN,}
         // create session for particular user
         await SERVICES.sessionService.createSession(data);
 
@@ -270,6 +270,11 @@ userController.blockUser = async (payload) => {
     }
     //if not then update the status of user to block/unblock
     await SERVICES.userService.updateUser(criteria, { status: payload.status })
+    if (payload.status === CONSTANTS.STATUS.BLOCK)
+    {
+      let deleteAllSession = await SERVICES.sessionService.removeAllSession({ userId: payload.id, userType: CONSTANTS.USER_TYPES.USER })
+      
+    }
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(`${payload.status === CONSTANTS.STATUS.BLOCK ? MESSAGES.USER_BLOCKED_SUCCESSFULLY : MESSAGES.USER_UNBLOCKED_SUCCESSFULLY}`), { user })
   }
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
