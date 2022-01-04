@@ -118,7 +118,7 @@ userService.getUserStats = async (criteria) => {
     },
     {
       $group: {
-        _id: null,
+        _id: '$userId',
         totalCalories: {
           $sum: "$caloriesBurned"
         },
@@ -130,12 +130,18 @@ userService.getUserStats = async (criteria) => {
         }
       }
     },
+    { $lookup: { from: "users", localField: "_id", foreignField: "_id", as: "userData" } },
+    { $unwind: "$userData" },
     {
       $project: {
         totalCalories: 1,
         totalTime: 1,
         totalDistance: 1,
-        _id:0
+        _id:0,
+        'userData._id': 1,
+        'userData.firstName': 1,
+        'userData.lastName': 1,
+        'userData.imagePath': 1,
       }
     }
   ]
