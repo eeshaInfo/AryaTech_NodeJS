@@ -176,7 +176,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body: {
-                contacts: Joi.array().items(Joi.number()).required().description("User's contact list"),
+                contacts: Joi.array().items(Joi.string()).required().description("User's contact list"),
             },
             group: 'User',
             description: 'Route to post user contacts ',
@@ -184,6 +184,29 @@ let routes = [
         },
         auth: AVAILABLE_AUTHS.USER,
         handler: userController.userContacts
+    }
+    ,
+    {
+        method: 'GET',
+        path: '/v1/user/friends',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            query: {
+                skip: Joi.number().default(0).description('skip'),
+                limit: Joi.number().default(10).description('limit'),
+                searchKey: Joi.string().allow(""),
+                sortKey: Joi.string().default("createdAt").optional().description('sort key'),
+                sortDirection: Joi.number().default(-1).optional().description('sort direction'),
+            },
+            
+            group: 'User',
+            description: 'Route to get Frineds list ',
+            model: 'GetFrinedList'
+        },
+        auth: AVAILABLE_AUTHS.USER,
+        handler: userController.frinedList
     }
 
 ]

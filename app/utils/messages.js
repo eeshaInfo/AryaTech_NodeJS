@@ -22,6 +22,7 @@ module.exports = {
     SUCCESS: 'Success.',
     USER_PROFILE_FETCHED_SUCCESSFULLY: 'User profile fetched successfully.',
     NO_USER_FOUND: 'No user found.',
+    NO_FRIENDS_FOUND:'No Friends Found ',
     FILE_REQUIRED_IN_PAYLOAD: 'File required in payload.',
     FILE_UPLOADED_SUCCESSFULLY: 'File uploaded successfully.',
     NO_REQUEST_FOUND: 'No request found.',

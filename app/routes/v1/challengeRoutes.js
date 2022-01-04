@@ -273,8 +273,8 @@ let routes = [
                 sortDirection: Joi.number().default(-1).optional().description('sort direction'),
             },
             group: 'Challenge',
-            description: 'Route to get challenges for admin/user',
-            model: 'GetChallenges'
+            description: 'Route to get leaderboardlist',
+            model: 'GetLeaderboard'
         },
         auth: AVAILABLE_AUTHS.USER,
         handler: challengeController.leaderboardList
