@@ -8,7 +8,15 @@ let fcmNotificationService = {};
  * Function to send notification to recipient.
  * @param {*} message // Message object having device ('topic' or 'token') and ('data' or 'notification') fields to send.
  */
-fcmNotificationService.pushNotification = async (message) => {
+fcmNotificationService.pushNotification = async () => {
+    var message = {
+        notification: {
+          title: 'Message from node',
+          body: 'hey there'
+        },
+        token: '43423feerftw'
+        //topic: topic
+      };
     return await admin.messaging().send(message)
         .then(response => {
             console.log('<<<<<<',response);

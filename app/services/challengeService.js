@@ -120,7 +120,7 @@ challengeService.listChallenge = async (criteria, pagination) => {
  * function to  get completed challenge based on criteria
  */
 challengeService.listUserChallenge = async (criteria) => {
-    return await userChallengesModel.find(criteria).sort({updatedAt: -1}).lean();
+    return await userChallengesModel.find(criteria).sort({ updatedAt: -1 }).lean();
 };
 
 /**
@@ -409,7 +409,6 @@ challengeService.getHistory = async (criteria) => {
  * function to get leaderboard data
  */
 challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {}) => {
-    console.log(payload);
     let query = [
         {
             $match: criteria
@@ -424,9 +423,26 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
             $sort: { timeTaken: 1 }
         },
         {
+            $group: {
+                _id: '$false',
+                challengeData: {
+                    $push: {
+                        "userId": "$_id",
+                        "timeTaken": "$timeTaken",
+                    }
+                }
+            }
+        },
+        {
+            $unwind: {
+                path: "$challengeData",
+                includeArrayIndex: "rank"
+            }
+        },
+        {
             $lookup: {
                 from: 'users',
-                let: { userId: '$_id' },
+                let: { userId: '$challengeData.userId' },
                 pipeline: [
                     {
                         $match: {
@@ -442,36 +458,50 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
                 as: "userData"
             }
         },
-        //{ $unwind:  { "path": "$userData", "includeArrayIndex": "userData.rank" }},
+        { $unwind: "$userData" },
+        { $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } },
+        { $sort: { order: 1 } },
         {
-            $setWindowFields: {
-                //partitionBy: "$state",
-                sortBy: { timeTaken: 1 },
-                output: {
-                    rankQuantityForState: {
-                        $denseRank: {}
-                    }
-                }
+            $project: {
+                _id: 0,
+                "rank": { $sum: ["$rank", 1] },
+                timeTaken: '$challengeData.timeTaken',
+                "userData._id": 1,
+                "userData.firstName": 1,
+                "userData.lastName": 1,
+                "userData.imagePath": 1,
+                "userData.mobileNumber": 1,
+                "userData.country": 1,
+                "userData.state": 1,
+                "userData.city": 1,
+                "userData.rank": 1
             }
-        },
-        // {$addFields: {order: {$cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 }}}},
-        // {$sort: { order: 1 } },
-        // {
-        //     $project: {
-        //         timeTaken: 1,
-        //         "userData.firstName": 1,
-        //         "userData.lastName": 1,
-        //         "userData.imagePath": 1,
-        //         "userData.mobileNumber": 1,
-        //         "userData.country": 1,
-        //         "userData.state": 1,
-        //         "userData.city": 1,
-
-
-        //     }
-        // }
+        }
     ]
     return await userChallengesModel.aggregate(query);
 };
+
+
+challengeService.calender = async (criteria) => {
+    let query = [
+        {
+            $match: criteria
+        },
+        {
+            $project: {
+                completingDate: 1,
+            
+            }
+        },
+        {
+            $group: {
+                _id: "$completingDate"
+            }
+        }
+
+    ]
+
+    return await userChallengesModel.aggregate(query)
+}
 
 module.exports = challengeService;

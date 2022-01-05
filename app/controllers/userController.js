@@ -357,12 +357,31 @@ userController.frinedList = async (payload) => {
     $and: [{ $or: [{ firstName: regex }, { lastName: regex }] }],
   }
   if (!payload.user.contacts.length) {
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NO_FRIENDS_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+    throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
   }
   let data = await SERVICES.userService.friends(criteria)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })  
   }
   
+
+userController.calenderMark = async (payload) => {
+  let criteria = {
+    userId: payload.user._id,
+  }
+  console.log("dffdfdfd",criteria)
+  
+  let data = await SERVICES.challengeService.calender(criteria)
+  console.log("date", data)
+  
+  if (!data.length)
+  {
+     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_CHALLENGES_COMPLETED);
+  }
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })  
+  
+ 
+}
+
 
 /* export userController */
 module.exports = userController;
