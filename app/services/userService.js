@@ -1,4 +1,5 @@
 'use strict';
+const { log } = require('npmlog');
 const { userModel, userChallengesModel,walletAddressModel } = require('../models');
 const CONSTANTS = require('../utils/constants');
 const utils = require('../utils/utils');
@@ -160,6 +161,12 @@ return await walletAddressModel.findOneAndUpdate({},{walletAddress:criteria},{up
  */
 userService. getAddress=async () => {
 return await walletAddressModel.findOne({}).lean()
+}
+
+
+userService.friends = async (criteria) => {
+  return await userModel.find(criteria, { firstName: 1, lastName: 1,challengeCompleted:1,imagePath:1})
+
 }
 
 module.exports = userService;

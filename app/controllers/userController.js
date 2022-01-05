@@ -34,7 +34,7 @@ userController.registerNewUser = async (payload) => {
     };
     let token = await encryptJwt(dataForJwt);
     let data = { userId: newRegisteredUser._id, token: token, deviceToken: payload.deviceToken }
-        // create session for particular user
+    // create session for particular user
     await SERVICES.sessionService.createSession(data);
 
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser, token });
@@ -59,7 +59,7 @@ userController.loginUser = async (payload) => {
         };
         delete user.password;
         let token = await encryptJwt(dataForJwt);
-        let data = { userId: user._id, token: token, userType: CONSTANTS.USER_TYPES.ADMIN,}
+        let data = { userId: user._id, token: token, userType: CONSTANTS.USER_TYPES.ADMIN, }
         // create session for particular user
         await SERVICES.sessionService.createSession(data);
 
@@ -270,10 +270,9 @@ userController.blockUser = async (payload) => {
     }
     //if not then update the status of user to block/unblock
     await SERVICES.userService.updateUser(criteria, { status: payload.status })
-    if (payload.status === CONSTANTS.STATUS.BLOCK)
-    {
+    if (payload.status === CONSTANTS.STATUS.BLOCK) {
       let deleteAllSession = await SERVICES.sessionService.removeAllSession({ userId: payload.id, userType: CONSTANTS.USER_TYPES.USER })
-      
+
     }
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(`${payload.status === CONSTANTS.STATUS.BLOCK ? MESSAGES.USER_BLOCKED_SUCCESSFULLY : MESSAGES.USER_UNBLOCKED_SUCCESSFULLY}`), { user })
   }
@@ -339,8 +338,8 @@ userController.getWalletAddress = async () => {
  * Function to post user contacts.
  */
 userController.userContacts = async (payload) => {
-let dataToUpdate= {"$addToSet": {"contacts": {"$each": payload.contacts}}, contactSyncTime: Date.now()}
-//find user and add contacts
+  let dataToUpdate = { "$addToSet": { "contacts": { "$each": payload.contacts } }, contactSyncTime: Date.now() }
+  //find user and add contacts
   let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, dataToUpdate)
   if (data) {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CONTACTS_ADDED_SUCCESSFULLY), { data })
@@ -348,5 +347,22 @@ let dataToUpdate= {"$addToSet": {"contacts": {"$each": payload.contacts}}, conta
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NO_USER_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
 
 }
+
+
+
+userController.frinedList = async (payload) => {
+  let regex = new RegExp(payload.searchKey, 'i');
+  let criteria = {
+    mobileNumber: { $in: payload.user.contacts },
+    $and: [{ $or: [{ firstName: regex }, { lastName: regex }] }],
+  }
+  if (!payload.user.contacts.length) {
+    throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
+  }
+  let data = await SERVICES.userService.friends(criteria)
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })  
+  }
+  
+
 /* export userController */
 module.exports = userController;
