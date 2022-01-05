@@ -364,5 +364,24 @@ userController.frinedList = async (payload) => {
   }
   
 
+userController.calenderMark = async (payload) => {
+  let criteria = {
+    userId: payload.user._id,
+  }
+  console.log("dffdfdfd",criteria)
+  
+  let data = await SERVICES.challengeService.calender(criteria)
+  console.log("date", data)
+  
+  if (!data.length)
+  {
+     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_CHALLENGES_COMPLETED);
+  }
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })  
+  
+ 
+}
+
+
 /* export userController */
 module.exports = userController;

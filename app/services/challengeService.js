@@ -120,7 +120,7 @@ challengeService.listChallenge = async (criteria, pagination) => {
  * function to  get completed challenge based on criteria
  */
 challengeService.listUserChallenge = async (criteria) => {
-    return await userChallengesModel.find(criteria).sort({updatedAt: -1}).lean();
+    return await userChallengesModel.find(criteria).sort({ updatedAt: -1 }).lean();
 };
 
 /**
@@ -480,5 +480,28 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
     ]
     return await userChallengesModel.aggregate(query);
 };
+
+
+challengeService.calender = async (criteria) => {
+    let query = [
+        {
+            $match: criteria
+        },
+        {
+            $project: {
+                completingDate: 1,
+            
+            }
+        },
+        {
+            $group: {
+                _id: "$completingDate"
+            }
+        }
+
+    ]
+
+    return await userChallengesModel.aggregate(query)
+}
 
 module.exports = challengeService;
