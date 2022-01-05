@@ -27,6 +27,18 @@ challengeController.createChallenge = async (payload) => {
     payload.completedByUser = 0;
     //create challenge
     let data = await SERVICES.challengeService.create(payload);
+  //   await SERVICES.fcmNotificationService.pushreNotification({
+  //     data: {'body':'abc'},
+  //     webpush: {
+  //         headers: {
+  //             image: ''
+  //         },
+  //         // fcm_options: {
+  //         //     link: `${CONFIG.CLIENT_URL}/${location.code && location.code.toLowerCase()}/go/${affiliateLinkObj.affiliateKey}`
+  //         // }
+  //     },
+  //     topic: 'abcd'
+  // });
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_CREATED_SUCCESSFULLY), { data });
   }
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
@@ -205,7 +217,7 @@ challengeController.history = async (payload) => {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challengeHistoryData, userStat: userStat[0] } });
   }
 
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NO_CHALLENGES_COMPLETED, ERROR_TYPES.DATA_NOT_FOUND);
+  return HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_CHALLENGES_COMPLETED);
 
 
 }

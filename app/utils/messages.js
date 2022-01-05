@@ -61,5 +61,13 @@ module.exports = {
     INVALID_CHALLENGE_TYPE: 'Challenge is invalid',
     PAYMENT_ALREADY_COMPLETED: 'Payment already completed',
     PAYMENT_ALREADY_APPROVED: 'Payment already approved',
-    PAYMENT_ALREADY_REJECTED: 'Payment already rejected'
+    PAYMENT_ALREADY_REJECTED: 'Payment already rejected',
+
+    //Notifications
+    FCM: {
+        SUBSCRIBED_TO_TOPIC: "Successfully subscribed to topic.",
+        NOTIFICATION_SENT_SUCCESSFULLY: "Notification Sent Successfully.",
+        NOTIFICATIONS_SENT_SUCCESSFULLY: "Notifications Sent Successfully.",
+        FAILED_TO_SEND_NOTIFICATIONS: "Failed to send notifications.",
+      },
 };
