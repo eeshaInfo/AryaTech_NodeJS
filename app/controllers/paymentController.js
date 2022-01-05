@@ -75,7 +75,6 @@ paymentController.acceptPayment = async (payload) => {
     amount:challengeData.amount,
     status: CONSTANTS.TRANSACTION_STATUS.PENDING,
   }
-  console.log(transactionDetails)
   await SERVICES.paymentService.updatePaymentDetails(transactionDetails)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_SUCCESSFULLY_COMPLETED));
 
