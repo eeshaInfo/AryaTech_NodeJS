@@ -12,6 +12,7 @@ const paymentSchema = new Schema(
         userId: { type: Schema.Types.ObjectId, ref: 'users' },
         challengeId: { type: Schema.Types.ObjectId, ref: 'challenges' },
         transactionID: { type: String }, // transection Id of payment
+        amount:{type: Number},
         status: { type: Number ,enum: [TRANSACTION_STATUS.APPROVE, TRANSACTION_STATUS.PENDING, TRANSACTION_STATUS.REJECT]} // status of payment i.e approve,pending ,reject
     },
     { versionKey: false, timestamps: true, collection: 'transactions' }

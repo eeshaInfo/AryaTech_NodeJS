@@ -56,6 +56,7 @@ paymentController.acceptPayment = async (payload) => {
   }
 
   let challengeDetails = await SERVICES.challengeService.getChallenge(criteria);
+  
   if (challengeDetails) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_CHALLENGE_TYPE, ERROR_TYPES.BAD_REQUEST);
   }
@@ -65,12 +66,16 @@ paymentController.acceptPayment = async (payload) => {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.PAYMENT_ALREADY_COMPLETED, ERROR_TYPES.BAD_REQUEST);
   }
 
+  let challengeData = await SERVICES.challengeService.getChallenge({ _id: payload.challengeId })
+  
   let transactionDetails = {
     challengeId: payload.challengeId,
     userId: payload.user._id,
     transactionID: payload.transactionID,
+    amount:challengeData.amount,
     status: CONSTANTS.TRANSACTION_STATUS.PENDING,
   }
+  console.log(transactionDetails)
   await SERVICES.paymentService.updatePaymentDetails(transactionDetails)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_SUCCESSFULLY_COMPLETED));
 

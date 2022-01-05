@@ -127,6 +127,7 @@ paymentService.getPaymentDetails = async (criteria) => {
         {
             $project: {
                 "transactionID": 1,
+                "amount":1,
                 "status": 1,
                 "createdAt": 1,
                 "userData.firstName": 1,
@@ -140,7 +141,7 @@ paymentService.getPaymentDetails = async (criteria) => {
                 "userData.mobileNumber": 1,
                 "userData._id": 1,
                 "challengeData.distance": 1,
-                "challengeData.amount": 1,
+                // "challengeData.amount": 1,
                 "challengeData.distanceType": 1
             }
         }
