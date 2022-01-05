@@ -18,13 +18,13 @@ fileUploadService.uploadFileToS3 = (payload, fileName, bucketName) => {
             Bucket: bucketName || CONFIG.AWS.bucketName,
             Key: fileName,
             Body: payload.file.buffer,
-            ACL: 'public-read',
         }, function (err, data) {
             if (err) {
                 console.log('Error here', err);
                 return reject(err);
             }
-            resolve(data.Location);
+            let imageUrl = `${process.env.CLOUD_FRONT_URL}/${data.key}`;
+            resolve(imageUrl);
         });
     });
 };
@@ -65,7 +65,7 @@ fileUploadService.uploadFile = async (payload, pathToUpload, pathOnServer) => {
         let fileName = `upload_${Date.now()}.${fileExtention}`, fileUrl = '';
         let UPLOAD_TO_S3 = process.env.UPLOAD_TO_S3 ? process.env.UPLOAD_TO_S3 : '';
         if (UPLOAD_TO_S3.toLowerCase() === 'true') {
-            let s3BucketName = CONFIG.s3Bucket.normalFilesPath;
+            let s3BucketName = CONFIG.S3_BUCKET.zipBucketName;
             fileUrl = await fileUploadService.uploadFileToS3(payload, fileName, s3BucketName);
         } else {
             fileUrl = await fileUploadService.uploadFileToLocal(payload, fileName, pathToUpload, pathOnServer);
