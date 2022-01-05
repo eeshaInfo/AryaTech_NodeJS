@@ -165,7 +165,7 @@ return await walletAddressModel.findOne({}).lean()
 
 
 userService.friends = async (criteria) => {
-  return await userModel.find(criteria, {firstName: 1, lastName: 1,imagePath:1})
+  return await userModel.find(criteria, { firstName: 1, lastName: 1,challengeCompleted:1,imagePath:1})
 
 }
 
