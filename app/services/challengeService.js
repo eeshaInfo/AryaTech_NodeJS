@@ -517,19 +517,25 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
 
 challengeService.calender = async (criteria) => {
     let query = [
-        {
+         {
             $match: criteria
         },
         {
             $project: {
-                completingDate: 1,
+                _id: 0,
+                date: {
+                    $dateToString: {
+                        format: "%Y-%m-%d",
+                        date: "$completingDate"
+                    }
+                }
             }
         },
         {
             $group: {
-                _id: "$completingDate"
+                _id: "$date"
             }
-        }
+        }      
 
     ]
 
