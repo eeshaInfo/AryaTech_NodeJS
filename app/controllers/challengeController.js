@@ -231,13 +231,13 @@ challengeController.calenderMark = async (payload) => {
   }
   console.log("dffdfdfd", criteria)
 
-  let data = await SERVICES.challengeService.calender(criteria)
-  console.log("date", data)
+  let date = await SERVICES.challengeService.calender(criteria)
+  console.log("date", date)
 
-  if (!data.length) {
+  if (!date.length) {
     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_CHALLENGES_COMPLETED);
   }
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { date })
 
 
 }
