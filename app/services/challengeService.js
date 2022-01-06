@@ -120,7 +120,7 @@ challengeService.listChallenge = async (criteria, pagination) => {
  * function to  get completed challenge based on criteria
  */
 challengeService.listUserChallenge = async (criteria) => {
-    return await userChallengesModel.find(criteria).sort({updatedAt: -1}).lean();
+    return await userChallengesModel.find(criteria).sort({ updatedAt: -1 }).lean();
 };
 
 /**
@@ -276,33 +276,44 @@ challengeService.getChallengesByUser = async (payload, pagination) => {
         {
             $match: {
                 $or: [
-                    { "challengeNameString": { $regex: payload.searchKey, $options: 'i' } },
-                    //{ 'challengeData.distanceType': { $regex: payload.searchKey, $options: 'i' } },
-                    //  { 'challengeData.mobileNumber': { $regex: payload.searchKey, $options: 'i' } },
-                    //{ 'avgSpeed': { $regex: payload.searchKey, $options: 'i' } },
-                    //{ 'maxSpeed': { $regex: payload.searchKey, $options: 'i' } },
-                    //{ 'timeTaken': { $regex: payload.searchKey, $options: 'i' } }
+                    { "challengeNameString": { $regex: payload.searchKey, $options: 'i' } }
                 ]
             }
         },
         { $sort: sort },
+        {
+            $facet: {
+                totalCount: [
+                    { $count: "value" }
+                ],
+                pipelineResults: [
+                    {
+                        $project: {
+                            "date": 1,
+                            "timeTaken": 1,
+                            "caloriesBurned": 1,
+                            "avgSpeed": 1,
+                            "maxSpeed": 1,
+                            "completingDate": 1,
+                            "challengeData.distance": 1,
+                            "challengeData.distanceType": 1,
+                            "challengeData._id": 1
+                        }
+                    }
+                ]
+            }
+        },
+        { $unwind: "$pipelineResults"},
+        { $unwind: "$totalCount"},
+        {
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: ["$pipelineResults", { totalCount: "$totalCount.value" }]
+                }
+            }
+        },
         { $skip: pagination.skip },
         { $limit: pagination.limit },
-        //{ $match: {'challengeData.firstName': {$regex: criteria.searchKey, $options: 'i'}}},
-        {
-            $project: {
-                "date": 1,
-                "timeTaken": 1,
-                "caloriesBurned": 1,
-                "avgSpeed": 1,
-                "maxSpeed": 1,
-                "completingDate": 1,
-                "challengeData.distance": 1,
-                "challengeData.distanceType": 1,
-                "challengeData._id": 1
-
-            }
-        }
     ] : [
         {
             $match: { userId: payload.userId },
@@ -310,22 +321,44 @@ challengeService.getChallengesByUser = async (payload, pagination) => {
         { $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
         { $unwind: "$challengeData" },
         { $sort: sort },
-        { $skip: pagination.skip },
-        { $limit: pagination.limit },
         {
-            $project: {
-                "date": 1,
-                "timeTaken": 1,
-                "caloriesBurned": 1,
-                "avgSpeed": 1,
-                "maxSpeed": 1,
-                "completingDate": 1,
-                "challengeData.distance": 1,
-                "challengeData.distanceType": 1,
-                "challengeData._id": 1
-
+            $facet: {
+                totalCount: [
+                    { $count: "value" }
+                ],
+                pipelineResults: [
+                    {
+                        $project: {
+                            "date": 1,
+                            "timeTaken": 1,
+                            "caloriesBurned": 1,
+                            "avgSpeed": 1,
+                            "maxSpeed": 1,
+                            "completingDate": 1,
+                            "challengeData.distance": 1,
+                            "challengeData.distanceType": 1,
+                            "challengeData._id": 1
+                            
+                        }
+                    }
+                ]
             }
-        }
+        },
+        {
+            $unwind: "$pipelineResults"
+        },
+        {
+            $unwind: "$totalCount"
+        },
+        {
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: ["$pipelineResults", { totalCount: "$totalCount.value" }]
+                }
+            }
+        },
+        { $skip: pagination.skip },
+        { $limit: pagination.limit }
     ]
     return await userChallengesModel.aggregate(query);
 };
@@ -480,5 +513,34 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
     ]
     return await userChallengesModel.aggregate(query);
 };
+
+
+challengeService.calender = async (criteria) => {
+    let query = [
+        { $match: criteria },
+        { $group: { _id: "$completingDate" } },
+        { $project: { completingDate: "$_id" } },
+        { $project: { _id: 0 } }
+        
+    
+        //         {
+        //     $project: {
+        //         _id: 0,
+        //         date: {
+        //             $dateToString: {
+        //                 format: "%Y-%m-%d",
+        //                 date: "$completingDate"
+        //             }
+        //         }
+        //     }
+        // },
+        // {
+        //     $group: {
+        //         _id: "$date"
+        //     }
+        // }  
+    ]
+    return await userChallengesModel.aggregate(query)
+}
 
 module.exports = challengeService;
