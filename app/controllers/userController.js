@@ -338,7 +338,9 @@ userController.getWalletAddress = async () => {
  * Function to post user contacts.
  */
 userController.userContacts = async (payload) => {
-  let dataToUpdate = { "$addToSet": { "contacts": { "$each": payload.contacts } }, contactSyncTime: Date.now() }
+  let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: payload.contacts } }, { _id: 0, mobileNumber: 1 })
+ let  contact = contacts.map(arr => arr.mobileNumber)
+  let dataToUpdate = { "$addToSet": { "contacts": { "$each": contact } }, contactSyncTime: Date.now() }
   //find user and add contacts
   let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, dataToUpdate)
   if (data) {
