@@ -276,33 +276,44 @@ challengeService.getChallengesByUser = async (payload, pagination) => {
         {
             $match: {
                 $or: [
-                    { "challengeNameString": { $regex: payload.searchKey, $options: 'i' } },
-                    //{ 'challengeData.distanceType': { $regex: payload.searchKey, $options: 'i' } },
-                    //  { 'challengeData.mobileNumber': { $regex: payload.searchKey, $options: 'i' } },
-                    //{ 'avgSpeed': { $regex: payload.searchKey, $options: 'i' } },
-                    //{ 'maxSpeed': { $regex: payload.searchKey, $options: 'i' } },
-                    //{ 'timeTaken': { $regex: payload.searchKey, $options: 'i' } }
+                    { "challengeNameString": { $regex: payload.searchKey, $options: 'i' } }
                 ]
             }
         },
         { $sort: sort },
+        {
+            $facet: {
+                totalCount: [
+                    { $count: "value" }
+                ],
+                pipelineResults: [
+                    {
+                        $project: {
+                            "date": 1,
+                            "timeTaken": 1,
+                            "caloriesBurned": 1,
+                            "avgSpeed": 1,
+                            "maxSpeed": 1,
+                            "completingDate": 1,
+                            "challengeData.distance": 1,
+                            "challengeData.distanceType": 1,
+                            "challengeData._id": 1
+                        }
+                    }
+                ]
+            }
+        },
+        { $unwind: "$pipelineResults"},
+        { $unwind: "$totalCount"},
+        {
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: ["$pipelineResults", { totalCount: "$totalCount.value" }]
+                }
+            }
+        },
         { $skip: pagination.skip },
         { $limit: pagination.limit },
-        //{ $match: {'challengeData.firstName': {$regex: criteria.searchKey, $options: 'i'}}},
-        {
-            $project: {
-                "date": 1,
-                "timeTaken": 1,
-                "caloriesBurned": 1,
-                "avgSpeed": 1,
-                "maxSpeed": 1,
-                "completingDate": 1,
-                "challengeData.distance": 1,
-                "challengeData.distanceType": 1,
-                "challengeData._id": 1
-
-            }
-        }
     ] : [
         {
             $match: { userId: payload.userId },
@@ -310,22 +321,44 @@ challengeService.getChallengesByUser = async (payload, pagination) => {
         { $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
         { $unwind: "$challengeData" },
         { $sort: sort },
-        { $skip: pagination.skip },
-        { $limit: pagination.limit },
         {
-            $project: {
-                "date": 1,
-                "timeTaken": 1,
-                "caloriesBurned": 1,
-                "avgSpeed": 1,
-                "maxSpeed": 1,
-                "completingDate": 1,
-                "challengeData.distance": 1,
-                "challengeData.distanceType": 1,
-                "challengeData._id": 1
-
+            $facet: {
+                totalCount: [
+                    { $count: "value" }
+                ],
+                pipelineResults: [
+                    {
+                        $project: {
+                            "date": 1,
+                            "timeTaken": 1,
+                            "caloriesBurned": 1,
+                            "avgSpeed": 1,
+                            "maxSpeed": 1,
+                            "completingDate": 1,
+                            "challengeData.distance": 1,
+                            "challengeData.distanceType": 1,
+                            "challengeData._id": 1
+                            
+                        }
+                    }
+                ]
             }
-        }
+        },
+        {
+            $unwind: "$pipelineResults"
+        },
+        {
+            $unwind: "$totalCount"
+        },
+        {
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: ["$pipelineResults", { totalCount: "$totalCount.value" }]
+                }
+            }
+        },
+        { $skip: pagination.skip },
+        { $limit: pagination.limit }
     ]
     return await userChallengesModel.aggregate(query);
 };
