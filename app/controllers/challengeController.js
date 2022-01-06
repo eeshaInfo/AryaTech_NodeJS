@@ -224,6 +224,24 @@ challengeController.history = async (payload) => {
 }
 
 
+
+challengeController.calenderMark = async (payload) => {
+  let criteria = {
+    userId: payload.user._id,
+  }
+  console.log("dffdfdfd", criteria)
+
+  let data = await SERVICES.challengeService.calender(criteria)
+  console.log("date", data)
+
+  if (!data.length) {
+    throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_CHALLENGES_COMPLETED);
+  }
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
+
+
+}
+
 /**
 * Function to fetch leaderboard list
 */
@@ -239,9 +257,7 @@ challengeController.leaderboardList = async (payload) => {
   let dashboardData = await SERVICES.challengeService.getLeaderboardList(criteria, payload, userCriteria);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { dashboardData } });
 
-
-
-};
+}
 
 /* export challengeController */
 module.exports = challengeController;

@@ -523,7 +523,6 @@ challengeService.calender = async (criteria) => {
         {
             $project: {
                 completingDate: 1,
-            
             }
         },
         {

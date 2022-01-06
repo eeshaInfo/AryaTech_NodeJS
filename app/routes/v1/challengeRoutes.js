@@ -256,6 +256,23 @@ let routes = [
         auth: AVAILABLE_AUTHS.USER,
 
     },
+    
+    {
+        method: 'GET',
+        path: '/v1/user/calender',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            group: 'Challenge',
+            description: 'Route to dark calender date on challenge complete ',
+            model: 'calenderMark'
+        },
+        auth: AVAILABLE_AUTHS.USER,
+        handler: challengeController.calenderMark
+    }
+    ,
+    
     {
         method: 'GET',
         path: '/v1/leaderboard/list',
