@@ -265,7 +265,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             group: 'Challenge',
-            description: 'Route to dark calender date on challenge complete ',
+            description: 'Route to mark date in  calender date on challenge complete ',
             model: 'calenderMark'
         },
         auth: AVAILABLE_AUTHS.USER,

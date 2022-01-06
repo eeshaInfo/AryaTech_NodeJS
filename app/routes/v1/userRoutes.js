@@ -206,7 +206,7 @@ let routes = [
         auth: AVAILABLE_AUTHS.USER,
         handler: userController.frinedList
     },
-    
+
 
 ]
 

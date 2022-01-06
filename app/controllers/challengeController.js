@@ -238,7 +238,7 @@ challengeController.calenderMark = async (payload) => {
   if (!date.length) {
     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_CHALLENGES_COMPLETED);
   }
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { date })
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.COMPLETED_CHALLENGES_DATE_FETCH_SUCCESSFULLY), { date })
 
 
 }
