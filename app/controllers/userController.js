@@ -339,8 +339,8 @@ userController.getWalletAddress = async () => {
  */
 userController.userContacts = async (payload) => {
   let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: payload.contacts } }, { _id: 0, mobileNumber: 1 })
- let  contact = contacts.map(arr => arr.mobileNumber)
-  let dataToUpdate = { "$addToSet": { "contacts": { "$each": contact } }, contactSyncTime: Date.now() }
+  let contact = contacts.map(arr => arr.mobileNumber)
+  let dataToUpdate = { $set: { "contacts": contact }, contactSyncTime: Date.now() } 
   //find user and add contacts
   let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, dataToUpdate)
   if (data) {
@@ -362,9 +362,9 @@ userController.frinedList = async (payload) => {
     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
   }
   let data = await SERVICES.userService.friends(criteria)
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })  
-  }
-  
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
+}
+
 
 /* export userController */
 module.exports = userController;
