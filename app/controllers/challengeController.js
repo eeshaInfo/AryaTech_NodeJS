@@ -230,10 +230,9 @@ challengeController.calenderMark = async (payload) => {
   let criteria = {
     userId: payload.user._id,
   }
-  console.log("dffdfdfd", criteria)
 
   let date = await SERVICES.challengeService.calender(criteria)
-  console.log("date", date)
+
 
   if (!date.length) {
     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_CHALLENGES_COMPLETED);
@@ -249,14 +248,15 @@ challengeController.calenderMark = async (payload) => {
 challengeController.leaderboardList = async (payload) => {
   //...(payload.limit && { limit: payload.limit })
   let criteria = {
-    challengeId: payload.challengeId
+    challengeId: payload.challengeId,
   }
   let userCriteria = {
     ...(payload.leaderboardCategory == LEADERBOARD_CATEGORY.COUNTRY && { $eq: [payload.user.country, '$country'] }),
     ...(payload.leaderboardCategory == LEADERBOARD_CATEGORY.FRIEND) && { $in: ['$mobileNumber', payload.user.contacts] }
   }
   let dashboardData = await SERVICES.challengeService.getLeaderboardList(criteria, payload, userCriteria);
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { dashboardData } });
+  
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { leaderboardCategory: payload.leaderboardCategory,data: { dashboardData } });
 
 }
 
