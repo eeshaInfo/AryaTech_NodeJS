@@ -235,8 +235,6 @@ let routes = [
         },
         handler: challengeController.list
     },
-
-
     {
         method: 'POST',
         path: '/v1/challenge/history',
@@ -256,7 +254,6 @@ let routes = [
         auth: AVAILABLE_AUTHS.USER,
 
     },
-    
     {
         method: 'GET',
         path: '/v1/user/calender',
@@ -270,9 +267,7 @@ let routes = [
         },
         auth: AVAILABLE_AUTHS.USER,
         handler: challengeController.calenderMark
-    }
-    ,
-    
+    } ,
     {
         method: 'GET',
         path: '/v1/leaderboard/list',
@@ -281,8 +276,6 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                skip: Joi.number().default(0).description('skip'),
-                limit: Joi.number().default(10).description('limit'),
                 searchKey: Joi.string().allow(""),
                 leaderboardCategory: Joi.number().valid(...Object.values(LEADERBOARD_CATEGORY)).description('leaderboard category type'),
                 challengeId: Joi.string().objectId().required().description('Challenge Id.'),

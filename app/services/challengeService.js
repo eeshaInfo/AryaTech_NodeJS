@@ -1,5 +1,6 @@
 const CONFIG = require('../../config');
 const { challengeModel, userChallengesModel } = require(`../models`);
+const { PAGINATION } = require(`../utils/constants`);
 const { convertIdToMongooseId } = require(`../utils/utils`);
 
 let challengeService = {};
@@ -492,8 +493,12 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
             }
         },
         { $unwind: "$userData" },
-        { $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } },
-        { $sort: { order: 1 } },
+        //{ $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } },
+        ...(Object.keys(payload.user).length && { $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } }),
+        ...(Object.keys(payload.user).length && { $sort: { order: 1 } }),
+        {
+            $limit: PAGINATION.limit
+        },
         {
             $project: {
                 _id: 0,
