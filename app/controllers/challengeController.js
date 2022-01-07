@@ -169,7 +169,7 @@ challengeController.getUserByChallenges = async (payload) => {
   }
   // get user list by particular challenge
   let list = await SERVICES.challengeService.getUserByChallenges(payload);
-  let totalCounts = list[0].totalCount
+  let totalCounts = list.length ? list[0].totalCount : 0;
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { list, totalCounts } });
 };
 
