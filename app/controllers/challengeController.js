@@ -135,7 +135,7 @@ challengeController.getChallengeById = async (payload) => {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenge } });
   }
 
-  challenge.completedData = await SERVICES.challengeService.listUserChallenge({ challengeId: payload.challengeId, ...(payload.userId ? { userId: payload.userId } : {userId: payload.user._id}), });
+  challenge.completedData = await SERVICES.challengeService.listUserChallenge({ challengeId: payload.challengeId, ...(payload.userId ? { userId: payload.userId } : { userId: payload.user._id }), });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenge } });
 };
 
@@ -147,6 +147,10 @@ challengeController.completedChallenge = async (payload) => {
   payload.userId = payload.user._id;
   payload.completingDate = new Date();
   // complete a challenge for particular user
+  if (payload.maxSpeed < payload.avgSpeed) {
+    throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.MAXSPEED_CANNOT_BE_LESS_THAN_AVG_SPEED);
+  }
+
   await SERVICES.challengeService.createUserChallenge(payload);
   await SERVICES.challengeService.update({ _id: payload.challengeId }, { $inc: { completedByUser: 1 } });
   await SERVICES.userService.updateUser({ _id: payload.user._id }, { $inc: { challengeCompleted: 1 } });
@@ -179,7 +183,7 @@ challengeController.getChallengesByUser = async (payload) => {
   }
   // get all challenge by particular user
   let list = await SERVICES.challengeService.getChallengesByUser(payload, { skip: payload.skip, limit: payload.limit });
-  let totalCounts=list[0].totalCount
+  let totalCounts = list[0].totalCount
   //let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { list, totalCounts } });
 };
@@ -246,17 +250,17 @@ challengeController.calenderMark = async (payload) => {
 * Function to fetch leaderboard list
 */
 challengeController.leaderboardList = async (payload) => {
-  //...(payload.limit && { limit: payload.limit })
   let criteria = {
     challengeId: payload.challengeId,
   }
+
   let userCriteria = {
     ...(payload.leaderboardCategory == LEADERBOARD_CATEGORY.COUNTRY && { $eq: [payload.user.country, '$country'] }),
     ...(payload.leaderboardCategory == LEADERBOARD_CATEGORY.FRIEND) && { $in: ['$mobileNumber', payload.user.contacts] }
   }
   let dashboardData = await SERVICES.challengeService.getLeaderboardList(criteria, payload, userCriteria);
-  
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { leaderboardCategory: payload.leaderboardCategory,data: { dashboardData } });
+
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { leaderboardCategory: payload.leaderboardCategory, data: { dashboardData } });
 
 }
 

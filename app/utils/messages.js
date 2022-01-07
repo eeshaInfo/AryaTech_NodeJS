@@ -53,6 +53,7 @@ module.exports = {
   CHALLENGE_NOT_FOUND: 'Challenge not found',
   NO_CHALLENGES_COMPLETED: 'No Challenges Completed',
   COMPLETED_CHALLENGES_DATE_FETCH_SUCCESSFULLY: 'Completed Challenges Date fetch Successfully',
+  MAXSPEED_CANNOT_BE_LESS_THAN_AVG_SPEED:'Max Speed Cannot be less than Average Speed',
   //Payment
   PAYMENT_SUCCESSFULLY_COMPLETED: 'Payment Successfully Completed',
   PAYMENT_FOUND: 'Payment Found',
