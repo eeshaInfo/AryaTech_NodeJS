@@ -459,6 +459,8 @@ challengeService.getHistory = async (criteria) => {
  * function to get leaderboard data
  */
 challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {}) => {
+    let userLength = Object.keys(payload.user).length > 0
+    console.log(userCriteria)
     let query = [
         {
             $match: criteria
@@ -509,11 +511,12 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
             }
         },
         { $unwind: "$userData" },
+        
         //{ $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } },
-        ...(Object.keys(payload.user).length && { $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } }),
-        ...(Object.keys(payload.user).length && { $sort: { order: 1 } }),
+        // { ...(userLength && { $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } }) },
+        // { ...(userLength && { $sort: { order: 1 } }) },
         {
-            $limit: PAGINATION.limit
+            $limit: PAGINATION.DEFAULT_LIMIT
         },
         {
             $project: {
@@ -542,7 +545,6 @@ challengeService.calender = async (criteria) => {
         { $group: { _id: "$completingDate" } },
         { $project: { completingDate: "$_id" } },
         { $project: { _id: 0 } }
-
 
         //         {
         //     $project: {
