@@ -328,9 +328,6 @@ userController.getWalletAddress = async () => {
   //get user wallet address 
 
   let address = await SERVICES.userService.getAddress()
-  if (!address) {
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
-  }
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { address })
 }
 
@@ -338,10 +335,10 @@ userController.getWalletAddress = async () => {
  * Function to post user contacts.
  */
 userController.userContacts = async (payload) => {
-//find those numbers which are present in our database
+  //find those numbers which are present in our database
   let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: payload.contacts } },{ _id: 0, mobileNumber: 1 })
   let contact = contacts.map(arr => arr.mobileNumber)
-  let dataToUpdate = { $set: { "contacts": contact }, contactSyncTime: Date.now() } 
+  let dataToUpdate = { $set: { "contacts": contact }, contactSyncTime: Date.now() }
   //find user and update contacts
   let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, dataToUpdate)
   if (data) {

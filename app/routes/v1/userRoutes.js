@@ -165,7 +165,7 @@ let routes = [
             description: 'Route to get userDetails for admin',
             model: 'GetUserDetails'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.COMMON,
         handler: userController.userDetails
     },
     {
