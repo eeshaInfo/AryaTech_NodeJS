@@ -170,7 +170,7 @@ let routes = [
                 avgSpeed: Joi.number().required().description(`Average Speed in km/h`),
                 maxSpeed: Joi.number().required().description('Maximum Speed in km/h'),
                 trackingPoints: Joi.array().items(
-                    Joi.object({ lat: Joi.number().description('latitude'), lng: Joi.number().description('longitude.') })).required().description('Tracking Point'),
+                Joi.object({ lat: Joi.number().description('latitude'), lng: Joi.number().description('longitude.') })).required().description('Tracking Point'),
 
             },
             group: 'Challenge',
@@ -235,8 +235,6 @@ let routes = [
         },
         handler: challengeController.list
     },
-
-
     {
         method: 'POST',
         path: '/v1/challenge/history',
@@ -258,19 +256,28 @@ let routes = [
     },
     {
         method: 'GET',
+        path: '/v1/user/calender',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            group: 'Challenge',
+            description: 'Route to mark date in  calender date on challenge complete ',
+            model: 'calenderMark'
+        },
+        auth: AVAILABLE_AUTHS.USER,
+        handler: challengeController.calenderMark
+    } ,
+    {
+        method: 'GET',
         path: '/v1/leaderboard/list',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                skip: Joi.number().default(0).description('skip'),
-                limit: Joi.number().default(10).description('limit'),
-                searchKey: Joi.string().allow(""),
                 leaderboardCategory: Joi.number().valid(...Object.values(LEADERBOARD_CATEGORY)).description('leaderboard category type'),
                 challengeId: Joi.string().objectId().required().description('Challenge Id.'),
-                sortKey: Joi.string().default("createdAt").optional().description('sort key'),
-                sortDirection: Joi.number().default(-1).optional().description('sort direction'),
             },
             group: 'Challenge',
             description: 'Route to get leaderboardlist',
@@ -279,6 +286,23 @@ let routes = [
         auth: AVAILABLE_AUTHS.USER,
         handler: challengeController.leaderboardList
     },
+    {
+        method: 'GET',
+        path: '/v1/leaderboard/guest/list',
+        joiSchemaForSwagger: {
+            query: {
+                challengeId: Joi.string().objectId().required().description('Challenge Id.'),
+                leaderboardCategory:Joi.number().default(1).description('learderboardCategory 1=>World Wise')
+            },
+            group: 'Challenge',
+            description: 'Route to get leaderboardlist for guest ',
+            model: 'GetLeaderboardForGuest'
+        },
+        handler: challengeController.leaderboardList
+    },
+    
+    
+    
 ];
 
 module.exports = routes;

@@ -176,7 +176,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body: {
-                contacts: Joi.array().items(Joi.string()).required().description("User's contact list"),
+                contacts: Joi.array().items(Joi.string()).required().min(1).description("User's contact list"),
             },
             group: 'User',
             description: 'Route to post user contacts ',
@@ -206,20 +206,7 @@ let routes = [
         auth: AVAILABLE_AUTHS.USER,
         handler: userController.frinedList
     },
-    {
-        method: 'GET',
-        path: '/v1/user/calender',
-        joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },         
-            group: 'User',
-            description: 'Route to dark calender date on challenge complete ',
-            model: 'calenderMark'
-        },
-        auth: AVAILABLE_AUTHS.USER,
-        handler: userController.calenderMark
-    }
+
 
 ]
 

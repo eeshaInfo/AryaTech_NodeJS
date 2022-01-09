@@ -338,8 +338,11 @@ userController.getWalletAddress = async () => {
  * Function to post user contacts.
  */
 userController.userContacts = async (payload) => {
-  let dataToUpdate = { "$addToSet": { "contacts": { "$each": payload.contacts } }, contactSyncTime: Date.now() }
-  //find user and add contacts
+//find those numbers which are present in our database
+  let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: payload.contacts } },{ _id: 0, mobileNumber: 1 })
+  let contact = contacts.map(arr => arr.mobileNumber)
+  let dataToUpdate = { $set: { "contacts": contact }, contactSyncTime: Date.now() } 
+  //find user and update contacts
   let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, dataToUpdate)
   if (data) {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CONTACTS_ADDED_SUCCESSFULLY), { data })
@@ -360,27 +363,11 @@ userController.frinedList = async (payload) => {
     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
   }
   let data = await SERVICES.userService.friends(criteria)
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })  
-  }
-  
-
-userController.calenderMark = async (payload) => {
-  let criteria = {
-    userId: payload.user._id,
-  }
-  console.log("dffdfdfd",criteria)
-  
-  let data = await SERVICES.challengeService.calender(criteria)
-  console.log("date", data)
-  
-  if (!data.length)
-  {
-     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_CHALLENGES_COMPLETED);
-  }
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })  
-  
- 
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
 }
+
+
+
 
 
 /* export userController */
