@@ -9,6 +9,7 @@ const Schema = MONGOOSE.Schema;
 const walletSchema = new Schema(
     {
         walletAddress: { type: String },
+        QRImage: { type: String }// path of QR image
     },
     { versionKey: false, timestamps: true, collection: 'wallet' }
 );

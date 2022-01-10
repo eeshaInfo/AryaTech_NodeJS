@@ -314,12 +314,10 @@ userController.userDetails = async (payload) => {
  * Function to update wallet address.
  */
 userController.updateWalletAddress = async (payload) => {
-  //find and update user address 
-  let address = await SERVICES.userService.updateAddress(payload.walletAddress)
    let pathToUpload = path.resolve(__dirname + `../../..${CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL}`);
    let fileName = `upload_${Date.now()}.jpeg`;
    let pathUri = `${pathToUpload}/${fileName}`;
-   const qrImage = await qrCode.toFile(pathUri,payload.walletAddress, {
+   await qrCode.toFile(pathUri,payload.walletAddress, {
     errorCorrectionLevel: 'H',
     quality: 0.95,
     margin: 1,
@@ -329,7 +327,8 @@ userController.updateWalletAddress = async (payload) => {
      },
   })
    //const qrImage = await qrCode.toFile(('./QRCode.jpeg',)
-   console.log(qrImage);
+   //find and update user address 
+  await SERVICES.userService.updateAddress({}, { walletAddress: payload.walletAddress, QRImage: pathUri });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY))
 }
 

@@ -119,8 +119,8 @@ challengeController.list = async (payload) => {
   } else {
     let challenges = await SERVICES.challengeService.getAllGuestChallenges({ isDeleted: false });
     let totalCounts = await SERVICES.challengeService.listCountForDashboard({ isDeleted: false });
-    let address = await SERVICES.userService.getAddress()
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, totalCounts }, address: address.walletAddress });
+    let walletData = await SERVICES.userService.getAddress()
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, totalCounts ,walletData} });
   }
 };
 
@@ -198,9 +198,9 @@ challengeController.challengeListForUser = async (payload) => {
   payload.user.challenges = userData.map(data => data.challengeId);
   // get challenge list for particular user
   let challenges = await SERVICES.challengeService.getChallengeListForUser(payload);
-  let address = await SERVICES.userService.getAddress()
+  let walletData = await SERVICES.userService.getAddress()
   //let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges }, address: address.walletAddress });
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges ,walletData} });
 };
 
 
