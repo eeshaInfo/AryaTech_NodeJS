@@ -534,7 +534,6 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
             }
         }
     ]
-    console.log(query)
     return await userChallengesModel.aggregate(query);
 };
 
