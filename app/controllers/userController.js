@@ -328,7 +328,7 @@ userController.updateWalletAddress = async (payload) => {
   })
    //const qrImage = await qrCode.toFile(('./QRCode.jpeg',)
    //find and update user address 
-  await SERVICES.userService.updateAddress({}, { walletAddress: payload.walletAddress, QRImage: pathUri });
+  await SERVICES.userService.updateAddress({}, { walletAddress: payload.walletAddress, QRImage: `${CONFIG.SERVER_URL}${CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL}/${fileName}` });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY))
 }
 

@@ -441,6 +441,7 @@ challengeService.getHistory = async (criteria) => {
         },
         { $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
         { $unwind: "$challengeData" },
+        { $sort: {'updatedAt': 1 } },
         {
             $group: {
                 _id: '$challengeId',
