@@ -66,7 +66,7 @@ fileUploadService.uploadFile = async (payload, pathToUpload, pathOnServer) => {
         let UPLOAD_TO_S3 = process.env.UPLOAD_TO_S3 ? process.env.UPLOAD_TO_S3 : '';
         if (UPLOAD_TO_S3.toLowerCase() === 'true') {
             let s3BucketName = CONFIG.S3_BUCKET.zipBucketName;
-            fileUrl = await fileUploadService.uploadFileToS3(buffer, fileName, s3BucketName);
+            fileUrl = await fileUploadService.uploadFileToS3(payload.file.buffer, fileName, s3BucketName);
         } else {
             fileUrl = await fileUploadService.uploadFileToLocal(payload, fileName, pathToUpload, pathOnServer);
         }
