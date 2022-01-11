@@ -255,6 +255,10 @@ challengeController.leaderboardList = async (payload) => {
   let criteria = {
     challengeId: payload.challengeId,
   }
+  // add user contact in contact list
+  if(Object.keys(payload.user).length) {
+   payload.user.contacts.push(payload.user.mobileNumber);
+  }
 
   let userCriteria = {
     ...(payload.leaderboardCategory == LEADERBOARD_CATEGORY.COUNTRY && { $eq: [payload.user.country, '$country'] }),
