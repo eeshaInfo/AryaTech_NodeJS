@@ -6,7 +6,8 @@ const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKE
 const SERVICES = require('../services');
 const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword, sendSms } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
-const qrCode = require('qrcode')
+const qrCode = require('qrcode');
+const fs = require('fs');
 
 /**************************************************
  ***************** user controller ***************
@@ -315,9 +316,8 @@ userController.userDetails = async (payload) => {
  */
 userController.updateWalletAddress = async (payload) => {
    let pathToUpload = path.resolve(__dirname + `../../..${CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL}`);
-   let fileName = `upload_${Date.now()}.jpeg`;
-   let pathUri = `${pathToUpload}/${fileName}`;
-   await qrCode.toFile(pathUri,payload.walletAddress, {
+   let fileName = `QRCode.jpeg`;
+   await qrCode.toFile(`${pathToUpload}/${fileName}`,payload.walletAddress, {
     errorCorrectionLevel: 'H',
     quality: 0.95,
     margin: 1,
@@ -326,9 +326,11 @@ userController.updateWalletAddress = async (payload) => {
       light: '#FFF',
      },
   })
-   //const qrImage = await qrCode.toFile(('./QRCode.jpeg',)
-   //find and update user address 
-  await SERVICES.userService.updateAddress({}, { walletAddress: payload.walletAddress, QRImage: `${CONFIG.SERVER_URL}${CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL}/${fileName}` });
+  let fileUrl = "uploads/files/QRCode.jpeg";
+  let data  = fs.readFileSync(fileUrl);
+  let imageUrl = await SERVICES.fileUploadService.uploadFileToS3(data, `upload_${Date.now()}.jpeg`, CONFIG.S3_BUCKET.zipBucketName);
+  //find and update user address
+  await SERVICES.userService.updateAddress({}, { walletAddress: payload.walletAddress, QRImage: imageUrl });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY))
 }
 
