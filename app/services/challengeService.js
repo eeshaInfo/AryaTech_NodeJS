@@ -468,7 +468,7 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
         {
             $group: {
                 _id: '$userId',
-                'timeTaken': { $max: '$timeTaken' },
+                'timeTaken': { $min: '$timeTaken' },
             }
         },
         {
