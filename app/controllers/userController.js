@@ -17,7 +17,7 @@ let userController = {};
 /**
  * function to check server.
  */
-userController.getServerResponse = async (payload) => {
+userController.getServerResponse = async () => {
   throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS);
 }
 
@@ -29,7 +29,7 @@ userController.registerNewUser = async (payload) => {
   if (!isUserAlreadyExists) {
     payload.status = STATUS.ACTIVE;
     payload.userType = USER_TYPES.USER
-    let newRegisteredUser = await SERVICES.userService.registerUser(payload);
+    let newRegisteredUser = await SERVICES.userService.createUser(payload);
     const dataForJwt = {
       id: newRegisteredUser._id,
       date: Date.now()
@@ -93,18 +93,6 @@ userController.loginUser = async (payload) => {
 };
 
 /**
- * Function to fetch user's profile from the system.
- */
-userController.getUserProfile = async (payload) => {
-  //get user data 
-  let user = await SERVICES.userService.getUser({ _id: payload.user._id }, { ...NORMAL_PROJECTION, password: 0 });
-  if (user) {
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: user });
-  }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
-};
-
-/**
  * funciton to send a link to registered email of an user who forgots his password.
  */
 userController.forgotPassword = async (payload) => {
@@ -129,28 +117,11 @@ userController.forgotPassword = async (payload) => {
 };
 
 /**
- * function to create user's sesion or update an existing one.
- * @param {*} userId 
- * @param {*} payload 
- */
-
-let createUserSession = async (criteriaForSession, userId, payload) => {
-  payload.userId = userId;
-  //create session for user when he login
-  await SERVICES.sessionService.updateSession(criteriaForSession, payload);
-};
-
-/**
  * function to logout an user.
  */
 userController.logout = async (payload) => {
-
-  let criteria = {
-    token: payload.user.token,
-  };
   //remove session of user
-  await SERVICES.sessionService.removeSession(criteria);
-
+  await SERVICES.sessionService.removeSession({ token: payload.user.token });
   return HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_OUT_SUCCESSFULLY);
 };
 
@@ -160,10 +131,7 @@ userController.logout = async (payload) => {
 userController.updateProfile = async (payload) => {
   //update user's profile'
   let updatedUser = await SERVICES.userService.updateUser({ _id: payload.user._id }, payload, { ...NORMAL_PROJECTION, password: 0, passwordToken: 0 });
-  if (updatedUser) {
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_UPDATE_SUCCESSFULLY), { data: updatedUser });
-  }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_UPDATE_SUCCESSFULLY), { data: updatedUser });
 };
 
 /**
@@ -215,11 +183,8 @@ userController.updatePassword = async (payload) => {
   if (!compareHash(payload.oldPassword, payload.user.password)) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.OLD_PASSWORD_INVALID, ERROR_TYPES.BAD_REQUEST);
   }
-  else {
-    await SERVICES.userService.updateUser({ _id: payload.user._id }, { password: hashPassword(payload.newPassword) }, NORMAL_PROJECTION);
-    return HELPERS.responseHelper.createSuccessResponse(MESSAGES.PASSWORD_UPDATED_SUCCESSFULLY);
-  }
-
+  await SERVICES.userService.updateUser({ _id: payload.user._id }, { password: hashPassword(payload.newPassword) }, NORMAL_PROJECTION);
+  return HELPERS.responseHelper.createSuccessResponse(MESSAGES.PASSWORD_UPDATED_SUCCESSFULLY);
 };
 
 /**
@@ -227,11 +192,8 @@ userController.updatePassword = async (payload) => {
  */
 userController.getAdminProfile = async (payload) => {
   //get user profile
-  let admin = await SERVICES.userService.getUser({ _id: payload.user._id }, { ...NORMAL_PROJECTION, password: 0, challengeCompleted: 0 })
-  if (admin) {
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: admin });
-  }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  let user = await SERVICES.userService.getUser({ _id: payload.user._id }, { ...NORMAL_PROJECTION, password: 0, challengeCompleted: 0 })
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: user });
 };
 
 /**
@@ -243,7 +205,41 @@ userController.list = async (payload) => {
     $and: [{ $or: [{ firstName: regex }, { lastName: regex }, { mobileNumber: regex }] }, { userType: CONSTANTS.USER_TYPES.USER }]
   }
   //get user list with search and sort
-  let userList = await SERVICES.userService.getUsersList(criteria, payload, { skip: payload.skip, limit: payload.limit })
+  let sort = {};
+  if (payload.sortKey) {
+    sort[payload.sortKey] = payload.sortDirection;
+  } else {
+    sort['createdAt'] = -1;
+  }
+  let query = [
+    {
+      $match: criteria
+    },
+    {
+      $sort: sort
+    },
+    {
+      $skip: payload.skip
+    },
+    {
+      $limit: payload.limit
+    },
+    {
+      $project: {
+        "firstName": 1,
+        "lastName": 1,
+        "gender": 1,
+        "country": 1,
+        "state": 1,
+        "city": 1,
+        "imagePath": 1,
+        "mobileNumber": 1,
+        'challengeCompleted': 1,
+        "status": 1,
+      }
+    },
+  ]
+  let userList = await SERVICES.userService.userAggregate(query);
   //count users in database
   let userCount = await SERVICES.userService.getCountOfUsers(criteria);
   let data = {
@@ -273,12 +269,11 @@ userController.blockUser = async (payload) => {
     //if not then update the status of user to block/unblock
     await SERVICES.userService.updateUser(criteria, { status: payload.status })
     if (payload.status === CONSTANTS.STATUS.BLOCK) {
-      let deleteAllSession = await SERVICES.sessionService.removeAllSession({ userId: payload.id, userType: CONSTANTS.USER_TYPES.USER })
-
+    await SERVICES.sessionService.removeAllSession({ userId: payload.id, userType: CONSTANTS.USER_TYPES.USER })
     }
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(`${payload.status === CONSTANTS.STATUS.BLOCK ? MESSAGES.USER_BLOCKED_SUCCESSFULLY : MESSAGES.USER_UNBLOCKED_SUCCESSFULLY}`), { user })
   }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
 }
 
 /**
@@ -339,8 +334,7 @@ userController.updateWalletAddress = async (payload) => {
  */
 userController.getWalletAddress = async () => {
   //get user wallet address 
-
-  let address = await SERVICES.userService.getAddress()
+  let address = await SERVICES.userService.getAddress({}, NORMAL_PROJECTION);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { address })
 }
 
@@ -365,10 +359,9 @@ userController.userContacts = async (payload) => {
 }
 
 userController.frinedList = async (payload) => {
-  let regex = new RegExp(payload.searchKey, 'i');
   let criteria = {
     mobileNumber: { $in: payload.user.contacts },
-    $and: [{ $or: [{ firstName: regex }, { lastName: regex }] }],
+    $and: [{ $or: [{ firstName: new RegExp(payload.searchKey, 'i') }, { lastName: new RegExp(payload.searchKey, 'i') }] }],
   }
   if (!payload.user.contacts.length) {
     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
@@ -376,6 +369,5 @@ userController.frinedList = async (payload) => {
   let data = await SERVICES.userService.getUsers(criteria, { firstName: 1, lastName: 1, challengeCompleted: 1, imagePath: 1 })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
 }
-
 /* export userController */
 module.exports = userController;

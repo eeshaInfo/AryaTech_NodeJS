@@ -204,7 +204,7 @@ let routes = [
             model: 'GetFrinedList'
         },
         auth: AVAILABLE_AUTHS.USER,
-        handler: userController.frinedList
+        handler: userController.friendList
     },
 
 

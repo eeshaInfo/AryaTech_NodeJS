@@ -8,9 +8,8 @@ let challengeService = {};
 /**
  * function to create a challenge.
  */
-challengeService.create = async (criteria) => {
-    return await challengeModel(criteria).save();
-
+challengeService.create = async (payload) => {
+    return await challengeModel(payload).save();
 };
 
 /**
@@ -23,8 +22,8 @@ challengeService.update = async (criteria, dataToUpdate) => {
 /**
  * function to get challenge.
  */
-challengeService.getChallenge = async (criteria) => {
-    return await challengeModel.findOne(criteria).lean();
+challengeService.getChallenge = async (criteria, projection = {}) => {
+    return await challengeModel.findOne(criteria, projection).lean();
 };
 
 /**
@@ -32,89 +31,6 @@ challengeService.getChallenge = async (criteria) => {
  */
 challengeService.getUserChallengeBasedOnCriteria = async (criteria) => {
     return await userChallengesModel.findOne(criteria).lean();
-};
-
-/**
- * function to get all challenges.
- */
-challengeService.getAllChallenges = async (criteria, pagination) => {
-    let sort = {};
-    if (pagination.sortKey) {
-        sort[pagination.sortKey] = pagination.sortDirection;
-    } else {
-        sort['createdAt'] = -1;
-    }
-    let query = [
-        {
-            $addFields: {
-                challengeNameString: {
-                    $toString: '$distance'
-                }
-            },
-        },
-        {
-            $match: criteria,
-        },
-        {
-            $sort: sort
-        },
-        {
-            $skip: pagination.skip
-        },
-        {
-            $limit: pagination.limit
-        },
-    ]
-    return await challengeModel.aggregate(query);
-};
-
-challengeService.getAllGuestChallenges = async (criteria) => {
-    let sort = {};
-    sort['createdAt'] = -1;
-    let query = [
-        {
-            $match: criteria,
-        },
-        {
-            $sort: sort
-        },
-        {
-            $addFields: {
-                completed: 0
-            }
-        }
-
-    ]
-    return await challengeModel.aggregate(query);
-};
-
-
-/**
- * function to get all challenges.
- */
-challengeService.listCountForDashboard = async (criteria, pagination) => {
-    //let sort = {};
-    //sort[pagination.sortKey] = pagination.sortDirection;
-    let query = [
-        {
-            $addFields: {
-                challengeNameString: {
-                    $toString: '$distance'
-                }
-            },
-        },
-        {
-            $match: criteria,
-        }
-    ]
-    let data = await challengeModel.aggregate(query);
-    return data.length;
-};
-/**
- * function to  get count based on criteria
- */
-challengeService.listChallenge = async (criteria, pagination) => {
-    return await challengeModel.find(criteria).sort([[pagination.sortKey, pagination.sortDirection]]).skip(pagination.skip).limit(pagination.limit).lean();
 };
 
 /**
@@ -249,7 +165,7 @@ challengeService.getUserByChallenges = async (criteria) => {
 /**
  * function to  get challenges by user
  */
-challengeService.getChallengesByUser = async (payload, pagination) => {
+challengeService.getChallengesByUser = async (payload) => {
     let sort = {}
     if (payload.sortKey === "distance") {
         payload.sortKey = `challengeData.${payload.sortKey}`
@@ -329,8 +245,8 @@ challengeService.getChallengesByUser = async (payload, pagination) => {
         { $unwind: "$pipelineResults" },
         { $unwind: "$totalCount" },
         { $replaceRoot: { newRoot: { $mergeObjects: ["$pipelineResults", { totalCount: "$totalCount.value" }] } } },
-        { $skip: pagination.skip },
-        { $limit: pagination.limit },
+        { $skip: payload.skip },
+        { $limit: payload.limit },
     ] : [
         {
             $match: { userId: payload.userId },
@@ -374,8 +290,8 @@ challengeService.getChallengesByUser = async (payload, pagination) => {
                 }
             }
         },
-        { $skip: pagination.skip },
-        { $limit: pagination.limit }
+        { $skip: payload.skip },
+        { $limit: payload.limit }
     ]
     return await userChallengesModel.aggregate(query);
 };
@@ -401,63 +317,8 @@ challengeService.getUserCountByChallenge = async (criteria) => {
     return await userChallengesModel.countDocuments(criteria);
 };
 
-/** 
- * function to  get challenge list for user
- */
-challengeService.getChallengeListForUser = async (criteria) => {
-
-    let query = [
-        {
-            $match: { isDeleted: false },
-        },
-        {
-            // $addFields: {
-            //     isChallengeCompleted: { $cond: [{ $in: [criteria.user.challenges, '$challenges._id'] }, 1, 0] }
-            // }
-            $addFields: {
-                isChallengeCompleted: { $cond: { if: { $in: ["$_id", criteria.user.challenges] }, then: 1, else: 0 } }
-            }
-        },
-        {
-            $project: {
-                "distance": 1,
-                "type": 1,
-                "distanceType": 1,
-                "amount": 1,
-                isChallengeCompleted: 1,
-
-            }
-        }
-    ]
-    return await challengeModel.aggregate(query);
-};
-
-
-
-challengeService.getHistory = async (criteria) => {
-    let query = [
-        {
-            $match: criteria,
-        },
-        { $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
-        { $unwind: "$challengeData" },
-        { $sort: {'updatedAt': 1 } },
-        {
-            $group: {
-                _id: '$challengeId',
-                challengeCompletedCount: {
-                    $sum: 1
-                },
-                "distance": { "$first": "$challengeData.distance" },
-                "distanceType": { "$first": "$challengeData.distanceType" }
-            }
-        },
-    ]
-    return await userChallengesModel.aggregate(query);
-};
-
 /**
- * function to get leaderboard data
+ * aggregation common model for userChallengeModel
  */
 challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {}) => {
     let userExists = Object.keys(payload.user).length > 0
@@ -535,34 +396,20 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
         }
     ]
     return await userChallengesModel.aggregate(query);
-};
-
-
-challengeService.calender = async (criteria) => {
-    let query = [
-        { $match: criteria },
-        { $group: { _id: "$completingDate" } },
-        { $project: { completingDate: "$_id" } },
-        { $project: { _id: 0 } }
-
-        //         {
-        //     $project: {
-        //         _id: 0,
-        //         date: {
-        //             $dateToString: {
-        //                 format: "%Y-%m-%d",
-        //                 date: "$completingDate"
-        //             }
-        //         }
-        //     }
-        // },
-        // {
-        //     $group: {
-        //         _id: "$date"
-        //     }
-        // }  
-    ]
-    return await userChallengesModel.aggregate(query)
 }
 
-module.exports = challengeService;
+/**
+* aggregation common model for user challengeModel
+*/
+challengeService.userChallengeAggregate = async (query) => {
+    return await userChallengesModel.aggregate(query);
+}
+
+/**
+ * aggregation common model for challengeModel
+ */
+challengeService.challengeAggregate = async (query) => {
+    return await challengeModel.aggregate(query);
+}
+
+module.exports = challengeService;        handler: userController.friendList

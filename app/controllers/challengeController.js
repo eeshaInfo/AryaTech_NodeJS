@@ -1,12 +1,9 @@
 "use strict";
-const path = require('path');
-const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
 const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES, CHALLENGES_TYPES, TRANSACTION_STATUS, LEADERBOARD_CATEGORY } = require('../utils/constants');
 const SERVICES = require('../services');
-const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword } = require('../utils/utils');
+const { getPaginationConditionForAggregate } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
-const { CHALLENGE_ALREADY_EXISTS } = require('../utils/messages');
 
 const moment = require('moment-timezone');
 /**************************************************
@@ -20,28 +17,16 @@ let challengeController = {};
 challengeController.createChallenge = async (payload) => {
   //check if challenge exists with same name or not
   let isChallengeExists = await SERVICES.challengeService.getChallenge({ distance: payload.distance, isDeleted: false });
-  if (!isChallengeExists) {
-    if (payload.type === CHALLENGES_TYPES.UNPAID) {
-      payload.amount = 0;
-    }
-    payload.completedByUser = 0;
-    //create challenge
-    let data = await SERVICES.challengeService.create(payload);
-    //   await SERVICES.fcmNotificationService.pushNotification({
-    //     data: {'body':'abc'},
-    //     webpush: {
-    //         headers: {
-    //             image: ''
-    //         },
-    //         // fcm_options: {
-    //         //     link: `${CONFIG.CLIENT_URL}/${location.code && location.code.toLowerCase()}/go/${affiliateLinkObj.affiliateKey}`
-    //         // }
-    //     },
-    //     topic: 'abcd'
-    // });
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_CREATED_SUCCESSFULLY), { data });
+  if (isChallengeExists) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
   }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
+  if (payload.type === CHALLENGES_TYPES.UNPAID) {
+    payload.amount = 0;
+  }
+  payload.completedByUser = 0;
+  //create challenge
+  let data = await SERVICES.challengeService.create(payload);
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_CREATED_SUCCESSFULLY), { data });
 };
 
 /**
@@ -72,15 +57,14 @@ challengeController.updateChallenge = async (payload) => {
   }
   //check if challenge Name already exists or not
   let isChallengeExists = await SERVICES.challengeService.getChallenge({ distance: payload.distance, _id: { $ne: payload.challengeId } });
-  if (!isChallengeExists) {
-    if (payload.type === CHALLENGES_TYPES.UNPAID) {
-      payload.amount = 0;
-    }
-    await SERVICES.challengeService.update({ _id: payload.challengeId }, payload);
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_UPDATED_SUCCESSFULLY));
+  if (isChallengeExists) {
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.DATA_NOT_FOUND);
   }
-
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CHALLENGE_ALREADY_EXISTS, ERROR_TYPES.DATA_NOT_FOUND);
+  if (payload.type === CHALLENGES_TYPES.UNPAID) {
+    payload.amount = 0;
+  }
+  await SERVICES.challengeService.update({ _id: payload.challengeId }, payload);
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_UPDATED_SUCCESSFULLY));
 };
 
 /**
@@ -105,22 +89,89 @@ challengeController.deleteChallenge = async (payload) => {
  * Function to fetch list of chaalenges
  */
 challengeController.list = async (payload) => {
-  if (payload.user.userType == CONSTANTS.USER_TYPES.ADMIN) {
+  let sort = {};
+  if (payload.sortKey) {
+    sort[payload.sortKey] = payload.sortDirection;
+  } else {
+    sort['createdAt'] = -1;
+  }
+ if (payload.user.userType == CONSTANTS.USER_TYPES.ADMIN) {
     if (payload.isRecentKey) {
-      let recentChallenges = await SERVICES.challengeService.listChallenge({ isDeleted: false }, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }), sortKey: payload.sortKey, sortDirection: payload.sortDirection });
+      let query = [
+        {
+          $match: { isDeleted: false }
+        },
+        {
+          $sort: sort
+        },
+        {
+          $skip: payload.skip
+        },
+        {
+          $limit: payload.limit
+        }
+      ]
+      let recentChallenges = await SERVICES.challengeService.challengeAggregate(query);
       let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false });
       return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { recentChallenges, totalCounts } });
     }
     else {
-      let challenges = await SERVICES.challengeService.getAllChallenges({ isDeleted: false, ...(payload.searchKey && { challengeNameString: { $regex: payload.searchKey, $options: 'i' } }) }, { skip: payload.skip, ...(payload.limit && { limit: payload.limit }), sortKey: payload.sortKey, sortDirection: payload.sortDirection });
-      let totalCounts = await SERVICES.challengeService.listCountForDashboard({ isDeleted: false, ...(payload.searchKey && { challengeNameString: { $regex: payload.searchKey, $options: 'i' } }) });
-      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, totalCounts } });
+      let query = [
+        {
+          $addFields: {
+            challengeNameString: {
+              $toString: '$distance'
+            }
+          },
+        },
+        {
+          $match: { isDeleted: false, ...(payload.searchKey && { challengeNameString: { $regex: payload.searchKey, $options: 'i' } }) },
+        },
+        {
+          $sort: sort
+        },
+        {
+          $skip: payload.skip
+        },
+        {
+          $limit: payload.limit
+        },
+      ]
+      let challenges = await SERVICES.challengeService.challengeAggregate(query);
+      let countQuery = [
+        {
+          $addFields: {
+            challengeNameString: {
+              $toString: '$distance'
+            }
+          },
+        },
+        {
+          $match: { isDeleted: false, ...(payload.searchKey && { challengeNameString: { $regex: payload.searchKey, $options: 'i' } }) },
+        }
+      ]
+      let totalCounts = await SERVICES.challengeService.challengeAggregate(countQuery);
+      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, totalCounts: totalCounts.length } });
     }
   } else {
-    let challenges = await SERVICES.challengeService.getAllGuestChallenges({ isDeleted: false });
-    let totalCounts = await SERVICES.challengeService.listCountForDashboard({ isDeleted: false });
-    let walletData = await SERVICES.userService.getAddress()
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, totalCounts ,walletData} });
+    let query = [
+      {
+        $match: { isDeleted: false },
+      },
+      {
+        $sort: sort
+      },
+      {
+        $addFields: {
+          completed: 0
+        }
+      }
+
+    ]
+    let challenges = await SERVICES.challengeService.challengeAggregate(query);
+    let totalCounts = await SERVICES.challengeService.listCount({ isDeleted: false });
+    let walletData = await SERVICES.userService.getAddress({}, NORMAL_PROJECTION);
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, totalCounts, walletData } });
   }
 };
 
@@ -165,9 +216,6 @@ challengeController.completedChallenge = async (payload) => {
 * Function to fetch user for particular challange
 */
 challengeController.getUserByChallenges = async (payload) => {
-  let criteria = {
-    challengeId: payload.challengeId
-  }
   // get user list by particular challenge
   let list = await SERVICES.challengeService.getUserByChallenges(payload);
   let totalCounts = list.length ? list[0].totalCount : 0;
@@ -179,13 +227,9 @@ challengeController.getUserByChallenges = async (payload) => {
 */
 challengeController.getChallengesByUser = async (payload) => {
   // criteria by which challenge to be fetched
-  let criteria = {
-    userId: payload.userId
-  }
   // get all challenge by particular user
-  let list = await SERVICES.challengeService.getChallengesByUser(payload, { skip: payload.skip, limit: payload.limit });
+  let list = await SERVICES.challengeService.getChallengesByUser(payload);
   let totalCounts = list.length ? list[0].totalCount : 0
-  //let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { list, totalCounts } });
 };
 
@@ -197,10 +241,28 @@ challengeController.challengeListForUser = async (payload) => {
   let userData = await SERVICES.challengeService.listUserChallenge({ userId: payload.user._id });
   payload.user.challenges = userData.map(data => data.challengeId);
   // get challenge list for particular user
-  let challenges = await SERVICES.challengeService.getChallengeListForUser(payload);
-  let walletData = await SERVICES.userService.getAddress()
-  //let totalCounts = await SERVICES.challengeService.getUserCountByChallenge(criteria);
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges ,walletData} });
+  let query = [
+    {
+      $match: { isDeleted: false },
+    },
+    {
+      $addFields: {
+        isChallengeCompleted: { $cond: { if: { $in: ["$_id", payload.user.challenges] }, then: 1, else: 0 } }
+      }
+    },
+    {
+      $project: {
+        "distance": 1,
+        "type": 1,
+        "distanceType": 1,
+        "amount": 1,
+        isChallengeCompleted: 1,
+      }
+    }
+  ]
+  let challenges = await SERVICES.challengeService.challengeAggregate(query);
+  let walletData = await SERVICES.userService.getAddress({}, NORMAL_PROJECTION);
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_FETCHED_SUCCESSFULLY), { data: { challenges, walletData } });
 };
 
 
@@ -218,7 +280,26 @@ challengeController.history = async (payload) => {
   }
 
   //get challenge history data
-  let challengeHistoryData = await SERVICES.challengeService.getHistory(criteria);
+  let query = [
+    {
+      $match: criteria,
+    },
+    { $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
+    { $unwind: "$challengeData" },
+    { $sort: { 'updatedAt': 1 } },
+    {
+      $group: {
+        _id: '$challengeId',
+        challengeCompletedCount: {
+          $sum: 1
+        },
+        "distance": { "$first": "$challengeData.distance" },
+        "distanceType": { "$first": "$challengeData.distanceType" }
+      }
+    },
+  ]
+  //get challenge history data
+  let challengeHistoryData = await SERVICES.challengeService.userChallengeAggregate(query);
   //get user stats
   let userStat = await SERVICES.userService.getUserStats(criteria)
   if (challengeHistoryData.length) {
@@ -233,13 +314,13 @@ challengeController.history = async (payload) => {
 
 
 challengeController.calenderMark = async (payload) => {
-  let criteria = {
-    userId: payload.user._id,
-  }
-
-  let date = await SERVICES.challengeService.calender(criteria)
-
-
+  let query = [
+    { $match: { userId: payload.user._id } },
+    { $group: { _id: "$completingDate" } },
+    { $project: { completingDate: "$_id" } },
+    { $project: { _id: 0 } }
+  ];
+  let date = await SERVICES.challengeService.userChallengeAggregate(query);
   if (!date.length) {
     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_CHALLENGES_COMPLETED);
   }
