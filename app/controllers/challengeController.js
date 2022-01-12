@@ -23,7 +23,6 @@ challengeController.createChallenge = async (payload) => {
   if (payload.type === CHALLENGES_TYPES.UNPAID) {
     payload.amount = 0;
   }
-  payload.completedByUser = 0;
   //create challenge
   let data = await SERVICES.challengeService.create(payload);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CHALLENGE_CREATED_SUCCESSFULLY), { data });
