@@ -373,7 +373,7 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
                 includeArrayIndex: "rank"
             }
         },
-        { $replaceRoot: { newRoot: "$challengeData" } },
+        { $replaceRoot: { newRoot: { $mergeObjects:  [ { userData: "$challengeData.userData", rank: "$rank", timeTaken:"$challengeData.timeTaken"  }]}}},
         //{ $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } },
         { ...(userExists ? { $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } } : { $match: {} }) },
         { ...(userExists ? { $sort: { order: 1 } } : { $match: {} }) },
