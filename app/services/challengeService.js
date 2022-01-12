@@ -336,26 +336,9 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
             $sort: { timeTaken: 1 }
         },
         {
-            $group: {
-                _id: '$false',
-                challengeData: {
-                    $push: {
-                        "userId": "$_id",
-                        "timeTaken": "$timeTaken",
-                    }
-                }
-            }
-        },
-        {
-            $unwind: {
-                path: "$challengeData",
-                includeArrayIndex: "rank"
-            }
-        },
-        {
             $lookup: {
                 from: 'users',
-                let: { userId: '$challengeData.userId' },
+                let: { userId: '$_id' },
                 pipeline: [
                     {
                         $match: {
@@ -372,6 +355,25 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
             }
         },
         { $unwind: "$userData" },
+        {
+            $group: {
+                _id: '$false',
+                challengeData: {
+                    $push: {
+                        "userId": "$_id",
+                        "timeTaken": "$timeTaken",
+                        "userData": "$userData"
+                    }
+                }
+            }
+        },
+        {
+            $unwind: {
+                path: "$challengeData",
+                includeArrayIndex: "rank"
+            }
+        },
+        { $replaceRoot: { newRoot: "$challengeData" } },
         //{ $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } },
         { ...(userExists ? { $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } } : { $match: {} }) },
         { ...(userExists ? { $sort: { order: 1 } } : { $match: {} }) },
@@ -382,7 +384,7 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
             $project: {
                 _id: 0,
                 "rank": { $sum: ["$rank", 1] },
-                timeTaken: '$challengeData.timeTaken',
+                timeTaken: '$timeTaken',
                 "userData._id": 1,
                 "userData.firstName": 1,
                 "userData.lastName": 1,

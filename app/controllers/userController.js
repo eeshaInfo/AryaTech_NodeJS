@@ -348,20 +348,22 @@ userController.userContacts = async (payload) => {
   //find user and update contacts
   let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, { $set: { "contacts": contacts }, contactSyncTime: Date.now() })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CONTACTS_ADDED_SUCCESSFULLY), { data })
-
 }
 
 
-
+/**
+ * Function to get friend contact.
+ */
 userController.friendList = async (payload) => {
-  let criteria = {
-    mobileNumber: { $in: payload.user.contacts },
-    $and: [{ $or: [{ firstName: new RegExp(payload.searchKey, 'i') }, { lastName: new RegExp(payload.searchKey, 'i') }] }],
-  }
+  //check if user has friend or not
   if (!payload.user.contacts.length) {
     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
   }
-  let data = await SERVICES.userService.getUsers(criteria, { firstName: 1, lastName: 1, challengeCompleted: 1, imagePath: 1 })
+  let criteria = {
+    mobileNumber: { $in: payload.user.contacts },
+    $and: [{ $or: [{ firstName: new RegExp(payload.searchKey, 'i') }, { lastName: new RegExp(payload.searchKey, 'i') }, { mobileNumber: new RegExp(payload.searchKey, 'i') }] }],
+  }
+  let data = await SERVICES.userService.getUsers(criteria, { firstName: 1, lastName: 1, challengeCompleted: 1, imagePath: 1 ,mobileNumber: 1})
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
 }
 /* export userController */
