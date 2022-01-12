@@ -315,16 +315,16 @@ userController.userDetails = async (payload) => {
  * Function to update wallet address.
  */
 userController.updateWalletAddress = async (payload) => {
-   let pathToUpload = path.resolve(__dirname + `../../..${CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL}`);
-   let fileName = `QRCode.jpeg`;
-   await qrCode.toFile(`${pathToUpload}/${fileName}`,payload.walletAddress, {
+  let pathToUpload = path.resolve(__dirname + `../../..${CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL}`);
+  let fileName = `QRCode.jpeg`;
+  await qrCode.toFile(`${pathToUpload}/${fileName}`,payload.walletAddress, {
     errorCorrectionLevel: 'H',
     quality: 0.95,
     margin: 1,
     color: {
       dark: '#208698',
       light: '#FFF',
-     },
+    },
   })
   let fileUrl = "uploads/files/QRCode.jpeg";
   let data  = fs.readFileSync(fileUrl);
@@ -349,19 +349,18 @@ userController.getWalletAddress = async () => {
  */
 userController.userContacts = async (payload) => {
   //find those numbers which are present in our database
-  let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: payload.contacts } },{ _id: 0, mobileNumber: 1 })
+  let phonesRegex = [];
+  payload.contacts.forEach(contact => {
+    phonesRegex.push(new RegExp(contact));
+  })
+
+  let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: phonesRegex } }, { _id: 0, mobileNumber: 1 })
   let contact = contacts.map(arr => arr.mobileNumber)
   let dataToUpdate = { $set: { "contacts": contact }, contactSyncTime: Date.now() }
   //find user and update contacts
   let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, dataToUpdate)
-  if (data) {
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CONTACTS_ADDED_SUCCESSFULLY), { data })
-  }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NO_USER_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
-
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CONTACTS_ADDED_SUCCESSFULLY), { data })
 }
-
-
 
 userController.frinedList = async (payload) => {
   let regex = new RegExp(payload.searchKey, 'i');
@@ -375,10 +374,6 @@ userController.frinedList = async (payload) => {
   let data = await SERVICES.userService.friends(criteria)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
 }
-
-
-
-
 
 /* export userController */
 module.exports = userController;

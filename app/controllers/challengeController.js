@@ -27,7 +27,7 @@ challengeController.createChallenge = async (payload) => {
     payload.completedByUser = 0;
     //create challenge
     let data = await SERVICES.challengeService.create(payload);
-    //   await SERVICES.fcmNotificationService.pushreNotification({
+    //   await SERVICES.fcmNotificationService.pushNotification({
     //     data: {'body':'abc'},
     //     webpush: {
     //         headers: {
