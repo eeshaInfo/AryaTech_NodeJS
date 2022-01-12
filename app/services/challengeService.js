@@ -475,9 +475,26 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
             $sort: { timeTaken: 1 }
         },
         {
+            $group: {
+                _id: '$false',
+                challengeData: {
+                    $push: {
+                        "userId": "$_id",
+                        "timeTaken": "$timeTaken",
+                    }
+                }
+            }
+        },
+        {
+            $unwind: {
+                path: "$challengeData",
+                includeArrayIndex: "rank"
+            }
+        },
+        {
             $lookup: {
                 from: 'users',
-                let: { userId: '$_id' },
+                let: { userId: '$challengeData.userId' },
                 pipeline: [
                     {
                         $match: {
@@ -494,27 +511,9 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
             }
         },
         { $unwind: "$userData" },
-        {
-            $group: {
-                _id: '$false',
-                challengeData: {
-                    $push: {
-                        "userId": "$_id",
-                        "timeTaken": "$timeTaken",
-                        "userData": "$userData"
-                    }
-                }
-            }
-        },
-        {
-            $unwind: {
-                path: "$challengeData",
-                includeArrayIndex: "rank"
-            }
-        },
         //{ $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } },
-        { ...(userExists ? { $addFields: { order: { $cond: { if: { $eq: ["$challengeData.userData._id", payload.user._id] }, then: 0, else: 1 } } } }: { $match: {} }) },
-        { ...(userExists ? { $sort: { order: 1 } }: { $match: {} }) },
+        { ...(userExists ? { $addFields: { order: { $cond: { if: { $eq: ["$userData._id", payload.user._id] }, then: 0, else: 1 } } } } : { $match: {} }) },
+        { ...(userExists ? { $sort: { order: 1 } } : { $match: {} }) },
         {
             $limit: PAGINATION.DEFAULT_LIMIT
         },
@@ -523,15 +522,15 @@ challengeService.getLeaderboardList = async (criteria, payload, userCriteria = {
                 _id: 0,
                 "rank": { $sum: ["$rank", 1] },
                 timeTaken: '$challengeData.timeTaken',
-                "challengeData.userData._id": 1,
-                "challengeData.userData.firstName": 1,
-                "challengeData.userData.lastName": 1,
-                "challengeData.userData.imagePath": 1,
-                "challengeData.userData.mobileNumber": 1,
-                "challengeData.userData.country": 1,
-                "challengeData.userData.state": 1,
-                "challengeData.userData.city": 1,
-                "challengeData.userData.rank": 1
+                "userData._id": 1,
+                "userData.firstName": 1,
+                "userData.lastName": 1,
+                "userData.imagePath": 1,
+                "userData.mobileNumber": 1,
+                "userData.country": 1,
+                "userData.state": 1,
+                "userData.city": 1,
+                "userData.rank": 1
             }
         }
     ]
