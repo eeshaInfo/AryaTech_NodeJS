@@ -355,7 +355,6 @@ userController.userContacts = async (payload) => {
       phonesRegex.push(new RegExp(contact));
     }
   })
-  console.log(phonesRegex)
 
   let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: phonesRegex } }, { _id: 0, mobileNumber: 1 })
   let contact = contacts.map(arr => arr.mobileNumber)
