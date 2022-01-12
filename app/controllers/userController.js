@@ -351,8 +351,11 @@ userController.userContacts = async (payload) => {
   //find those numbers which are present in our database
   let phonesRegex = [];
   payload.contacts.forEach(contact => {
-    phonesRegex.push(new RegExp(contact));
+    if (contact != payload.user.mobileNumber) {
+      phonesRegex.push(new RegExp(contact));
+    }
   })
+  console.log(phonesRegex)
 
   let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: phonesRegex } }, { _id: 0, mobileNumber: 1 })
   let contact = contacts.map(arr => arr.mobileNumber)
@@ -371,7 +374,7 @@ userController.frinedList = async (payload) => {
   if (!payload.user.contacts.length) {
     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
   }
-  let data = await SERVICES.userService.friends(criteria)
+  let data = await SERVICES.userService.getUsers(criteria, { firstName: 1, lastName: 1, challengeCompleted: 1, imagePath: 1 })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
 }
 
