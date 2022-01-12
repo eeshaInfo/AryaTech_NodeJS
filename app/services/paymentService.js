@@ -13,16 +13,9 @@ paymentService.updatePayment = async (criteria, dataToUpdate) => {
 /**
  * function to get payment detail.
  */
-paymentService.getPayment = async (criteria) => {
-    return await paymentModel.findOne(criteria, null, { sort: { createdAt: -1 } }).lean();
+paymentService.getPayment = async (criteria, projection = {}) => {
+    return await paymentModel.findOne(criteria, projection, { sort: { createdAt: -1 } }).lean();
 };
-
-/**
- * function to get payment list.
- */
-// paymentService.getPayment = async (criteria) => {
-//     return await paymentModel.find(criteria).lean();
-// };
 
 
 paymentService.updatePaymentDetails = async (dataToInsert) => {

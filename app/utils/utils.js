@@ -248,6 +248,18 @@ commonFunctions.sendSms = async (receiver, content) => {
   return smsResponse
 }
 
+/**
+ * function to get pagination condition for aggregate query.
+ * @param {*} sort
+ * @param {*} skip
+ * @param {*} limit
+ */
+commonFunctions.getPaginationConditionForAggregate = (sort, skip, limit) => {
+  let condition = [...(!!sort ? [{ $sort: sort }] : []), { $skip: skip }, { $limit: limit }];
+  console.log(condition);
+  return condition;
+};
+
 
 
 module.exports = commonFunctions;
