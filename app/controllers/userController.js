@@ -269,7 +269,7 @@ userController.blockUser = async (payload) => {
     //if not then update the status of user to block/unblock
     await SERVICES.userService.updateUser(criteria, { status: payload.status })
     if (payload.status === CONSTANTS.STATUS.BLOCK) {
-    await SERVICES.sessionService.removeAllSession({ userId: payload.id, userType: CONSTANTS.USER_TYPES.USER })
+      await SERVICES.sessionService.removeAllSession({ userId: payload.id, userType: CONSTANTS.USER_TYPES.USER })
     }
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(`${payload.status === CONSTANTS.STATUS.BLOCK ? MESSAGES.USER_BLOCKED_SUCCESSFULLY : MESSAGES.USER_UNBLOCKED_SUCCESSFULLY}`), { user })
   }
@@ -312,7 +312,7 @@ userController.userDetails = async (payload) => {
 userController.updateWalletAddress = async (payload) => {
   let pathToUpload = path.resolve(__dirname + `../../..${CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL}`);
   let fileName = `QRCode.jpeg`;
-  await qrCode.toFile(`${pathToUpload}/${fileName}`,payload.walletAddress, {
+  await qrCode.toFile(`${pathToUpload}/${fileName}`, payload.walletAddress, {
     errorCorrectionLevel: 'H',
     quality: 0.95,
     margin: 1,
@@ -322,7 +322,7 @@ userController.updateWalletAddress = async (payload) => {
     },
   })
   let fileUrl = "uploads/files/QRCode.jpeg";
-  let data  = fs.readFileSync(fileUrl);
+  let data = fs.readFileSync(fileUrl);
   let imageUrl = await SERVICES.fileUploadService.uploadFileToS3(data, `upload_${Date.now()}.jpeg`, CONFIG.S3_BUCKET.zipBucketName);
   //find and update user address
   await SERVICES.userService.updateAddress({}, { walletAddress: payload.walletAddress, QRImage: imageUrl });
@@ -365,7 +365,7 @@ userController.friendList = async (payload) => {
   if (!payload.user.contacts.length) {
     throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
   }
-  let data = await SERVICES.userService.getUsers(criteria, { firstName: 1, lastName: 1, challengeCompleted: 1, imagePath: 1 })
+  let data = await SERVICES.userService.getUsers(criteria, { firstName: 1, lastName: 1, mobileNumber: 1, challengeCompleted: 1, imagePath: 1 })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
 }
 /* export userController */
