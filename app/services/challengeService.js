@@ -412,4 +412,4 @@ challengeService.challengeAggregate = async (query) => {
     return await challengeModel.aggregate(query);
 }
 
-module.exports = challengeService;        handler: userController.friendList
+module.exports = challengeService;    

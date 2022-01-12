@@ -345,11 +345,10 @@ userController.userContacts = async (payload) => {
   //find those numbers which are present in our database
   let phonesRegex = [];
   payload.contacts.forEach(contact => {
-    if (contact != payload.user.mobileNumber) {
+    if (contact != paylpoad.user.mobileNumber) {
       phonesRegex.push(new RegExp(contact));
     }
   })
-
   let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: phonesRegex } }, { _id: 0, mobileNumber: 1 })
   let contact = contacts.map(arr => arr.mobileNumber)
   let dataToUpdate = { $set: { "contacts": contact }, contactSyncTime: Date.now() }
@@ -358,7 +357,7 @@ userController.userContacts = async (payload) => {
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CONTACTS_ADDED_SUCCESSFULLY), { data })
 }
 
-userController.frinedList = async (payload) => {
+userController.friendList = async (payload) => {
   let criteria = {
     mobileNumber: { $in: payload.user.contacts },
     $and: [{ $or: [{ firstName: new RegExp(payload.searchKey, 'i') }, { lastName: new RegExp(payload.searchKey, 'i') }] }],
