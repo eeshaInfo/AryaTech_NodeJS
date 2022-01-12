@@ -345,7 +345,7 @@ userController.userContacts = async (payload) => {
   //find those numbers which are present in our database
   let phonesRegex = [];
   payload.contacts.forEach(contact => {
-    if (contact != paylpoad.user.mobileNumber) {
+    if (contact != payload.user.mobileNumber) {
       phonesRegex.push(new RegExp(contact));
     }
   })
