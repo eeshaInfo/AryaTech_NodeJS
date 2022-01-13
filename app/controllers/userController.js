@@ -345,12 +345,13 @@ userController.userContacts = async (payload) => {
   //find those numbers which are present in our database
   let phonesRegex = [];
   payload.contacts.forEach(contact => {
-    if (contact != payload.user.mobileNumber) {
       phonesRegex.push(new RegExp(contact));
-    }
   })
   let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: phonesRegex } }, { _id: 0, mobileNumber: 1 })
-  let contact = contacts.map(arr => arr.mobileNumber)
+  let contact = contacts.filter((arr) => {
+    if (arr.mobileNumber !=  payload.user.mobileNumber ) {
+      return arr.mobileNumber
+    }}).map(arr => arr.mobileNumber)
   let dataToUpdate = { $set: { "contacts": contact }, contactSyncTime: Date.now() }
   //find user and update contacts
   let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, dataToUpdate)
