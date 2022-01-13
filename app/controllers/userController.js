@@ -269,7 +269,7 @@ userController.blockUser = async (payload) => {
     //if not then update the status of user to block/unblock
     await SERVICES.userService.updateUser(criteria, { status: payload.status })
     if (payload.status === CONSTANTS.STATUS.BLOCK) {
-    await SERVICES.sessionService.removeAllSession({ userId: payload.id, userType: CONSTANTS.USER_TYPES.USER })
+      await SERVICES.sessionService.removeAllSession({ userId: payload.id, userType: CONSTANTS.USER_TYPES.USER })
     }
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(`${payload.status === CONSTANTS.STATUS.BLOCK ? MESSAGES.USER_BLOCKED_SUCCESSFULLY : MESSAGES.USER_UNBLOCKED_SUCCESSFULLY}`), { user })
   }
@@ -310,19 +310,19 @@ userController.userDetails = async (payload) => {
  * Function to update wallet address.
  */
 userController.updateWalletAddress = async (payload) => {
-   let pathToUpload = path.resolve(__dirname + `../../..${CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL}`);
-   let fileName = `QRCode.jpeg`;
-   await qrCode.toFile(`${pathToUpload}/${fileName}`,payload.walletAddress, {
+  let pathToUpload = path.resolve(__dirname + `../../..${CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL}`);
+  let fileName = `QRCode.jpeg`;
+  await qrCode.toFile(`${pathToUpload}/${fileName}`, payload.walletAddress, {
     errorCorrectionLevel: 'H',
     quality: 0.95,
     margin: 1,
     color: {
       dark: '#208698',
       light: '#FFF',
-     },
+    },
   })
   let fileUrl = "uploads/files/QRCode.jpeg";
-  let data  = fs.readFileSync(fileUrl);
+  let data = fs.readFileSync(fileUrl);
   let imageUrl = await SERVICES.fileUploadService.uploadFileToS3(data, `upload_${Date.now()}.jpeg`, CONFIG.S3_BUCKET.zipBucketName);
   //find and update user address
   await SERVICES.userService.updateAddress({}, { walletAddress: payload.walletAddress, QRImage: imageUrl });
@@ -343,17 +343,21 @@ userController.getWalletAddress = async () => {
  */
 userController.userContacts = async (payload) => {
   //find those numbers which are present in our database
-  let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: payload.contacts } },{ _id: 0, mobileNumber: 1 })
-  contacts = contacts.map(arr => arr.mobileNumber)
+  let phonesRegex = [];
+  payload.contacts.forEach(contact => {
+      phonesRegex.push(new RegExp(contact));
+  })
+  let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: phonesRegex } }, { _id: 0, mobileNumber: 1 })
+  let contact = contacts.filter((arr) => {
+    if (arr.mobileNumber !=  payload.user.mobileNumber ) {
+      return arr.mobileNumber
+    }}).map(arr => arr.mobileNumber)
+  let dataToUpdate = { $set: { "contacts": contact }, contactSyncTime: Date.now() }
   //find user and update contacts
-  let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, { $set: { "contacts": contacts }, contactSyncTime: Date.now() })
+  let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, dataToUpdate)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CONTACTS_ADDED_SUCCESSFULLY), { data })
 }
 
-
-/**
- * Function to get friend contact.
- */
 userController.friendList = async (payload) => {
   //check if user has friend or not
   if (!payload.user.contacts.length) {
