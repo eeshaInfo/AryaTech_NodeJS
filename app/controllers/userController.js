@@ -38,7 +38,8 @@ userController.registerNewUser = async (payload) => {
     let data = { userId: newRegisteredUser._id, token: token, deviceToken: payload.deviceToken }
     // create session for particular user
     await SERVICES.sessionService.createSession(data);
-
+    // update user contacts isRegistered status to true
+    await SERVICES.userService.updateContacts({ "contacts.mobileNumber": { $in: payload.mobileNumber } }, {"contacts.$.isRegistered": true});
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser, token });
   }
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
@@ -360,11 +361,14 @@ userController.userContacts = async (payload) => {
 
 userController.friendList = async (payload) => {
   //check if user has friend or not
-  if (!payload.user.contacts.length) {
-    throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
-  }
+  // if (!payload.user.contacts.length) {
+  //   throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
+  // }
+  let contactsData = await SERVICES.userService.getContact({userId: payload.user._id});
+  let contacts = contactsData.contacts.filter(item => item.isRegistered == true).map(item => item.mobileNumber)
+  console.log(contacts);
   let criteria = {
-    mobileNumber: { $in: payload.user.contacts },
+    mobileNumber: { $in: contacts },
     $and: [{ $or: [{ firstName: new RegExp(payload.searchKey, 'i') }, { lastName: new RegExp(payload.searchKey, 'i') }, { mobileNumber: new RegExp(payload.searchKey, 'i') }] }],
   }
   let data = await SERVICES.userService.getUsers(criteria, { firstName: 1, lastName: 1, challengeCompleted: 1, imagePath: 1 ,mobileNumber: 1})

@@ -1,5 +1,5 @@
 'use strict';
-const { userModel, userChallengesModel,walletAddressModel } = require('../models');
+const { userModel, userChallengesModel,walletAddressModel, contactsModel } = require('../models');
 const CONSTANTS = require('../utils/constants');
 let userService = {};
 
@@ -113,6 +113,19 @@ userService.userAggregate=async (query) => {
   return await userModel.aggregate(query);
 }
 
+/**
+ * function to fetch user from the system based on criteria.
+ */
+userService.getContact = async (criteria, projection) => {
+  return await contactsModel.findOne(criteria, projection).lean();
+};
+
+/**
+ * Function to update user contacts
+ */
+userService.updateContacts = async (criteria, dataToUpdate) => {
+  return await contactsModel.updateMany(criteria, dataToUpdate, { upsert: true, new: true })
+}
 
 
 module.exports = userService;
