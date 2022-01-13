@@ -1,28 +1,13 @@
 'use strict';
-const { log } = require('npmlog');
-const { userModel, userChallengesModel,walletAddressModel } = require('../models');
+const { userModel, userChallengesModel,walletAddressModel, contactsModel } = require('../models');
 const CONSTANTS = require('../utils/constants');
-const utils = require('../utils/utils');
-const { convertIdToMongooseId } = require(`../utils/utils`);
 let userService = {};
-
-/** 
- * function to register a new  user
- */
-userService.registerUser = async (payload) => {
-  // encrypt user's password and store it in the database.
-  //payload.password = utils.hashPassword(payload.password);
-  return await userModel(payload).save();
-};
 
 /**
  * function to update user.
  */
 userService.updateUser = async (criteria, dataToUpdate, projection = {}) => {
-  let updatedUserData = await userModel.findOneAndUpdate(criteria, dataToUpdate, { new: true, projection: projection }).lean();
-  //function to maintain the users stats history.
-  //await userService.updateUserStatsHistory(userData, updatedUserData);
-  return updatedUserData;
+  return await userModel.findOneAndUpdate(criteria, dataToUpdate, { new: true, projection: projection }).lean();
 };
 
 /**
@@ -31,42 +16,6 @@ userService.updateUser = async (criteria, dataToUpdate, projection = {}) => {
 userService.getUser = async (criteria, projection) => {
   return await userModel.findOne(criteria, projection).lean();
 };
-
-
-userService.getUsersList = async (criteria, payload, pagination) => {
-  let sort = {};
-  sort[payload.sortKey] = payload.sortDirection;
-  let query = [
-    {
-      $match: criteria
-    },
-    {
-      $sort: sort
-    },
-    {
-      $skip: pagination.skip
-    },
-    {
-      $limit: pagination.limit
-    },
-    {
-      $project: {
-        "firstName": 1,
-        "lastName": 1,
-        "gender": 1,
-        "country": 1,
-        "state": 1,
-        "city":1,
-        "imagePath": 1,
-        "mobileNumber": 1,
-        'challengeCompleted': 1,
-        "status": 1,
-      }
-    },
-  ]
-  return await userModel.aggregate(query);
-};
-
 
 /**
  * function to create new user into the system.
@@ -82,17 +31,11 @@ userService.getCountOfUsers = async (criteria) => {
   return await userModel.countDocuments(criteria)
 }
 
-
-//   let data = await userModel.aggregate(query);
-//   return data.length
-//   // return await userModel.find(criteria);
-// };
-
 /**
  * function to fetch users from the system based on criteria.
  */
-userService.getUsers = async (criteria) => {
-  return await userModel.find(criteria);
+userService.getUsers = async (criteria, projection= {}) => {
+  return await userModel.find(criteria,projection);
 };
 
 /**
@@ -152,24 +95,37 @@ userService.getUserStats = async (criteria) => {
 /**
  * Function to update admin wallet address
  */
-userService.updateAddress = async (criteria) => {
-return await walletAddressModel.findOneAndUpdate({},{walletAddress:criteria},{upsert: true, new:true}).lean()
+userService.updateAddress = async (criteria, dataToUpdate) => {
+  return await walletAddressModel.findOneAndUpdate(criteria, dataToUpdate, { upsert: true, new: true }).lean()
 }
 
 /**
  * Function to get  wallet address
  */
-userService. getAddress=async () => {
-return await walletAddressModel.findOne({}).lean()
+userService.getAddress=async (criteria, projection = {} ) => {
+  return await walletAddressModel.findOne(criteria,projection).lean()
 }
 
-
-userService.friends = async (criteria) => {
-  return await userModel.aggregate(criteria, { firstName: 1, lastName: 1,challengeCompleted:1,imagePath:1})
-
+/**
+ * Function to get aggregate data from user Model
+ */
+userService.userAggregate=async (query) => {
+  return await userModel.aggregate(query);
 }
 
+/**
+ * function to fetch user from the system based on criteria.
+ */
+userService.getContact = async (criteria, projection) => {
+  return await contactsModel.findOne(criteria, projection).lean();
+};
 
+/**
+ * Function to update user contacts
+ */
+userService.updateContacts = async (criteria, dataToUpdate) => {
+  return await contactsModel.updateMany(criteria, dataToUpdate, { upsert: true, new: true })
+}
 
 
 module.exports = userService;

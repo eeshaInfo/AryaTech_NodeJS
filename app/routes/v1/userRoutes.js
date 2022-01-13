@@ -200,11 +200,11 @@ let routes = [
             },
 
             group: 'User',
-            description: 'Route to get Frineds list ',
+            description: 'Route to get Friends list ',
             model: 'GetFrinedList'
         },
         auth: AVAILABLE_AUTHS.USER,
-        handler: userController.frinedList
+        handler: userController.friendList
     },
 
 

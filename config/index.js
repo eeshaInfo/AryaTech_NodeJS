@@ -63,6 +63,20 @@ var defaults = {
         awsRegion: process.env.AWS_REGION || 'ohio',
         smsSender: process.env.SMS_SENDER || 'chicmic'
     },
+    SMTP: {
+        TRANSPORT: {
+          host: process.env.NODEMAILER_HOST || `node-mailer-host-name`,
+          // service: process.env.NODEMAILER_SERVICE || `node-mailer-service`,
+          auth: {
+            user: process.env.NODEMAILER_USER || `node-mailer-user`,
+            pass: process.env.NODEMAILER_PASSWORD || `node-mailer-password`,
+          },
+          port: 465,
+          secure: true,
+          tls: { rejectUnauthorized: false },
+        },
+        SENDER: "CamelSports <sport@demo.co.in>",
+      },
     PATH_TO_UPLOAD_FILES_ON_LOCAL: process.env.PATH_TO_UPLOAD_FILES_ON_LOCAL || '/uploads/files'
 };
 

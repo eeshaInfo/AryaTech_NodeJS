@@ -6,6 +6,8 @@ const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKE
 const SERVICES = require('../services');
 const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword, sendSms } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
+const qrCode = require('qrcode');
+const fs = require('fs');
 
 /**************************************************
  ***************** user controller ***************
@@ -15,7 +17,7 @@ let userController = {};
 /**
  * function to check server.
  */
-userController.getServerResponse = async (payload) => {
+userController.getServerResponse = async () => {
   throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS);
 }
 
@@ -27,7 +29,7 @@ userController.registerNewUser = async (payload) => {
   if (!isUserAlreadyExists) {
     payload.status = STATUS.ACTIVE;
     payload.userType = USER_TYPES.USER
-    let newRegisteredUser = await SERVICES.userService.registerUser(payload);
+    let newRegisteredUser = await SERVICES.userService.createUser(payload);
     const dataForJwt = {
       id: newRegisteredUser._id,
       date: Date.now()
@@ -36,7 +38,8 @@ userController.registerNewUser = async (payload) => {
     let data = { userId: newRegisteredUser._id, token: token, deviceToken: payload.deviceToken }
     // create session for particular user
     await SERVICES.sessionService.createSession(data);
-
+    // update user contacts isRegistered status to true
+    await SERVICES.userService.updateContacts({ "contacts.mobileNumber": { $in: payload.mobileNumber } }, {"contacts.$.isRegistered": true});
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser, token });
   }
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
@@ -91,18 +94,6 @@ userController.loginUser = async (payload) => {
 };
 
 /**
- * Function to fetch user's profile from the system.
- */
-userController.getUserProfile = async (payload) => {
-  //get user data 
-  let user = await SERVICES.userService.getUser({ _id: payload.user._id }, { ...NORMAL_PROJECTION, password: 0 });
-  if (user) {
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: user });
-  }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
-};
-
-/**
  * funciton to send a link to registered email of an user who forgots his password.
  */
 userController.forgotPassword = async (payload) => {
@@ -127,28 +118,11 @@ userController.forgotPassword = async (payload) => {
 };
 
 /**
- * function to create user's sesion or update an existing one.
- * @param {*} userId 
- * @param {*} payload 
- */
-
-let createUserSession = async (criteriaForSession, userId, payload) => {
-  payload.userId = userId;
-  //create session for user when he login
-  await SERVICES.sessionService.updateSession(criteriaForSession, payload);
-};
-
-/**
  * function to logout an user.
  */
 userController.logout = async (payload) => {
-
-  let criteria = {
-    token: payload.user.token,
-  };
   //remove session of user
-  await SERVICES.sessionService.removeSession(criteria);
-
+  await SERVICES.sessionService.removeSession({ token: payload.user.token });
   return HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_OUT_SUCCESSFULLY);
 };
 
@@ -158,10 +132,7 @@ userController.logout = async (payload) => {
 userController.updateProfile = async (payload) => {
   //update user's profile'
   let updatedUser = await SERVICES.userService.updateUser({ _id: payload.user._id }, payload, { ...NORMAL_PROJECTION, password: 0, passwordToken: 0 });
-  if (updatedUser) {
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_UPDATE_SUCCESSFULLY), { data: updatedUser });
-  }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_UPDATE_SUCCESSFULLY), { data: updatedUser });
 };
 
 /**
@@ -213,11 +184,8 @@ userController.updatePassword = async (payload) => {
   if (!compareHash(payload.oldPassword, payload.user.password)) {
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.OLD_PASSWORD_INVALID, ERROR_TYPES.BAD_REQUEST);
   }
-  else {
-    await SERVICES.userService.updateUser({ _id: payload.user._id }, { password: hashPassword(payload.newPassword) }, NORMAL_PROJECTION);
-    return HELPERS.responseHelper.createSuccessResponse(MESSAGES.PASSWORD_UPDATED_SUCCESSFULLY);
-  }
-
+  await SERVICES.userService.updateUser({ _id: payload.user._id }, { password: hashPassword(payload.newPassword) }, NORMAL_PROJECTION);
+  return HELPERS.responseHelper.createSuccessResponse(MESSAGES.PASSWORD_UPDATED_SUCCESSFULLY);
 };
 
 /**
@@ -225,11 +193,8 @@ userController.updatePassword = async (payload) => {
  */
 userController.getAdminProfile = async (payload) => {
   //get user profile
-  let admin = await SERVICES.userService.getUser({ _id: payload.user._id }, { ...NORMAL_PROJECTION, password: 0, challengeCompleted: 0 })
-  if (admin) {
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: admin });
-  }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  let user = await SERVICES.userService.getUser({ _id: payload.user._id }, { ...NORMAL_PROJECTION, password: 0, challengeCompleted: 0 })
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: user });
 };
 
 /**
@@ -241,7 +206,41 @@ userController.list = async (payload) => {
     $and: [{ $or: [{ firstName: regex }, { lastName: regex }, { mobileNumber: regex }] }, { userType: CONSTANTS.USER_TYPES.USER }]
   }
   //get user list with search and sort
-  let userList = await SERVICES.userService.getUsersList(criteria, payload, { skip: payload.skip, limit: payload.limit })
+  let sort = {};
+  if (payload.sortKey) {
+    sort[payload.sortKey] = payload.sortDirection;
+  } else {
+    sort['createdAt'] = -1;
+  }
+  let query = [
+    {
+      $match: criteria
+    },
+    {
+      $sort: sort
+    },
+    {
+      $skip: payload.skip
+    },
+    {
+      $limit: payload.limit
+    },
+    {
+      $project: {
+        "firstName": 1,
+        "lastName": 1,
+        "gender": 1,
+        "country": 1,
+        "state": 1,
+        "city": 1,
+        "imagePath": 1,
+        "mobileNumber": 1,
+        'challengeCompleted': 1,
+        "status": 1,
+      }
+    },
+  ]
+  let userList = await SERVICES.userService.userAggregate(query);
   //count users in database
   let userCount = await SERVICES.userService.getCountOfUsers(criteria);
   let data = {
@@ -271,12 +270,11 @@ userController.blockUser = async (payload) => {
     //if not then update the status of user to block/unblock
     await SERVICES.userService.updateUser(criteria, { status: payload.status })
     if (payload.status === CONSTANTS.STATUS.BLOCK) {
-      let deleteAllSession = await SERVICES.sessionService.removeAllSession({ userId: payload.id, userType: CONSTANTS.USER_TYPES.USER })
-
+      await SERVICES.sessionService.removeAllSession({ userId: payload.id, userType: CONSTANTS.USER_TYPES.USER })
     }
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(`${payload.status === CONSTANTS.STATUS.BLOCK ? MESSAGES.USER_BLOCKED_SUCCESSFULLY : MESSAGES.USER_UNBLOCKED_SUCCESSFULLY}`), { user })
   }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
 }
 
 /**
@@ -313,11 +311,22 @@ userController.userDetails = async (payload) => {
  * Function to update wallet address.
  */
 userController.updateWalletAddress = async (payload) => {
-  //find and update user address 
-  let address = await SERVICES.userService.updateAddress(payload.walletAddress)
-  if (!address) {
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NOT_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
-  }
+  let pathToUpload = path.resolve(__dirname + `../../..${CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL}`);
+  let fileName = `QRCode.jpeg`;
+  await qrCode.toFile(`${pathToUpload}/${fileName}`, payload.walletAddress, {
+    errorCorrectionLevel: 'H',
+    quality: 0.95,
+    margin: 1,
+    color: {
+      dark: '#208698',
+      light: '#FFF',
+    },
+  })
+  let fileUrl = "uploads/files/QRCode.jpeg";
+  let data = fs.readFileSync(fileUrl);
+  let imageUrl = await SERVICES.fileUploadService.uploadFileToS3(data, `upload_${Date.now()}.jpeg`, CONFIG.S3_BUCKET.zipBucketName);
+  //find and update user address
+  await SERVICES.userService.updateAddress({}, { walletAddress: payload.walletAddress, QRImage: imageUrl });
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY))
 }
 
@@ -326,8 +335,7 @@ userController.updateWalletAddress = async (payload) => {
  */
 userController.getWalletAddress = async () => {
   //get user wallet address 
-
-  let address = await SERVICES.userService.getAddress()
+  let address = await SERVICES.userService.getAddress({}, NORMAL_PROJECTION);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { address })
 }
 
@@ -336,36 +344,35 @@ userController.getWalletAddress = async () => {
  */
 userController.userContacts = async (payload) => {
   //find those numbers which are present in our database
-  let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: payload.contacts } },{ _id: 0, mobileNumber: 1 })
-  let contact = contacts.map(arr => arr.mobileNumber)
+  let phonesRegex = [];
+  payload.contacts.forEach(contact => {
+      phonesRegex.push(new RegExp(contact));
+  })
+  let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: phonesRegex } }, { _id: 0, mobileNumber: 1 })
+  let contact = contacts.filter((arr) => {
+    if (arr.mobileNumber !=  payload.user.mobileNumber ) {
+      return arr.mobileNumber
+    }}).map(arr => arr.mobileNumber)
   let dataToUpdate = { $set: { "contacts": contact }, contactSyncTime: Date.now() }
   //find user and update contacts
   let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, dataToUpdate)
-  if (data) {
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CONTACTS_ADDED_SUCCESSFULLY), { data })
-  }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.NO_USER_FOUND, ERROR_TYPES.DATA_NOT_FOUND);
-
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.CONTACTS_ADDED_SUCCESSFULLY), { data })
 }
 
-
-
-userController.frinedList = async (payload) => {
-  let regex = new RegExp(payload.searchKey, 'i');
+userController.friendList = async (payload) => {
+  //check if user has friend or not
+  // if (!payload.user.contacts.length) {
+  //   throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
+  // }
+  let contactsData = await SERVICES.userService.getContact({userId: payload.user._id});
+  let contacts = contactsData.contacts.filter(item => item.isRegistered == true).map(item => item.mobileNumber)
+  console.log(contacts);
   let criteria = {
-    mobileNumber: { $in: payload.user.contacts },
-    $and: [{ $or: [{ firstName: regex }, { lastName: regex }] }],
+    mobileNumber: { $in: contacts },
+    $and: [{ $or: [{ firstName: new RegExp(payload.searchKey, 'i') }, { lastName: new RegExp(payload.searchKey, 'i') }, { mobileNumber: new RegExp(payload.searchKey, 'i') }] }],
   }
-  if (!payload.user.contacts.length) {
-    throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
-  }
-  let data = await SERVICES.userService.friends(criteria)
+  let data = await SERVICES.userService.getUsers(criteria, { firstName: 1, lastName: 1, challengeCompleted: 1, imagePath: 1 ,mobileNumber: 1})
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
 }
-
-
-
-
-
 /* export userController */
 module.exports = userController;
