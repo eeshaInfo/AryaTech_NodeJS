@@ -7,9 +7,9 @@
  ********************************/
 let v1Routes = [
     ...require('./userRoutes'),
-     ...require('./adminRoute'),
-    ...require('./challengeRoutes'),
-     ...require('./paymentRoute')
+     ...require('./franchiseRoutes'),
+    // ...require('./challengeRoutes'),
+    //  ...require('./paymentRoute')
     
 ]
 

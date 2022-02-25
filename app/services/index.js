@@ -9,8 +9,8 @@ module.exports = {
     swaggerService: require('./swaggerService'),
     authService: require('./authService'),
     sessionService: require('./sessionService'),
-    challengeService: require('./challengeService'),
-    fileUploadService: require('./fileUploadService'),
-    paymentService: require('./paymentService'),
-    fcmNotificationService: require('./fcmNotificationService')
+    // challengeService: require('./challengeService'),
+    // fileUploadService: require('./fileUploadService'),
+    // paymentService: require('./paymentService'),
+    // fcmNotificationService: require('./fcmNotificationService')
 };

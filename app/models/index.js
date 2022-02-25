@@ -8,10 +8,4 @@ module.exports = {
   userModel: require(`../models/userModel`),
   dbVersionModel: require(`../models/dbVersionModel`),
   sessionModel:require(`../models/sessionModel`),
-  challengeModel:require(`../models/challengeModel`),
-  userChallengesModel:require(`../models/userChallengesModel`),
-  paymentModel:require(`./paymentModel`),
-  walletAddressModel:require(`../models/walletAddressModel`),
-  contactsModel:require(`../models/contactsModel`),
-
 };

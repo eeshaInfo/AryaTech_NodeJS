@@ -1,4 +1,4 @@
-const PLATFORM = process.env.PLATFORM || 'Camel_Sports';
+const PLATFORM = process.env.PLATFORM || 'AryaTech';
 module.exports = {
   "swagger": "2.0",
   "info": {

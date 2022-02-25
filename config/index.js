@@ -3,7 +3,7 @@ const path = require('path');
 var development = require('./env/development');
 var production = require('./env/production');
 var staging = require('./env/staging');
-var PLATFORM = process.env.PLATFORM || 'CamelSports';
+var PLATFORM = process.env.PLATFORM || 'AryaTech';
 
 var defaults = {
     PLATFORM: PLATFORM,
@@ -31,7 +31,7 @@ var defaults = {
         PROTOCOL: process.env.DB_PROTOCOL || 'mongodb',
         HOST: process.env.DB_HOST || '127.0.0.1',
         PORT: process.env.DB_PORT || 27017,
-        NAME: PLATFORM || 'Camel Sports',
+        NAME: PLATFORM || 'AryaTech',
         USER: '',
         PASSWORD: '',
         get URL() { return process.env.dbUrl || `${this.PROTOCOL}://${this.HOST}:${this.PORT}/${this.NAME}` }

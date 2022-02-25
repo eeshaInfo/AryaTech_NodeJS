@@ -16,6 +16,22 @@ let routes = [
         },
         handler: userController.getServerResponse
     },
+
+    {
+        method: 'GET',
+        path: '/v1/admin/auth',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            group: 'Test',
+            description: 'Route to user/admin auth example',
+            model: 'Admin_Auth'
+        },
+        auth: AVAILABLE_AUTHS.COMMON,
+        handler: userController.getServerResponse
+    },
+
     {
         method: 'POST',
         path: '/v1/user/register',
@@ -75,8 +91,6 @@ let routes = [
         method: "POST",
         path: "/v1/file/upload",
         joiSchemaForSwagger: {
-            // Route format to use for files upload 
-
             formData: {
                 file: Joi.file({ name: "image", description: "Single image file" }),
             },
@@ -168,46 +182,7 @@ let routes = [
         auth: AVAILABLE_AUTHS.COMMON,
         handler: userController.userDetails
     },
-    {
-        method: 'POST',
-        path: '/v1/user/contacts',
-        joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
-            body: {
-                contacts: Joi.array().items(Joi.string()).required().min(1).description("User's contact list"),
-            },
-            group: 'User',
-            description: 'Route to post user contacts ',
-            model: 'GetUserContacts'
-        },
-        auth: AVAILABLE_AUTHS.USER,
-        handler: userController.userContacts
-    }
-    ,
-    {
-        method: 'GET',
-        path: '/v1/user/friends',
-        joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
-            query: {
-                skip: Joi.number().default(0).description('skip'),
-                limit: Joi.number().default(10).description('limit'),
-                searchKey: Joi.string().allow(""),
-            },
-
-            group: 'User',
-            description: 'Route to get Friends list ',
-            model: 'GetFrinedList'
-        },
-        auth: AVAILABLE_AUTHS.USER,
-        handler: userController.friendList
-    },
-
-
+    
 ]
 
 module.exports = routes;

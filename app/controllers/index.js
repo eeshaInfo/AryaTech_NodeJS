@@ -6,6 +6,4 @@
  ********************************/
 module.exports = {
     userController: require('./userController'),
-    challengeController: require('./challengeController'),
-    paymentController:require('./paymentController')
 };

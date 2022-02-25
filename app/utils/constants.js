@@ -8,13 +8,18 @@ CONSTANTS.SERVER = {
 
 CONSTANTS.AVAILABLE_AUTHS = {
     ADMIN: 1,
-    USER: 2,
-    COMMON: 3
+    TEACHER: 2,
+    STUDENT: 3,
+    ACCOUNTS: 4
 };
 
 CONSTANTS.STATUS = {
-    ACTIVE: 1,
-    BLOCK: 2,
+    PENDING:1,
+    APPROVE:2,
+    REJECT:3,    
+    ACTIVE: 4,
+    PASSED_OUT:5,
+    BLOCK: 6,
 };
 
 CONSTANTS.PASSWORD_PATTER_REGEX = /^(?=.{6,})(?=.*[a-z])(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$/;
@@ -43,7 +48,9 @@ CONSTANTS.ERROR_TYPES = {
 
 CONSTANTS.USER_TYPES = {
     ADMIN: 1,
-    USER: 2,
+    TEACHER:2,
+    STUDENT: 3,
+    FRANCHISE:4
 };
 
 
@@ -54,15 +61,11 @@ CONSTANTS.GENDER_TYPES = {
 }
 
 
-CONSTANTS.CHALLENGES_TYPES = {
-    PAID: 1,
-    UNPAID: 2,
+CONSTANTS.AREA_TYPES = {
+    RURAL: 1,
+    URBAN: 2,
 }
 
-CONSTANTS.DISTANCE_TYPE = {
-    METER: 1,
-    KM: 2,
-}
 
 CONSTANTS.LOGIN_TYPES = {
     NORMAL: 1,
