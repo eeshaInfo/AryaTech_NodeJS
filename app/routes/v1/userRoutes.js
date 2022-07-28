@@ -1,9 +1,10 @@
 'use strict';
 
 const { Joi } = require('../../utils/joiUtils');
-const { AVAILABLE_AUTHS, GENDER_TYPES, STATUS } = require('../../utils/constants');
+const { AVAILABLE_AUTHS, GENDER_TYPES, ADDRESS_TYPE,STATUS } = require('../../utils/constants');
 //load controllers
 const { userController } = require('../../controllers');
+const CONSTANTS = require('../../utils/constants');
 
 let routes = [
     {
@@ -37,18 +38,31 @@ let routes = [
         path: '/v1/user/register',
         joiSchemaForSwagger: {
             body: {
-                firstName: Joi.string().required().description('User\'s first name.'),
-                lastName: Joi.string().required().description('User\'s last name.'),
-                //location: Joi.string().required().description('User\'s location.'),
-                country: Joi.string().required().description('User\'s country.'),
-                state: Joi.string().required().description('User\'s state.'),
-                city: Joi.string().required().description('User\'s city.'),
-                zipCode: Joi.string().required().description('User\'s zip code.'),
-                mobileNumber: Joi.string().required().description('User\'s mobile number.'),
-                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3 for other.`),
+                registrationNo:Joi.string().required().description('Student Registration Number'),
+                name: Joi.string().required().description('User\'s first name.'),
+                fathersName:Joi.string().required().description('father\'s name'),                
+                mothersName:Joi.string().required().description('mother\'s name'),
                 dob: Joi.date().max(new Date()).description('User date of birth.'),
+                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3 for other.`),
+                mobileNumber: Joi.string().required().description('User\'s mobile number.'),
+                email:Joi.string().description('email id of student'),
+                addresses:Joi.array().items(
+                    Joi.object({
+                        type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
+                        address: Joi.string().description('localicty, street No'),
+                        state: Joi.string().description('state'),
+                        district: Joi.string().description('district'),
+                        zipCode:Joi.string().description('zip code')
+                    })
+                ),
+                educations:Joi.array().items(
+                    Joi.object({
+                        examination:Joi.string().description('examination'),
+                        board:Joi.string().description('board/university name'),
+                        year:Joi.string().description('passing year')
+                    })
+                ),
                 imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
-                deviceToken: Joi.string().description('device token'),
             },
             group: 'User',
             description: 'Route to register a user.',
@@ -108,16 +122,32 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body: {
-                firstName: Joi.string().description('User\'s first name.'),
-                lastName: Joi.string().description('User\'s last name.'),
-                country: Joi.string().required().description('User\'s country.'),
-                state: Joi.string().description('User\'s state.'),
-                city: Joi.string().description('User\'s city.'),
-                zipCode: Joi.string().description('User\'s zip code.'),
-                mobileNumber: Joi.string().description('User\'s mobile number.'),
-                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).description(`User's gender. 1 for male and 2 for female 3 for other.`),
+                _id:Joi.string().objectId().description('mongo id'),
+                registrationNo:Joi.string().required().description('Student Registration Number'),
+                name: Joi.string().required().description('User\'s first name.'),
+                fathersName:Joi.string().required().description('father\'s name'),                
+                mothersName:Joi.string().required().description('mother\'s name'),
                 dob: Joi.date().max(new Date()).description('User date of birth.'),
-                imagePath: Joi.string().optional().description('Url of image.')
+                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3 for other.`),
+                mobileNumber: Joi.string().required().description('User\'s mobile number.'),
+                email:Joi.string().description('email id of student'),
+                addresses:Joi.array().items(
+                    Joi.object({
+                        type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
+                        address: Joi.string().description('localicty, street No'),
+                        state: Joi.string().description('state'),
+                        district: Joi.string().description('district'),
+                        zipCode:Joi.string().description('zip code')
+                    })
+                ),
+                educations:Joi.array().items(
+                    Joi.object({
+                        examination:Joi.string().description('examination'),
+                        board:Joi.string().description('board/university name'),
+                        year:Joi.string().description('passing year')
+                    })
+                ),
+                imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
             },
             group: 'User',
             description: 'Route to edit user profile for user/admin',
