@@ -123,21 +123,24 @@ let routes = [
             },
             body: {
                 _id:Joi.string().objectId().description('mongo id'),
-                registrationNo:Joi.string().required().description('Student Registration Number'),
-                name: Joi.string().required().description('User\'s first name.'),
+                regNo:Joi.string().required().description('Student Registration Number'),
+                studentName: Joi.string().required().description('User\'s first name.'),
                 fathersName:Joi.string().required().description('father\'s name'),                
                 mothersName:Joi.string().required().description('mother\'s name'),
                 dob: Joi.date().max(new Date()).description('User date of birth.'),
                 gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3 for other.`),
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
+                parentsMobile: Joi.string().required().description('User\'s mobile number.'),
                 email:Joi.string().description('email id of student'),
+                course:Joi.string().required().description('Course Name'),
                 addresses:Joi.array().items(
                     Joi.object({
                         type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
                         address: Joi.string().description('localicty, street No'),
+                        postOffice: Joi.string().description('Post office'),
                         state: Joi.string().description('state'),
                         district: Joi.string().description('district'),
-                        zipCode:Joi.string().description('zip code')
+                        pincode:Joi.string().description('pincode')
                     })
                 ),
                 educations:Joi.array().items(
