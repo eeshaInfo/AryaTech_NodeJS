@@ -1,6 +1,6 @@
 "use strict";
 /************* Modules ***********/
-const { USER_TYPES, GENDER_TYPES, DURATION_TYPES } = require("../utils/constants");
+const { USER_TYPES, GENDER_TYPES, DURATION_TYPES, ADDRESS_TYPE } = require("../utils/constants");
 const MONGOOSE = require("mongoose");
 const Schema = MONGOOSE.Schema;
 
@@ -16,7 +16,7 @@ const userSchema = new Schema(
         userType: { type: Number, enum: [ USER_TYPES.STUDENT, USER_TYPES.ADMIN,USER_TYPES.TEACHER ] },
         country: { type: String },
         address:[{
-            type:{type: Number},
+            type:{type: Number, enum:Object.keys(ADDRESS_TYPE)},
             address: {type:String},
             state: { type: String },
             city: { type: String },
