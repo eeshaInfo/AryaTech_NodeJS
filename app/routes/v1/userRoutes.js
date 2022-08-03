@@ -35,24 +35,29 @@ let routes = [
 
     {
         method: 'POST',
-        path: '/v1/user/register',
+        path: '/v1/user',
         joiSchemaForSwagger: {
             body: {
-                registrationNo:Joi.string().required().description('Student Registration Number'),
-                name: Joi.string().required().description('User\'s first name.'),
+                studentType: Joi.number().optional().description('student type'),
+                registrationNo:Joi.string().optional().description('Student Registration Number'),
+                branch: Joi.string().optional().description('Branch code'),
+                studentsName: Joi.string().required().description('User\'s first name.'),
                 fathersName:Joi.string().required().description('father\'s name'),                
                 mothersName:Joi.string().required().description('mother\'s name'),
                 dob: Joi.date().max(new Date()).description('User date of birth.'),
                 gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3 for other.`),
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
                 email:Joi.string().description('email id of student'),
-                addresses:Joi.array().items(
+                course: Joi.string().description('course'),
+                duration:Joi.number().description('duration of the course'),
+                address:Joi.array().items(
                     Joi.object({
                         type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
                         address: Joi.string().description('localicty, street No'),
+                        postOffice:Joi.string().description('post office'),
                         state: Joi.string().description('state'),
-                        district: Joi.string().description('district'),
-                        zipCode:Joi.string().description('zip code')
+                        dist: Joi.string().description('district'),
+                        pincode:Joi.string().description('zip code')
                     })
                 ),
                 educations:Joi.array().items(
@@ -118,9 +123,9 @@ let routes = [
         method: 'PUT',
         path: '/v1/user',
         joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
+            // headers: {
+            //     'authorization': Joi.string().required().description("User's JWT token.")
+            // },
             body: {
                 _id:Joi.string().objectId().description('mongo id'),
                 regNo:Joi.string().required().description('Student Registration Number'),
@@ -133,7 +138,8 @@ let routes = [
                 parentsMobile: Joi.string().required().description('User\'s mobile number.'),
                 email:Joi.string().description('email id of student'),
                 course:Joi.string().required().description('Course Name'),
-                addresses:Joi.array().items(
+                duration:Joi.number().description('jjjjj'),
+                address:Joi.array().items(
                     Joi.object({
                         type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
                         address: Joi.string().description('localicty, street No'),
@@ -156,7 +162,7 @@ let routes = [
             description: 'Route to edit user profile for user/admin',
             model: 'UpdateProfile'
         },
-        auth: AVAILABLE_AUTHS.COMMON,
+        // auth: AVAILABLE_AUTHS.COMMON,
         handler: userController.updateProfile
     },
 

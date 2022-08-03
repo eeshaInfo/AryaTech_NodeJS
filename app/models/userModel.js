@@ -9,6 +9,9 @@ const Schema = MONGOOSE.Schema;
  **************************************************/
 const userSchema = new Schema(
     {
+        regNo: { type: String },
+        branch: { type: String },
+        studentType: { type: Number },
         email: { type: String },
         studentsName: { type: String },
         fathersName: { type: String },
@@ -16,11 +19,12 @@ const userSchema = new Schema(
         userType: { type: Number, enum: [ USER_TYPES.STUDENT, USER_TYPES.ADMIN,USER_TYPES.TEACHER ] },
         country: { type: String },
         address:[{
-            type:{type: Number, enum:Object.keys(ADDRESS_TYPE)},
+            type:{type: Number, enum:Object.values(ADDRESS_TYPE)},
             address: {type:String},
+            postOffice:{type:String},
             state: { type: String },
             city: { type: String },
-            district: { type:String },
+            dist: { type:String },
             pincode: { type: String },
         }],       
         aadharNo: {type: String},

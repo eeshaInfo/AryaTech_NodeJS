@@ -25,25 +25,10 @@ userController.getServerResponse = async () => {
  * function to register a user to the system.
  */
 userController.registerNewUser = async (payload) => {
-  let isUserAlreadyExists = await SERVICES.userService.getUser({ mobileNumber: payload.mobileNumber }, NORMAL_PROJECTION);
-  if (!isUserAlreadyExists) {
-    payload.status = STATUS.ACTIVE;
-    payload.userType = USER_TYPES.USER
-    let newRegisteredUser = await SERVICES.userService.createUser(payload);
-    const dataForJwt = {
-      id: newRegisteredUser._id,
-      date: Date.now()
-    };
-    let token = await encryptJwt(dataForJwt);
-    let data = { userId: newRegisteredUser._id, token: token, deviceToken: payload.deviceToken }
-    // create session for particular user
-    await SERVICES.sessionService.createSession(data);
-    // update user contacts isRegistered status to true
-    await SERVICES.userService.updateContacts({ "contacts.mobileNumber": { $in: payload.mobileNumber } }, {"contacts.$.isRegistered": true});
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: newRegisteredUser, token });
+    let data = await SERVICES.userService.createUser(payload)
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: data });
   }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
-};
+  // throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
 
 /**
  * function to login a user to the system.
@@ -203,7 +188,7 @@ userController.getAdminProfile = async (payload) => {
 userController.list = async (payload) => {
   let regex = new RegExp(payload.searchKey, 'i');
   let criteria = {
-    $and: [{ $or: [{ firstName: regex }, { lastName: regex }, { mobileNumber: regex }] }, { userType: CONSTANTS.USER_TYPES.USER }]
+    $and: [{ $or: [{ studentsName: regex } ,{ mobileNumber: regex }] }, { userType: CONSTANTS.USER_TYPES.USER }]
   }
   //get user list with search and sort
   let sort = {};
@@ -225,20 +210,20 @@ userController.list = async (payload) => {
     {
       $limit: payload.limit
     },
-    {
-      $project: {
-        "firstName": 1,
-        "lastName": 1,
-        "gender": 1,
-        "country": 1,
-        "state": 1,
-        "city": 1,
-        "imagePath": 1,
-        "mobileNumber": 1,
-        'challengeCompleted': 1,
-        "status": 1,
-      }
-    },
+    // {
+    //   $project: {
+    //     "firstName": 1,
+    //     "lastName": 1,
+    //     "gender": 1,
+    //     "country": 1,
+    //     "state": 1,
+    //     "city": 1,
+    //     "imagePath": 1,
+    //     "mobileNumber": 1,
+    //     'challengeCompleted': 1,
+    //     "status": 1,
+    //   }
+    // },
   ]
   let userList = await SERVICES.userService.userAggregate(query);
   //count users in database
@@ -292,19 +277,10 @@ userController.deleteUser = async (payload) => {
 userController.userDetails = async (payload) => {
   let criteria = {
     userId: payload.userId
-  }, userStatData = {
-    totalCalories: 0,
-    totalTime: 0,
-    totalDistance: 0
-  };
-  //get challenge details completed by a user
-  let userStat = await SERVICES.userService.getUserStats(criteria, NORMAL_PROJECTION);
+  }
   //get user data
   let userData = await SERVICES.userService.getUser({ _id: payload.userId });
-  if (userStat[0]) {
-    userStatData = userStat[0];
-  }
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { user: { ...userStatData, ...userData } })
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { userData })
 }
 
 /**
