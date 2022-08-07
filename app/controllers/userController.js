@@ -236,6 +236,15 @@ userController.list = async (payload) => {
 }
 
 /**
+ * user list for dropdown
+ * @param {*} payload 
+ * @returns 
+ */
+ userController.userDropdown = async (payload) =>{
+  let userList=await SERVICES.userService.getUsers({userType:{$ne:1}},{regNo:1,studentsName:1,course:1})
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY),{userList})
+ }
+/**
  * Function to block-unblock user.
  */
 

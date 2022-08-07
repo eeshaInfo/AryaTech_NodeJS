@@ -6,11 +6,9 @@ const CONFIG = require('../../config');
  ********************************/
 module.exports = {
     userService: require('./userService'),
+    courseService: require('./courseService'),
+    paymentService: require('./paymentService'),
     swaggerService: require('./swaggerService'),
     authService: require('./authService'),
     sessionService: require('./sessionService'),
-    // challengeService: require('./challengeService'),
-    // fileUploadService: require('./fileUploadService'),
-    // paymentService: require('./paymentService'),
-    // fcmNotificationService: require('./fcmNotificationService')
 };

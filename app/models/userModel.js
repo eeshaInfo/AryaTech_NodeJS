@@ -2,6 +2,7 @@
 /************* Modules ***********/
 const { USER_TYPES, GENDER_TYPES, DURATION_TYPES, ADDRESS_TYPE } = require("../utils/constants");
 const MONGOOSE = require("mongoose");
+const CONSTANTS = require("../utils/constants");
 const Schema = MONGOOSE.Schema;
 
 /**************************************************
@@ -11,6 +12,7 @@ const userSchema = new Schema(
     {
         regNo: { type: String },
         branch: { type: String },
+        userType: { type: Number, default: CONSTANTS.USER_TYPES.STUDENT},
         studentType: { type: Number },
         email: { type: String },
         studentsName: { type: String },
@@ -41,6 +43,7 @@ const userSchema = new Schema(
         imagePath: { type: String },
         password: { type: String },
         status: { type: Number },
+        isDeleted: { type: Boolean, default: false},
     },
     { versionKey: false, timestamps: true,collection: 'users' }
 );

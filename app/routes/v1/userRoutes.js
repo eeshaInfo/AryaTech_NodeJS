@@ -187,6 +187,23 @@ let routes = [
         auth: AVAILABLE_AUTHS.ADMIN,
         handler: userController.list
     },
+
+    {
+        method: 'GET',
+        path: '/v1/user/dropdown',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            group: 'User',
+            description: 'Route to get user dropdwon for user',
+            model: 'getUsersDropDown'
+        },
+        auth: AVAILABLE_AUTHS.ADMIN,
+        handler: userController.userDropdown
+    },
+
+
     {
         method: 'DELETE',
         path: '/v1/user',

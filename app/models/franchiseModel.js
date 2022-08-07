@@ -43,6 +43,7 @@ const franchiseSchema = new Schema(
         imagePath: { type: String },
         password: { type: String },
         status: { type: Number },
+        isDeleted: { type: Boolean, default: false},
     },
     { versionKey: false, timestamps: true,collection: 'franchise' }
 );
