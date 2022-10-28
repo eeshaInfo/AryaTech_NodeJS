@@ -34,7 +34,7 @@ userController.registerNewUser = async (payload) => {
  * function to login a user to the system.
  */
 userController.loginUser = async (payload) => {
-  if (payload.isAdminRole) {
+
     // check is user exists in the database with provided email or not.
     let user = await SERVICES.userService.getUser({ email: payload.email }, { ...NORMAL_PROJECTION });
     // if user exists then compare the password that user entered.
@@ -50,32 +50,11 @@ userController.loginUser = async (payload) => {
         let data = { userId: user._id, token: token, userType: CONSTANTS.USER_TYPES.ADMIN, }
         // create session for particular user
         await SERVICES.sessionService.createSession(data);
-
         return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
       }
       throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_PASSWORD, ERROR_TYPES.BAD_REQUEST);
     }
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_EMAIL, ERROR_TYPES.BAD_REQUEST);
-
-  }
-  else {
-    let user = await SERVICES.userService.getUser({ mobileNumber: payload.mobileNumber }, { ...NORMAL_PROJECTION });
-    //check if user is bocked or not
-    if (user && user.status == CONSTANTS.STATUS.BLOCK) {
-      throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_ALREADY_BLOCKED, ERROR_TYPES.BAD_REQUEST);
-    }
-    if (user) {
-      const dataForJwt = {
-        id: user._id,
-        date: Date.now()
-      };
-      let token = await encryptJwt(dataForJwt);
-      let data = { userId: user._id, token, deviceToken: payload.deviceToken }
-      await SERVICES.sessionService.createSession(data);
-      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user, isNewUser: false });
-    }
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_DOESNOT_EXIST), { isNewUser: true });
-  }
 };
 
 /**

@@ -15,7 +15,12 @@ let courseRoutes=[
             body:{
                 name: Joi.string().required().description('Course Name'),
                 duration: Joi.number().required().description('course duration'),
-                price: Joi.number().required().description('course price'),
+                modules:Joi.array().items(
+                  Joi.object({
+                    name: Joi.string().required().description('module Name'),
+                    details: Joi.string().default(" ").description('Details of course eg: All Topics')
+                  })  
+                )
             },
             group: 'Course',
             description: 'Route to create Course for Admin',

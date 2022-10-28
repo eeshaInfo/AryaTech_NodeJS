@@ -12,13 +12,12 @@ const userSchema = new Schema(
     {
         regNo: { type: String },
         branch: { type: String },
-        userType: { type: Number, default: CONSTANTS.USER_TYPES.STUDENT},
         studentType: { type: Number },
         email: { type: String },
         studentsName: { type: String },
         fathersName: { type: String },
         mothersName: { type: String },
-        userType: { type: Number, enum: [ USER_TYPES.STUDENT, USER_TYPES.ADMIN,USER_TYPES.TEACHER ] },
+        userType: { type: Number, enum: Object.values(CONSTANTS.USER_TYPES) },
         country: { type: String },
         address:[{
             type:{type: Number, enum:Object.values(ADDRESS_TYPE)},

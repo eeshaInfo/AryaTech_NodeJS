@@ -35,6 +35,37 @@ let routes = [
 
     {
         method: 'POST',
+        path: '/v1/user/login',
+        joiSchemaForSwagger: {
+            body: {
+                // isAdminRole: Joi.boolean(),
+                // mobileNumber: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().optional(), otherwise: Joi.string().required() }),
+                email: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().required(), otherwise: Joi.string().optional() }),
+                password: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().required(), otherwise: Joi.string().optional() }),
+            },
+            group: 'Auth',
+            description: 'Route to login a user/admin.',
+            model: 'Login'
+        },
+        handler: userController.loginUser
+    },
+    {
+        method: 'POST',
+        path: '/v1/user/logout',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            group: 'Auth',
+            description: 'Route to logout user/admin auth',
+            model: 'UserAuth'
+        },
+        auth: AVAILABLE_AUTHS.COMMON,
+        handler: userController.logout
+    },
+
+    {
+        method: 'POST',
         path: '/v1/user',
         joiSchemaForSwagger: {
             body: {
@@ -75,37 +106,7 @@ let routes = [
         },
         handler: userController.registerNewUser
     },
-    {
-        method: 'POST',
-        path: '/v1/user/login',
-        joiSchemaForSwagger: {
-            body: {
-                isAdminRole: Joi.boolean(),
-                mobileNumber: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().optional(), otherwise: Joi.string().required() }),
-                email: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().required(), otherwise: Joi.string().optional() }),
-                password: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().required(), otherwise: Joi.string().optional() }),
-                deviceToken: Joi.alternatives().conditional('isAdminRole', { is: false, then: Joi.string().required(), otherwise: Joi.string().optional() }),
-            },
-            group: 'User',
-            description: 'Route to login a user/admin.',
-            model: 'Login'
-        },
-        handler: userController.loginUser
-    },
-    {
-        method: 'POST',
-        path: '/v1/user/logout',
-        joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
-            group: 'User',
-            description: 'Route to logout user/admin auth',
-            model: 'UserAuth'
-        },
-        auth: AVAILABLE_AUTHS.COMMON,
-        handler: userController.logout
-    },
+
     {
         method: "POST",
         path: "/v1/file/upload",

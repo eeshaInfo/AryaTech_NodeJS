@@ -9,11 +9,12 @@ const Schema = MONGOOSE.Schema;
  **************************************************/
 const courseSchema = new Schema(
     {
-        name: { type: String },
+        name: { type: String, required:true },
         duration: { type: Number }, // Duration will be in Months only
         modules :[{
                 name: { type: String },
-                description: { type: String, default: ""} } 
+                details: { type: String, default: ""},
+                _id: false } 
             ],
         isDeleted: { type: Boolean, default: false},
      },
