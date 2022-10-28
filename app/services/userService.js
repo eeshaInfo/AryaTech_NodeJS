@@ -17,6 +17,10 @@ userService.getUser = async (criteria, projection) => {
   return await userModel.findOne(criteria, projection).lean();
 };
 
+userService.updateUserStatus = async(criteria, dataToUpdate)=>{
+  return await userModel.updateOne(criteria,{$set:{dataToUpdate}})
+}
+
 /**
  * function to create new user into the system.
  */

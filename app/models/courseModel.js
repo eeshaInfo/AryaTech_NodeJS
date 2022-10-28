@@ -11,7 +11,10 @@ const courseSchema = new Schema(
     {
         name: { type: String },
         duration: { type: Number }, // Duration will be in Months only
-        description: { type: String, default: ""},
+        modules :[{
+                name: { type: String },
+                description: { type: String, default: ""} } 
+            ],
         isDeleted: { type: Boolean, default: false},
      },
     { versionKey: false, timestamps: true,collection: 'course' }

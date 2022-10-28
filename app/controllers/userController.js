@@ -188,7 +188,7 @@ userController.getAdminProfile = async (payload) => {
 userController.list = async (payload) => {
   let regex = new RegExp(payload.searchKey, 'i');
   let criteria = {
-    $and: [{ $or: [{ studentsName: regex } ,{ mobileNumber: regex }] }, { userType: CONSTANTS.USER_TYPES.USER }]
+    $and: [{ $or: [{ studentsName: regex } ,{ mobileNumber: regex }] }, { userType: CONSTANTS.USER_TYPES.USER ,status:payload.status}]
   }
   //get user list with search and sort
   let sort = {};
@@ -358,6 +358,11 @@ userController.friendList = async (payload) => {
   }
   let data = await SERVICES.userService.getUsers(criteria, { firstName: 1, lastName: 1, challengeCompleted: 1, imagePath: 1 ,mobileNumber: 1})
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
+}
+
+
+userController.userStatus = async(payload)=>{
+  await SERVICES.userService.updateUserStatus({_id:payload.userId},{status:payload.status})
 }
 /* export userController */
 module.exports = userController;

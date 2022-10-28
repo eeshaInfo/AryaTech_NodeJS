@@ -165,6 +165,20 @@ let routes = [
         // auth: AVAILABLE_AUTHS.COMMON,
         handler: userController.updateProfile
     },
+    {
+        method: "PUT",
+        path: "/v1/user/status",
+        joiSchemaForSwagger: {
+           body:{
+                userId:Joi.string().valid(...Object.values(STATUS)).description('UserId'),
+                status:Joi.number().valid(...Object.values(STATUS)).description('Status of the user')
+           },
+            group: "User",
+            description: "Changes user application status",
+            model: "changeUserStatus",
+        },
+        handler: userController.userStatus,
+    },
 
     {
         method: 'GET',
@@ -174,6 +188,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
+                status:Joi.number().default(STATUS.APPROVE).valid(...Object.values(STATUS)).description('status'),
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
                 searchKey: Joi.string().allow(""),

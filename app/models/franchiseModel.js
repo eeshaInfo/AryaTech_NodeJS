@@ -21,7 +21,7 @@ const franchiseSchema = new Schema(
         district: { type:String },
         city: { type: String },
         zipCode: { type: String },
-        Qualification: {type: String},
+        qualification: {type: String},
         aadharNo: {type: String},
         panNo: {type: String},
 

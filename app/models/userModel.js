@@ -42,7 +42,7 @@ const userSchema = new Schema(
         dob: { type: Date, max: new Date() },
         imagePath: { type: String },
         password: { type: String },
-        status: { type: Number },
+        status: { type: Number, default:CONSTANTS.STATUS.PENDING, enum:Object.values(CONSTANTS.STATUS) },
         isDeleted: { type: Boolean, default: false},
     },
     { versionKey: false, timestamps: true,collection: 'users' }
