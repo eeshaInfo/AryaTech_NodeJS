@@ -21,7 +21,8 @@ CONSTANTS.STATUS = {
     PENDING: 1,
     APPROVE: 2,
     ACTIVE: 3,
-    BLOCK: 4
+    BLOCK: 4,
+    INACTIVE: 5
 };
 
 CONSTANTS.PASSWORD_PATTER_REGEX = /^(?=.{6,})(?=.*[a-z])(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$/;
@@ -70,12 +71,6 @@ CONSTANTS.AREA_TYPES = {
     URBAN: 2,
 }
 
-
-CONSTANTS.LOGIN_TYPES = {
-    NORMAL: 1,
-    GOOGLE: 2,
-    FACEBOOK: 3
-};
 
 CONSTANTS.TOKEN_TYPES = {
     LOGIN: 1,
@@ -129,10 +124,5 @@ CONSTANTS.TRANSACTION_STATUS = {
     PENDING: 3,
 }
 
-CONSTANTS.LEADERBOARD_CATEGORY = {
-    WORLD: 1,
-    COUNTRY: 2,
-    FRIEND: 3
-}
 
 module.exports = CONSTANTS;
