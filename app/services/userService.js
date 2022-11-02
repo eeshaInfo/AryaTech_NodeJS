@@ -106,8 +106,8 @@ userService.updateAddress = async (criteria, dataToUpdate) => {
 /**
  * Function to get  wallet address
  */
-userService.getAddress=async (criteria, projection = {} ) => {
-  return await walletAddressModel.findOne(criteria,projection).lean()
+userService.findOne=async (criteria, projection = {} ) => {
+  return await userModel.findOne(criteria,projection).lean()
 }
 
 /**

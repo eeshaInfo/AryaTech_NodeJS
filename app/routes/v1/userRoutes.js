@@ -38,8 +38,6 @@ let routes = [
         path: '/v1/user/login',
         joiSchemaForSwagger: {
             body: {
-                // isAdminRole: Joi.boolean(),
-                // mobileNumber: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().optional(), otherwise: Joi.string().required() }),
                 email: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().required(), otherwise: Joi.string().optional() }),
                 password: Joi.alternatives().conditional('isAdminRole', { is: true, then: Joi.string().required(), otherwise: Joi.string().optional() }),
             },
@@ -69,16 +67,15 @@ let routes = [
         path: '/v1/user',
         joiSchemaForSwagger: {
             body: {
-                studentType: Joi.number().optional().description('student type'),
-                registrationNo:Joi.string().optional().description('Student Registration Number'),
-                branch: Joi.string().optional().description('Branch code'),
-                studentsName: Joi.string().required().description('User\'s first name.'),
-                fathersName:Joi.string().required().description('father\'s name'),                
-                mothersName:Joi.string().required().description('mother\'s name'),
+                centerId: Joi.string().objectId().description('Center mongo _id'),
+                dateOfReg: Joi.date().required().default(new Date()).max(new Date()).description('date of registration'),
+                name: Joi.string().required().description('User\'s  name.'),
+                fathersName:Joi.string().optional().description('father\'s name'),                
+                mothersName:Joi.string().optional().description('mother\'s name'),
                 dob: Joi.date().max(new Date()).description('User date of birth.'),
-                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3 for other.`),
+                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3.`),
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
-                email:Joi.string().description('email id of student'),
+                email:Joi.string().required().description('email id of student'),
                 course: Joi.string().description('course'),
                 duration:Joi.number().description('duration of the course'),
                 address:Joi.array().items(
@@ -97,8 +94,11 @@ let routes = [
                         board:Joi.string().description('board/university name'),
                         year:Joi.string().description('passing year')
                     })
-                ),
+                ).required().description('Education Details of the student or Admin'),
                 imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
+                centerAddress: Joi.string().description('center full address Address'),
+                areaType: Joi.number().valid(...Object.values(CONSTANTS.AREA_TYPES)).description('area type 1=>Rural, 2=>Urban')
+
             },
             group: 'User',
             description: 'Route to register a user.',
@@ -106,6 +106,54 @@ let routes = [
         },
         handler: userController.registerNewUser
     },
+
+
+    {
+        method: 'POST',
+        path: '/v1/user',
+        joiSchemaForSwagger: {
+            body: {
+                _id:Joi.string().objectId().required().description('user mongo _id'),
+                centerId: Joi.string().objectId().description('Center mongo _id'),
+                dateOfReg: Joi.date().required().default(new Date()).max(new Date()).description('date of registration'),
+                name: Joi.string().required().description('User\'s  name.'),
+                fathersName:Joi.string().optional().description('father\'s name'),                
+                mothersName:Joi.string().optional().description('mother\'s name'),
+                dob: Joi.date().max(new Date()).description('User date of birth.'),
+                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3.`),
+                mobileNumber: Joi.string().required().description('User\'s mobile number.'),
+                email:Joi.string().required().description('email id of student'),
+                course: Joi.string().description('course'),
+                duration:Joi.number().description('duration of the course'),
+                address:Joi.array().items(
+                    Joi.object({
+                        type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
+                        address: Joi.string().description('localicty, street No'),
+                        postOffice:Joi.string().description('post office'),
+                        state: Joi.string().description('state'),
+                        dist: Joi.string().description('district'),
+                        pincode:Joi.string().description('zip code')
+                    })
+                ),
+                educations:Joi.array().items(
+                    Joi.object({
+                        examination:Joi.string().description('examination'),
+                        board:Joi.string().description('board/university name'),
+                        year:Joi.string().description('passing year')
+                    })
+                ).required().description('Education Details of the student or Admin'),
+                imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
+                centerAddress: Joi.string().description('center full address Address'),
+                areaType: Joi.number().valid(...Object.values(CONSTANTS.AREA_TYPES)).description('area type 1=>Rural, 2=>Urban')
+
+            },
+            group: 'User',
+            description: 'Route to update a user.',
+            model: 'Register'
+        },
+        handler: userController.updateUser
+    },
+
 
     {
         method: "POST",

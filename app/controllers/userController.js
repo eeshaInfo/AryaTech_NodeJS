@@ -1,4 +1,4 @@
-"use strict";
+// "use strict";
 const path = require('path');
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
@@ -21,40 +21,32 @@ userController.getServerResponse = async () => {
   throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS);
 }
 
-/**
- * function to register a user to the system.
- */
-userController.registerNewUser = async (payload) => {
-    let data = await SERVICES.userService.createUser(payload)
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: data });
-  }
-  // throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
 
 /**
  * function to login a user to the system.
  */
 userController.loginUser = async (payload) => {
 
-    // check is user exists in the database with provided email or not.
-    let user = await SERVICES.userService.getUser({ email: payload.email }, { ...NORMAL_PROJECTION });
-    // if user exists then compare the password that user entered.
-    if (user) {
-      // compare user's password.
-      if (compareHash(payload.password, user.password)) {
-        const dataForJwt = {
-          id: user._id,
-          date: Date.now()
-        };
-        delete user.password;
-        let token = await encryptJwt(dataForJwt);
-        let data = { userId: user._id, token: token, userType: CONSTANTS.USER_TYPES.ADMIN, }
-        // create session for particular user
-        await SERVICES.sessionService.createSession(data);
-        return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
-      }
-      throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_PASSWORD, ERROR_TYPES.BAD_REQUEST);
+  // check is user exists in the database with provided email or not.
+  let user = await SERVICES.userService.getUser({ email: payload.email }, { ...NORMAL_PROJECTION });
+  // if user exists then compare the password that user entered.
+  if (user) {
+    // compare user's password.
+    if (compareHash(payload.password, user.password)) {
+      const dataForJwt = {
+        id: user._id,
+        date: Date.now()
+      };
+      delete user.password;
+      let token = await encryptJwt(dataForJwt);
+      let data = { userId: user._id, token: token, userType: CONSTANTS.USER_TYPES.ADMIN, }
+      // create session for particular user
+      await SERVICES.sessionService.createSession(data);
+      return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
     }
-    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_EMAIL, ERROR_TYPES.BAD_REQUEST);
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_PASSWORD, ERROR_TYPES.BAD_REQUEST);
+  }
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_EMAIL, ERROR_TYPES.BAD_REQUEST);
 };
 
 /**
@@ -153,6 +145,39 @@ userController.updatePassword = async (payload) => {
 };
 
 /**
+ * function to register a user to the system.
+ */
+userController.registerNewUser = async (payload) => {
+  if (payload.userType == CONSTANTS.USER_TYPES.STUDENT) {
+    console.log('===New Student Registration===');
+    //Auto Generate Registration No for Student----- 
+    let lastRegStuForGivenYear = await SERVICES.userService.findOne({ centerId: payload.user._id, userType: CONSTANTS.USER_TYPES.STUDENT }).sort({ 'createdAt': -1 }).skip(0).limit(1)
+    let lastRegNo = parseInt(lastRegStuForGivenYear.regNo.slice(-5)) + 1 || `0001`
+    let centerDetails = await SERVICES.userService.getUser({ _id: payload.centerId })
+    let newRegNo = `${centerDetails.centerCode}${payload.dateOfReg.getYear().toString().slice(1)}${lastRegNo}`
+    payload.regNo = newRegNo;
+    console.log('----------------New Registration No:----------------', payload.regNo)
+  }
+  else if (payload.userType == CONSTANTS.USER_TYPES.ADMIN) {
+    //Auto Generate center code---
+    console.log('------New Auto Generate Center Code-------');
+    let centerDetails = await SERVICES.userService.findOne({ userType: CONSTANTS.USER_TYPES.ADMIN }).sort({ 'createdAt': -1 }).skip(0).limit(1)
+    let lastCenterCode = centerDetails.centerCode.slice(-3) || 001;
+    payload.centerCode = `ACE${parseInt(lastCenterCode) + 1}`;
+  }
+  let data = await SERVICES.userService.createUser(payload)
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: data });
+}
+// throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
+
+
+userController.updateUser = async(payload)=>{
+
+}
+
+
+
+/**
  * Function to get admin data.
  */
 userController.getAdminProfile = async (payload) => {
@@ -167,7 +192,7 @@ userController.getAdminProfile = async (payload) => {
 userController.list = async (payload) => {
   let regex = new RegExp(payload.searchKey, 'i');
   let criteria = {
-    $and: [{ $or: [{ studentsName: regex } ,{ mobileNumber: regex }] }, { userType: CONSTANTS.USER_TYPES.USER ,status:payload.status}]
+    $and: [{ $or: [{ studentsName: regex }, { mobileNumber: regex }] }, { userType: CONSTANTS.USER_TYPES.USER, status: payload.status }]
   }
   //get user list with search and sort
   let sort = {};
@@ -219,10 +244,10 @@ userController.list = async (payload) => {
  * @param {*} payload 
  * @returns 
  */
- userController.userDropdown = async (payload) =>{
-  let userList=await SERVICES.userService.getUsers({userType:{$ne:1}},{regNo:1,studentsName:1,course:1})
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY),{userList})
- }
+userController.userDropdown = async (payload) => {
+  let userList = await SERVICES.userService.getUsers({ userType: { $ne: 1 } }, { regNo: 1, studentsName: 1, course: 1 })
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { userList })
+}
 /**
  * Function to block-unblock user.
  */
@@ -310,13 +335,14 @@ userController.userContacts = async (payload) => {
   //find those numbers which are present in our database
   let phonesRegex = [];
   payload.contacts.forEach(contact => {
-      phonesRegex.push(new RegExp(contact));
+    phonesRegex.push(new RegExp(contact));
   })
   let contacts = await SERVICES.userService.getUsers({ "mobileNumber": { $in: phonesRegex } }, { _id: 0, mobileNumber: 1 })
   let contact = contacts.filter((arr) => {
-    if (arr.mobileNumber !=  payload.user.mobileNumber ) {
+    if (arr.mobileNumber != payload.user.mobileNumber) {
       return arr.mobileNumber
-    }}).map(arr => arr.mobileNumber)
+    }
+  }).map(arr => arr.mobileNumber)
   let dataToUpdate = { $set: { "contacts": contact }, contactSyncTime: Date.now() }
   //find user and update contacts
   let data = await SERVICES.userService.updateUser({ _id: payload.user._id }, dataToUpdate)
@@ -328,20 +354,20 @@ userController.friendList = async (payload) => {
   // if (!payload.user.contacts.length) {
   //   throw HELPERS.responseHelper.createSuccessResponse(MESSAGES.NO_FRIENDS_FOUND);
   // }
-  let contactsData = await SERVICES.userService.getContact({userId: payload.user._id});
+  let contactsData = await SERVICES.userService.getContact({ userId: payload.user._id });
   let contacts = contactsData.contacts.filter(item => item.isRegistered == true).map(item => item.mobileNumber)
   console.log(contacts);
   let criteria = {
     mobileNumber: { $in: contacts },
     $and: [{ $or: [{ firstName: new RegExp(payload.searchKey, 'i') }, { lastName: new RegExp(payload.searchKey, 'i') }, { mobileNumber: new RegExp(payload.searchKey, 'i') }] }],
   }
-  let data = await SERVICES.userService.getUsers(criteria, { firstName: 1, lastName: 1, challengeCompleted: 1, imagePath: 1 ,mobileNumber: 1})
+  let data = await SERVICES.userService.getUsers(criteria, { firstName: 1, lastName: 1, challengeCompleted: 1, imagePath: 1, mobileNumber: 1 })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
 }
 
 
-userController.userStatus = async(payload)=>{
-  await SERVICES.userService.updateUserStatus({_id:payload.userId},{status:payload.status})
+userController.userStatus = async (payload) => {
+  await SERVICES.userService.updateUserStatus({ _id: payload.userId }, { status: payload.status })
 }
 /* export userController */
 module.exports = userController;

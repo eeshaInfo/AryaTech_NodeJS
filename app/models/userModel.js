@@ -6,41 +6,45 @@ const CONSTANTS = require("../utils/constants");
 const Schema = MONGOOSE.Schema;
 
 /**************************************************
- ************* User Model or collection ***********
+ ************* User,Franchise/Admin/SuperAdmin Model or collection ***********
  **************************************************/
 const userSchema = new Schema(
     {
+        //user details
         regNo: { type: String },
-        branch: { type: String },
-        studentType: { type: Number },
+        centerId: { type: Schema.Types.ObjectId, ref:'users'},
         email: { type: String },
-        studentsName: { type: String },
+        name: { type: String },
+        gender: { type: Number, enum: [GENDER_TYPES.MALE, GENDER_TYPES.FEMALE] },
         fathersName: { type: String },
         mothersName: { type: String },
+        dateOfReg: { type: Date },
         userType: { type: Number, enum: Object.values(CONSTANTS.USER_TYPES) },
-        country: { type: String },
         address:[{
             type:{type: Number, enum:Object.values(ADDRESS_TYPE)},
             address: {type:String},
             postOffice:{type:String},
-            state: { type: String },
+            state: { type: String, default:'Bihar' },
             city: { type: String },
             dist: { type:String },
             pincode: { type: String },
         }],       
         aadharNo: {type: String},
         panNo: {type: String},
-        studyCenter: {type: String},
-        centerLocation: {type: String},
         course: { type: String },
         duration: {type: Number },
         Qualification: {type: String},
         mobileNumber: { type: String },  
         parentsMobile: { type: String },    
-        gender: { type: Number, enum: [GENDER_TYPES.MALE, GENDER_TYPES.FEMALE] },
         dob: { type: Date, max: new Date() },
         imagePath: { type: String },
         password: { type: String },
+
+        //branch details for frachise admin registration
+        centerCode: {type: String},
+        centerAddress: {type: String},
+        areaType: {type: Number, enum:Object.values(CONSTANTS.AREA_TYPES)},   
+        centerEmail: {type: String},
         status: { type: Number, default:CONSTANTS.STATUS.PENDING, enum:Object.values(CONSTANTS.STATUS) },
         isDeleted: { type: Boolean, default: false},
     },
