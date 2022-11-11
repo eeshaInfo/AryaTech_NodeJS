@@ -11,7 +11,7 @@ const Schema = MONGOOSE.Schema;
 const userSchema = new Schema(
     {
         //user details
-        regNo: { type: String },
+        regNo: { type: String, unique:true },
         centerId: { type: Schema.Types.ObjectId, ref:'users'},
         email: { type: String },
         name: { type: String },
@@ -42,6 +42,7 @@ const userSchema = new Schema(
 
         //branch details for frachise admin registration
         centerCode: {type: String},
+        centerName: {type: String},
         centerAddress: {type: String},
         areaType: {type: Number, enum:Object.values(CONSTANTS.AREA_TYPES)},   
         centerEmail: {type: String},

@@ -151,8 +151,9 @@ userController.registerNewUser = async (payload) => {
   if (payload.userType == CONSTANTS.USER_TYPES.STUDENT) {
     console.log('===New Student Registration===');
     //Auto Generate Registration No for Student----- 
-    let lastRegStuForGivenYear = await SERVICES.userService.findOne({ centerId: payload.user._id, userType: CONSTANTS.USER_TYPES.STUDENT }).sort({ 'createdAt': -1 }).skip(0).limit(1)
-    let lastRegNo = parseInt(lastRegStuForGivenYear.regNo.slice(-5)) + 1 || `0001`
+    let lastRegStuForGivenYear = await SERVICES.userService.getLatestRecord({ centerId: payload.centerId, userType: CONSTANTS.USER_TYPES.STUDENT })
+    let lastRegNo = lastRegStuForGivenYear?parseInt(lastRegStuForGivenYear.regNo.slice(-4))+1 : `0001`
+    lastRegNo = lastRegStuForGivenYear?'000'+lastRegNo:'0001'
     let centerDetails = await SERVICES.userService.getUser({ _id: payload.centerId })
     let newRegNo = `${centerDetails.centerCode}${payload.dateOfReg.getYear().toString().slice(1)}${lastRegNo}`
     payload.regNo = newRegNo;
@@ -161,18 +162,27 @@ userController.registerNewUser = async (payload) => {
   else if (payload.userType == CONSTANTS.USER_TYPES.ADMIN) {
     //Auto Generate center code---
     console.log('------New Auto Generate Center Code-------');
-    let centerDetails = await SERVICES.userService.findOne({ userType: CONSTANTS.USER_TYPES.ADMIN }).sort({ 'createdAt': -1 }).skip(0).limit(1)
-    let lastCenterCode = centerDetails.centerCode.slice(-3) || 001;
-    payload.centerCode = `ACE${parseInt(lastCenterCode) + 1}`;
+    let centerDetails = await SERVICES.userService.getLatestRecord({ userType: CONSTANTS.USER_TYPES.ADMIN })
+    console.log('current center',centerDetails);
+    let lastCenterCode = centerDetails?centerDetails.centerCode.slice(-3):null;
+    console.log('centerCode==>',lastCenterCode)
+    let newCenterCode = '00'+(parseInt(lastCenterCode) + 1)
+    payload.centerCode = lastCenterCode?`ACE${newCenterCode}`:'ACE001';
+    console.log('new Center code would be===>',payload.centerCode)
   }
   let data = await SERVICES.userService.createUser(payload)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: data });
 }
 // throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
 
-
+/**
+ * function to update user details
+ * @param {*} payload 
+ */
 userController.updateUser = async(payload)=>{
-
+  let criteria = { _id:payload._id };
+  let data = await SERVICES.userService.updateUser(criteria,payload,{ ...NORMAL_PROJECTION, password: 0, passwordToken: 0 })
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY),{data})
 }
 
 
@@ -245,7 +255,7 @@ userController.list = async (payload) => {
  * @returns 
  */
 userController.userDropdown = async (payload) => {
-  let userList = await SERVICES.userService.getUsers({ userType: { $ne: 1 } }, { regNo: 1, studentsName: 1, course: 1 })
+  let userList = await SERVICES.userService.getUsers({userType:payload.userType }, { regNo: 1, name: 1, })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { userList })
 }
 /**

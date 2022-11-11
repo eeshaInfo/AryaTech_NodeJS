@@ -96,18 +96,17 @@ userService.getUserStats = async (criteria) => {
   return await userChallengesModel.aggregate(query);
 };
 
-/**
- * Function to update admin wallet address
- */
-userService.updateAddress = async (criteria, dataToUpdate) => {
-  return await walletAddressModel.findOneAndUpdate(criteria, dataToUpdate, { upsert: true, new: true }).lean()
-}
+
 
 /**
  * Function to get  wallet address
  */
 userService.findOne=async (criteria, projection = {} ) => {
   return await userModel.findOne(criteria,projection).lean()
+}
+
+userService.getLatestRecord = async(criteria, projection ={})=>{
+  return await userModel.findOne(criteria,projection).sort({'createdAt':-1}).skip(0).limit(1)
 }
 
 /**
@@ -117,19 +116,7 @@ userService.userAggregate=async (query) => {
   return await userModel.aggregate(query);
 }
 
-/**
- * function to fetch user from the system based on criteria.
- */
-userService.getContact = async (criteria, projection) => {
-  return await contactsModel.findOne(criteria, projection).lean();
-};
 
-/**
- * Function to update user contacts
- */
-userService.updateContacts = async (criteria, dataToUpdate) => {
-  return await contactsModel.updateMany(criteria, dataToUpdate, { upsert: true, new: true })
-}
 
 
 module.exports = userService;

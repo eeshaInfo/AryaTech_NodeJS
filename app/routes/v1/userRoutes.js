@@ -1,7 +1,7 @@
 'use strict';
 
 const { Joi } = require('../../utils/joiUtils');
-const { AVAILABLE_AUTHS, GENDER_TYPES, ADDRESS_TYPE,STATUS } = require('../../utils/constants');
+const { AVAILABLE_AUTHS, GENDER_TYPES, ADDRESS_TYPE,STATUS,USER_TYPES } = require('../../utils/constants');
 //load controllers
 const { userController } = require('../../controllers');
 const CONSTANTS = require('../../utils/constants');
@@ -67,6 +67,7 @@ let routes = [
         path: '/v1/user',
         joiSchemaForSwagger: {
             body: {
+                userType: Joi.number().default(USER_TYPES.STUDENT).valid(...Object.values(USER_TYPES)).description('user Type, 2=>Admin, 3=>Student'),
                 centerId: Joi.string().objectId().description('Center mongo _id'),
                 dateOfReg: Joi.date().required().default(new Date()).max(new Date()).description('date of registration'),
                 name: Joi.string().required().description('User\'s  name.'),
@@ -96,6 +97,7 @@ let routes = [
                     })
                 ).required().description('Education Details of the student or Admin'),
                 imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
+                centerName: Joi.string().default("AryaTech Computer Pvt. Ltd").description('center Name'),
                 centerAddress: Joi.string().description('center full address Address'),
                 areaType: Joi.number().valid(...Object.values(CONSTANTS.AREA_TYPES)).description('area type 1=>Rural, 2=>Urban')
 
@@ -109,7 +111,7 @@ let routes = [
 
 
     {
-        method: 'POST',
+        method: 'PUT',
         path: '/v1/user',
         joiSchemaForSwagger: {
             body: {
@@ -148,12 +150,24 @@ let routes = [
 
             },
             group: 'User',
-            description: 'Route to update a user.',
-            model: 'Register'
+            description: 'Route to update a user details',
+            model: 'updateUser'
         },
         handler: userController.updateUser
     },
 
+    {
+        method: "DELETE",
+        path: "/v1/user",
+        joiSchemaForSwagger: {
+            query:{
+                _id:Joi.string().objectId().required().description('user mongo _id')
+            }
+        },
+        group: 'User',
+        description: 'Route to delete a user',
+        model: 'deleteUser'
+    },
 
     {
         method: "POST",
@@ -168,58 +182,13 @@ let routes = [
         },
         handler: userController.uploadFile,
     },
-    {
-        method: 'PUT',
-        path: '/v1/user',
-        joiSchemaForSwagger: {
-            // headers: {
-            //     'authorization': Joi.string().required().description("User's JWT token.")
-            // },
-            body: {
-                _id:Joi.string().objectId().description('mongo id'),
-                regNo:Joi.string().required().description('Student Registration Number'),
-                studentName: Joi.string().required().description('User\'s first name.'),
-                fathersName:Joi.string().required().description('father\'s name'),                
-                mothersName:Joi.string().required().description('mother\'s name'),
-                dob: Joi.date().max(new Date()).description('User date of birth.'),
-                gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3 for other.`),
-                mobileNumber: Joi.string().required().description('User\'s mobile number.'),
-                parentsMobile: Joi.string().required().description('User\'s mobile number.'),
-                email:Joi.string().description('email id of student'),
-                course:Joi.string().required().description('Course Name'),
-                duration:Joi.number().description('jjjjj'),
-                address:Joi.array().items(
-                    Joi.object({
-                        type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
-                        address: Joi.string().description('localicty, street No'),
-                        postOffice: Joi.string().description('Post office'),
-                        state: Joi.string().description('state'),
-                        district: Joi.string().description('district'),
-                        pincode:Joi.string().description('pincode')
-                    })
-                ),
-                educations:Joi.array().items(
-                    Joi.object({
-                        examination:Joi.string().description('examination'),
-                        board:Joi.string().description('board/university name'),
-                        year:Joi.string().description('passing year')
-                    })
-                ),
-                imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
-            },
-            group: 'User',
-            description: 'Route to edit user profile for user/admin',
-            model: 'UpdateProfile'
-        },
-        // auth: AVAILABLE_AUTHS.COMMON,
-        handler: userController.updateProfile
-    },
+    
     {
         method: "PUT",
         path: "/v1/user/status",
         joiSchemaForSwagger: {
            body:{
-                userId:Joi.string().valid(...Object.values(STATUS)).description('UserId'),
+                userId:Joi.string().objectId().description('UserId'),
                 status:Joi.number().valid(...Object.values(STATUS)).description('Status of the user')
            },
             group: "User",
@@ -237,6 +206,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
+                userType: Joi.number().required().default(USER_TYPES.STUDENT).valid(...Object.values(USER_TYPES)).description('User Type'),
                 status:Joi.number().default(STATUS.PENDING).valid(...Object.values(STATUS)).description('status'),
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
@@ -258,6 +228,9 @@ let routes = [
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            query:{
+                userType: Joi.number().default(USER_TYPES.STUDENT).valid(...Object.values(USER_TYPES)).description('User Type')
             },
             group: 'User',
             description: 'Route to get user dropdwon for user',
