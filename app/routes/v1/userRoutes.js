@@ -162,11 +162,12 @@ let routes = [
         joiSchemaForSwagger: {
             query:{
                 _id:Joi.string().objectId().required().description('user mongo _id')
-            }
-        },
-        group: 'User',
-        description: 'Route to delete a user',
-        model: 'deleteUser'
+            },
+            group: 'User',
+            description: 'Route to delete a user',
+            model: 'deleteUser'
+        },       
+        handler: userController.deleteUser,
     },
 
     {

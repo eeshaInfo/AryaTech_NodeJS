@@ -8,6 +8,7 @@ module.exports = {
   userModel: require(`../models/userModel`),
   courseModel: require('../models/courseModel'),
   paymentModel: require('../models/paymentModel'),
+  certificationModel: require('../models/certificationModel'),
   dbVersionModel: require(`../models/dbVersionModel`),
   sessionModel:require(`../models/sessionModel`),
 };

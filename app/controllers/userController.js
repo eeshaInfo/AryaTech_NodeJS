@@ -186,7 +186,6 @@ userController.updateUser = async(payload)=>{
 }
 
 
-
 /**
  * Function to get admin data.
  */

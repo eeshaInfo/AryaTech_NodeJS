@@ -49,53 +49,6 @@ userService.deleteUser = async (criteria) => {
   await userChallengesModel.deleteMany({ userId: criteria._id });
   return await userModel.deleteOne(criteria);
 }
-/**
- * Function to get challenge information completed by user 
- */
-userService.getUserStats = async (criteria) => {
-  let query = [
-    { $match: criteria },
-    { $lookup: { from: "challenges", localField: "challengeId", foreignField: "_id", as: "challengeData" } },
-    { $unwind: "$challengeData" },
-    // { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userData" } },
-    // { $unwind: "$userData" },
-    {
-      $addFields: {
-        distanceTravelledInMeter: { $cond: { if: { $eq: ["$challengeData.distanceType", CONSTANTS.DISTANCE_TYPE.KM] }, then: { $multiply: ["$challengeData.distance", 1000] }, else: "$challengeData.distance" } }
-      }
-    },
-    {
-      $group: {
-        _id: '$userId',
-        totalCalories: {
-          $sum: "$caloriesBurned"
-        },
-        totalTime: {
-          $sum: "$timeTaken"
-        },
-        totalDistance: {
-          $sum: "$distanceTravelledInMeter"
-        }
-      }
-    },
-    { $lookup: { from: "users", localField: "_id", foreignField: "_id", as: "userData" } },
-    { $unwind: "$userData" },
-    {
-      $project: {
-        totalCalories: 1,
-        totalTime: 1,
-        totalDistance: 1,
-        _id:0,
-        'userData._id': 1,
-        'userData.firstName': 1,
-        'userData.lastName': 1,
-        'userData.imagePath': 1,
-      }
-    }
-  ]
-  return await userChallengesModel.aggregate(query);
-};
-
 
 
 /**
@@ -106,7 +59,7 @@ userService.findOne=async (criteria, projection = {} ) => {
 }
 
 userService.getLatestRecord = async(criteria, projection ={})=>{
-  return await userModel.findOne(criteria,projection).sort({'createdAt':-1}).skip(0).limit(1)
+  return await userModel.findOne(criteria,projection).sort({'createdAt':-1})
 }
 
 /**

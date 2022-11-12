@@ -7,5 +7,6 @@
 module.exports = {
     userController: require('./userController'),
     courseController: require('./courseController'),
-    paymentController: require('./paymentController')
+    paymentController: require('./paymentController'),
+    certificationController: require('./certificationController')
 };
