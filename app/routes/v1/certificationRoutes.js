@@ -17,7 +17,7 @@ let certificationRoutes=[
                 centerId:Joi.string().objectId().description('centerId'),
                 userId: Joi.string().objectId().description('userId'),
                 courseId: Joi.string().objectId().description('course MongoId'),
-                marksDetails:Joi.object(
+                marks:Joi.object(
                     {
                         pratical: Joi.number().description('practical Marks'),
                         written: Joi.number().description('written Marks'),
@@ -46,7 +46,7 @@ let certificationRoutes=[
                 centerId:Joi.string().objectId().description('centerId'),
                 userId: Joi.string().objectId().description('userId'),
                 courseId: Joi.string().objectId().description('course MongoId'),
-                marksDetails:Joi.object(
+                marks:Joi.object(
                     {
                         pratical: Joi.number().description('practical Marks'),
                         written: Joi.number().description('written Marks'),
@@ -78,7 +78,7 @@ let certificationRoutes=[
             description: 'Route to update certificate status for Admin',
             model: 'update certificate status'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: certificationController.updateStatus
     },
 
@@ -96,7 +96,7 @@ let certificationRoutes=[
             description: 'Route to get certificate by Id for Admin',
             model: 'getCertificateById'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: certificationController.getCertificate
     },
 

@@ -13,7 +13,7 @@ const certificationSchema = new Schema(
         courseId: { type: Schema.Types.ObjectId, ref: 'course'},
         centerId: { type: Schema.Types.ObjectId, ref:'users'},
         serialNumber: { type: Number },
-        marksDetail:{
+        marks:{
             pratical: { type : Number, default:0},
             written: { type: Number, default: 0 },
             assignment: { type: Number, default: 0 },

@@ -97,7 +97,7 @@ let routes = [
                     })
                 ).required().description('Education Details of the student or Admin'),
                 imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
-                centerName: Joi.string().default("AryaTech Computer Pvt. Ltd").description('center Name'),
+                centerName: Joi.string().description('center Name'),
                 centerAddress: Joi.string().description('center full address Address'),
                 areaType: Joi.number().valid(...Object.values(CONSTANTS.AREA_TYPES)).description('area type 1=>Rural, 2=>Urban')
 

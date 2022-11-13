@@ -10,11 +10,11 @@ certificationService.update = async(criteria,dataToUpdate)=>{
     return await certificationModel.findOneAndUpdate(criteria,dataToUpdate,{new:true,upsert:true})
 }
 
-certificationService.getList = async(criteria)=>{
-    return await certificationModel.find(criteria)
+certificationService.aggregate = async(queryArray)=>{
+    return await certificationModel.aggregate(queryArray)
 }
 
-certificationService.getCertificate = async(criteria)=>{
+certificationService.find = async(criteria)=>{
     return await certificationModel.findOne(criteria).lean()
 }
 
@@ -25,4 +25,5 @@ certificationService.delete = async(criteria)=>{
 certificationService.getLatestRecord = async(criteria) =>{
     return await certificationModel.findOne(criteria).sort({'createdAt':-1})
 }
+
 module.exports =certificationService

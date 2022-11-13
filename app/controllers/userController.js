@@ -155,7 +155,7 @@ userController.registerNewUser = async (payload) => {
     let lastRegNo = lastRegStuForGivenYear?parseInt(lastRegStuForGivenYear.regNo.slice(-4))+1 : `0001`
     lastRegNo = lastRegStuForGivenYear?'000'+lastRegNo:'0001'
     let centerDetails = await SERVICES.userService.getUser({ _id: payload.centerId })
-    let newRegNo = `${centerDetails.centerCode}${payload.dateOfReg.getYear().toString().slice(1)}${lastRegNo}`
+    let newRegNo = `${centerDetails.regNo}${payload.dateOfReg.getYear().toString().slice(1)}${lastRegNo}`
     payload.regNo = newRegNo;
     console.log('----------------New Registration No:----------------', payload.regNo)
   }
@@ -163,13 +163,14 @@ userController.registerNewUser = async (payload) => {
     //Auto Generate center code---
     console.log('------New Auto Generate Center Code-------');
     let centerDetails = await SERVICES.userService.getLatestRecord({ userType: CONSTANTS.USER_TYPES.ADMIN })
-    console.log('current center',centerDetails);
-    let lastCenterCode = centerDetails?centerDetails.centerCode.slice(-3):null;
-    console.log('centerCode==>',lastCenterCode)
-    let newCenterCode = '00'+(parseInt(lastCenterCode) + 1)
-    payload.centerCode = lastCenterCode?`ACE${newCenterCode}`:'ACE001';
-    console.log('new Center code would be===>',payload.centerCode)
+    let lastCenterRegNo = centerDetails?centerDetails.regNo.slice(-3):null;
+    console.log('centerCode==>',lastCenterRegNo)
+    let newCenterRegNo = lastCenterRegNo?'00'+(parseInt(lastCenterRegNo) + 1):'001'
+    payload.regNo = lastCenterRegNo?`ACE${newCenterRegNo}`:'ACE001';
+    console.log('new Center code would be===>',payload.regNo)
   }
+  payload.password = hashPassword(payload.mobileNumber);
+  console.log(payload)
   let data = await SERVICES.userService.createUser(payload)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: data });
 }
