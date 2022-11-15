@@ -78,7 +78,6 @@ let routes = [
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
                 email:Joi.string().required().description('email id of student'),
                 course: Joi.string().description('course'),
-                duration:Joi.number().description('duration of the course'),
                 address:Joi.array().items(
                     Joi.object({
                         type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
@@ -97,6 +96,8 @@ let routes = [
                     })
                 ).required().description('Education Details of the student or Admin'),
                 imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
+                panNo:Joi.string().description('pan card no of franchise admin'),
+                aadharNo: Joi.string().description('aadhar no of franchise admin'),
                 centerName: Joi.string().description('center Name'),
                 centerAddress: Joi.string().description('center full address Address'),
                 areaType: Joi.number().valid(...Object.values(CONSTANTS.AREA_TYPES)).description('area type 1=>Rural, 2=>Urban')
@@ -126,7 +127,6 @@ let routes = [
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
                 email:Joi.string().required().description('email id of student'),
                 course: Joi.string().description('course'),
-                duration:Joi.number().description('duration of the course'),
                 address:Joi.array().items(
                     Joi.object({
                         type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
@@ -145,6 +145,8 @@ let routes = [
                     })
                 ).required().description('Education Details of the student or Admin'),
                 imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
+                panNo:Joi.string().description('pan card no of franchise admin'),
+                aadharNo: Joi.string().description('aadhar no of franchise admin'),
                 centerAddress: Joi.string().description('center full address Address'),
                 areaType: Joi.number().valid(...Object.values(CONSTANTS.AREA_TYPES)).description('area type 1=>Rural, 2=>Urban')
 
