@@ -107,6 +107,7 @@ let routes = [
             description: 'Route to register a user.',
             model: 'Register'
         },
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.registerNewUser
     },
 
@@ -155,6 +156,7 @@ let routes = [
             description: 'Route to update a user details',
             model: 'updateUser'
         },
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.updateUser
     },
 
@@ -168,7 +170,8 @@ let routes = [
             group: 'User',
             description: 'Route to delete a user',
             model: 'deleteUser'
-        },       
+        },      
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN, 
         handler: userController.deleteUser,
     },
 
@@ -183,6 +186,7 @@ let routes = [
             description: "Route to upload profile image for user",
             model: "UploadFiles",
         },
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.uploadFile,
     },
     
@@ -198,6 +202,7 @@ let routes = [
             description: "Changes user application status",
             model: "changeUserStatus",
         },
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.userStatus,
     },
 
@@ -221,7 +226,7 @@ let routes = [
             description: 'Route to get userList for admin',
             model: 'GetUserList'
         },
-        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.list
     },
 
@@ -239,7 +244,7 @@ let routes = [
             description: 'Route to get user dropdwon for user',
             model: 'getUsersDropDown'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.userDropdown
     },
 
@@ -258,7 +263,7 @@ let routes = [
             description: 'Route to delete user for admin .',
             model: 'DeleteUser'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.deleteUser
     },
     {
@@ -275,7 +280,7 @@ let routes = [
             description: 'Route to get userDetails for admin',
             model: 'GetUserDetails'
         },
-        auth: AVAILABLE_AUTHS.COMMON,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.userDetails
     },
     

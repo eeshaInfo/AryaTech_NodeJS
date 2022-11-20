@@ -30,7 +30,7 @@ let certificationRoutes=[
             description: 'Route to create certificate request for Admin',
             model: 'createCertificateRequest'
         },
-        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: certificationController.requestForCertificate
     },
 
@@ -59,7 +59,7 @@ let certificationRoutes=[
             description: 'Route to update certificate for Admin',
             model: 'updateCertificateRequest'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: certificationController.update
     },
 
@@ -96,7 +96,7 @@ let certificationRoutes=[
             description: 'Route to get certificate by Id for Admin',
             model: 'getCertificateById'
         },
-        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: certificationController.getCertificate
     },
 
