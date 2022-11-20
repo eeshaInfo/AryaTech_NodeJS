@@ -10,8 +10,6 @@ const CONFIG = require('./config');
 /**creating express server app for server */
 const app = EXPRESS();
 
-
-
 /********************************
  ***** Server Configuration *****
  ********************************/
