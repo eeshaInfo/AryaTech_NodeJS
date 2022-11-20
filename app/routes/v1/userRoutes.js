@@ -209,7 +209,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                userType: Joi.number().required().default(USER_TYPES.STUDENT).valid(...Object.values(USER_TYPES)).description('User Type'),
+                userType: Joi.number().required().default(USER_TYPES.STUDENT).valid(...[USER_TYPES.ADMIN,USER_TYPES.STUDENT]).description('User Type'),
                 status:Joi.number().default(STATUS.PENDING).valid(...Object.values(STATUS)).description('status'),
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
@@ -221,7 +221,7 @@ let routes = [
             description: 'Route to get userList for admin',
             model: 'GetUserList'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: userController.list
     },
 

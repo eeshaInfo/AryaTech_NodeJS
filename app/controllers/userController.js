@@ -202,7 +202,7 @@ userController.getAdminProfile = async (payload) => {
 userController.list = async (payload) => {
   let regex = new RegExp(payload.searchKey, 'i');
   let criteria = {
-    $and: [{ $or: [{ studentsName: regex }, { mobileNumber: regex }] }, { userType: CONSTANTS.USER_TYPES.USER, status: payload.status }]
+    $and: [{ $or: [{ studentsName: regex }, { mobileNumber: regex }] }, { userType: payload.userType, status: payload.status }]
   }
   //get user list with search and sort
   let sort = {};
