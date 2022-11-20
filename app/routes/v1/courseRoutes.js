@@ -26,7 +26,7 @@ let courseRoutes=[
             description: 'Route to create Course for Admin',
             model: 'createCourse'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: courseController.createCourse
     },
 
@@ -47,7 +47,7 @@ let courseRoutes=[
             description: 'Route to update Course for Admin',
             model: 'updateCourse'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: courseController.updateCourse
     },
 
@@ -65,7 +65,7 @@ let courseRoutes=[
             description: 'Route to get Course by Id for Admin',
             model: 'getCourseById'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: courseController.getCourseById
     },
 
@@ -80,7 +80,7 @@ let courseRoutes=[
             description: 'Route to get list of course for Admin',
             model: 'courseList'
         },
-        auth: AVAILABLE_AUTHS.ADMIN,
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: courseController.getCourseList
     },
 ]
