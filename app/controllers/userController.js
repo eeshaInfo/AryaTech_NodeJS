@@ -39,7 +39,7 @@ userController.loginUser = async (payload) => {
       };
       delete user.password;
       let token = await encryptJwt(dataForJwt);
-      let data = { userId: user._id, token: token, userType: CONSTANTS.USER_TYPES.ADMIN, }
+      let data = { userId: user._id, token: token, userType: user.userTYpe, }
       // create session for particular user
       await SERVICES.sessionService.createSession(data);
       return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.LOGGED_IN_SUCCESSFULLY), { token, user });
