@@ -6,7 +6,7 @@ const CONSTANTS = require("../utils/constants");
 const Schema = MONGOOSE.Schema;
 
 /**************************************************
- ************* User,Franchise/Admin/SuperAdmin Model or collection ***********
+ *************Franchise_Admin/SuperAdmin Model or collection ***********
  **************************************************/
 const franchaiseSchema = new Schema(
     {
@@ -14,6 +14,7 @@ const franchaiseSchema = new Schema(
         email: { type: String },
         password: { type: String },
         name: { type: String },
+        userType: { type: Number, default:CONSTANTS.USER_TYPES.ADMIN, enum:Object.values(CONSTANTS.USER_TYPES)},
         gender: { type: Number, enum: [GENDER_TYPES.MALE, GENDER_TYPES.FEMALE] },
         fathersName: { type: String },
         mothersName: { type: String },

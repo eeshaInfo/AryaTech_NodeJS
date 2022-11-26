@@ -13,7 +13,6 @@ let routes = [
         path: '/v1/user',
         joiSchemaForSwagger: {
             body: {
-                userType: Joi.number().default(USER_TYPES.STUDENT).valid(...Object.values(USER_TYPES)).description('user Type, 2=>Admin, 3=>Student'),
                 centerId: Joi.string().objectId().description('Center mongo _id'),
                 dateOfReg: Joi.date().required().default(new Date()).max(new Date()).description('date of registration'),
                 name: Joi.string().required().description('User\'s  name.'),
@@ -22,8 +21,9 @@ let routes = [
                 dob: Joi.date().max(new Date()).description('User date of birth.'),
                 gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3.`),
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
-                email:Joi.string().required().description('email id of student'),
-                course: Joi.string().description('course'),
+                parentsMobileNumber: Joi.string().description('User\'s parent mobile number.'),
+                email:Joi.string().required().description(' email id of student'),
+                course: Joi.string().objectId().description('course mongo _id'),
                 address:Joi.array().items(
                     Joi.object({
                         type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
@@ -38,15 +38,12 @@ let routes = [
                     Joi.object({
                         examination:Joi.string().description('examination'),
                         board:Joi.string().description('board/university name'),
-                        year:Joi.string().description('passing year')
+                        year:Joi.string().description('passing year'),
+                        percentage: Joi.number().description('total percentage of marks')
                     })
                 ).required().description('Education Details of the student or Admin'),
                 imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
-                panNo:Joi.string().description('pan card no of franchise admin'),
-                aadharNo: Joi.string().description('aadhar no of franchise admin'),
-                centerName: Joi.string().description('center Name'),
-                centerAddress: Joi.string().description('center full address Address'),
-                areaType: Joi.number().valid(...Object.values(CONSTANTS.AREA_TYPES)).description('area type 1=>Rural, 2=>Urban')
+                aadharNo: Joi.string().description('aadhar number of student'),
 
             },
             group: 'Student',
@@ -72,8 +69,9 @@ let routes = [
                 dob: Joi.date().max(new Date()).description('User date of birth.'),
                 gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3.`),
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
+                parentsMobileNumber: Joi.string().description('User\'s parent mobile number.'),
                 email:Joi.string().required().description('email id of student'),
-                course: Joi.string().description('course'),
+                course: Joi.string().objectId().description('course mongo _id'),
                 address:Joi.array().items(
                     Joi.object({
                         type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
@@ -88,14 +86,12 @@ let routes = [
                     Joi.object({
                         examination:Joi.string().description('examination'),
                         board:Joi.string().description('board/university name'),
-                        year:Joi.string().description('passing year')
+                        year:Joi.string().description('passing year'),
+                        percentage: Joi.number().description('total percentage of marks')
                     })
                 ).required().description('Education Details of the student or Admin'),
                 imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
-                panNo:Joi.string().description('pan card no of franchise admin'),
-                aadharNo: Joi.string().description('aadhar no of franchise admin'),
-                centerAddress: Joi.string().description('center full address Address'),
-                areaType: Joi.number().valid(...Object.values(CONSTANTS.AREA_TYPES)).description('area type 1=>Rural, 2=>Urban')
+                aadharNo: Joi.string().description('aadhar number of student'),
 
             },
             group: 'Student',
