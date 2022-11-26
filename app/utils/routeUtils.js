@@ -151,6 +151,7 @@ let getHandlerMethod = (route) => {
       request.payload = payload;
       payload = request
     }
+
     handler(payload)
       .then((result) => {
         if (result.filePath) {

@@ -3,18 +3,15 @@
 const { Joi } = require('../../utils/joiUtils');
 const { AVAILABLE_AUTHS, GENDER_TYPES, ADDRESS_TYPE,STATUS,USER_TYPES } = require('../../utils/constants');
 //load controllers
-const { userController } = require('../../controllers');
+const { franchaiseController } = require('../../controllers');
 const CONSTANTS = require('../../utils/constants');
 
 let routes = [
-   
     {
         method: 'POST',
-        path: '/v1/user',
+        path: '/v1/franchaise',
         joiSchemaForSwagger: {
             body: {
-                userType: Joi.number().default(USER_TYPES.STUDENT).valid(...Object.values(USER_TYPES)).description('user Type, 2=>Admin, 3=>Student'),
-                centerId: Joi.string().objectId().description('Center mongo _id'),
                 dateOfReg: Joi.date().required().default(new Date()).max(new Date()).description('date of registration'),
                 name: Joi.string().required().description('User\'s  name.'),
                 fathersName:Joi.string().optional().description('father\'s name'),                
@@ -23,7 +20,6 @@ let routes = [
                 gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3.`),
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
                 email:Joi.string().required().description('email id of student'),
-                course: Joi.string().description('course'),
                 address:Joi.array().items(
                     Joi.object({
                         type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
@@ -38,7 +34,8 @@ let routes = [
                     Joi.object({
                         examination:Joi.string().description('examination'),
                         board:Joi.string().description('board/university name'),
-                        year:Joi.string().description('passing year')
+                        year:Joi.string().description('passing year'),
+                        percentage: Joi.number().description('total percentage of marks')
                     })
                 ).required().description('Education Details of the student or Admin'),
                 imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
@@ -49,22 +46,19 @@ let routes = [
                 areaType: Joi.number().valid(...Object.values(CONSTANTS.AREA_TYPES)).description('area type 1=>Rural, 2=>Urban')
 
             },
-            group: 'Student',
-            description: 'Route to register a user.',
-            model: 'Register'
+            group: 'Franchaise',
+            description: 'Route to register a new franchaise',
+            model: 'RegisterNewFranchaise'
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
-        handler: userController.registerNewUser
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        handler: franchaiseController.registerNewFranchaise
     },
-
-
     {
         method: 'PUT',
-        path: '/v1/user',
+        path: '/v1/franchaise',
         joiSchemaForSwagger: {
             body: {
-                _id:Joi.string().objectId().required().description('user mongo _id'),
-                centerId: Joi.string().objectId().description('Center mongo _id'),
+                _id:Joi.string().objectId().required().description('franchaise mongo _id'),
                 dateOfReg: Joi.date().required().default(new Date()).max(new Date()).description('date of registration'),
                 name: Joi.string().required().description('User\'s  name.'),
                 fathersName:Joi.string().optional().description('father\'s name'),                
@@ -73,7 +67,6 @@ let routes = [
                 gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3.`),
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
                 email:Joi.string().required().description('email id of student'),
-                course: Joi.string().description('course'),
                 address:Joi.array().items(
                     Joi.object({
                         type:Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
@@ -88,147 +81,78 @@ let routes = [
                     Joi.object({
                         examination:Joi.string().description('examination'),
                         board:Joi.string().description('board/university name'),
-                        year:Joi.string().description('passing year')
+                        year:Joi.string().description('passing year'),
+                        percentage: Joi.number().description('total percentage of marks')
                     })
-                ).required().description('Education Details of the student or Admin'),
+                ).optional().description('Education Details of the student or Admin'),
                 imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
                 panNo:Joi.string().description('pan card no of franchise admin'),
                 aadharNo: Joi.string().description('aadhar no of franchise admin'),
+                centerName: Joi.string().description('center Name'),
                 centerAddress: Joi.string().description('center full address Address'),
                 areaType: Joi.number().valid(...Object.values(CONSTANTS.AREA_TYPES)).description('area type 1=>Rural, 2=>Urban')
-
             },
-            group: 'Student',
-            description: 'Route to update a user details',
-            model: 'updateUser'
+            group: 'Franchaise',
+            description: 'Route to update a franchaise details',
+            model: 'updateFranchaise'
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
-        handler: userController.updateUser
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        handler: franchaiseController.udpateFranchaise
     },
-
     {
-        method: "DELETE",
-        path: "/v1/user",
+        method: "GET",
+        path: "/v1/franchaise",
         joiSchemaForSwagger: {
-            query:{
-                _id:Joi.string().objectId().required().description('user mongo _id')
-            },
-            group: 'Student',
-            description: 'Route to delete a user',
-            model: 'deleteUser'
-        },      
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN, 
-        handler: userController.deleteUser,
-    },
-
-    {
-        method: "POST",
-        path: "/v1/file/upload",
-        joiSchemaForSwagger: {
-            formData: {
-                file: Joi.file({ name: "image", description: "Single image file" }),
-            },
-            group: "File",
-            description: "Route to upload profile image for user",
-            model: "UploadFiles",
-        },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
-        handler: userController.uploadFile,
-    },
-    
-    {
-        method: "PUT",
-        path: "/v1/user/status",
-        joiSchemaForSwagger: {
-           body:{
-                userId:Joi.string().objectId().description('UserId'),
-                status:Joi.number().valid(...Object.values(STATUS)).description('Status of the user')
+           query:{
+                _id:Joi.string().objectId().required().description('franchaise mongo _id')
            },
-           group: 'Student',
-            description: "Changes user application status",
-            model: "changeUserStatus",
+            group: "Franchaise",
+            description: "get franchaise details by _id",
+            model: "getFranchaiseDetails",
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
-        handler: userController.userStatus,
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        handler: franchaiseController.getFranchaise,
     },
 
     {
         method: 'GET',
-        path: '/v1/user/list',
+        path: '/v1/franchaise/list',
         joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
+            // headers: {
+            //     'authorization': Joi.string().required().description("User's JWT token.")
+            // },
             query: {
-                userType: Joi.number().required().default(USER_TYPES.STUDENT).valid(...[USER_TYPES.ADMIN,USER_TYPES.STUDENT]).description('User Type'),
-                status:Joi.number().default(STATUS.PENDING).valid(...Object.values(STATUS)).description('status'),
+                // status:Joi.number().default(STATUS.PENDING).valid(...Object.values(STATUS)).description('status'),
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
                 searchKey: Joi.string().allow(""),
                 sortKey: Joi.string().default("createdAt").optional().description('sort key'),
                 sortDirection: Joi.number().default(-1).optional().description('sort direction'),
             },
-            group: 'Student',
+            group: 'Franchaise',
             description: 'Route to get userList for admin',
             model: 'GetUserList'
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
-        handler: userController.list
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        handler: franchaiseController.list
     },
 
     {
         method: 'GET',
-        path: '/v1/user/dropdown',
+        path: '/v1/franchaise/dropdown',
         joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
-            query:{
-                userType: Joi.number().default(USER_TYPES.STUDENT).valid(...Object.values(USER_TYPES)).description('User Type')
-            },
-            group: 'Student',
-            description: 'Route to get user dropdwon for user',
-            model: 'getUsersDropDown'
+            // headers: {
+            //     'authorization': Joi.string().required().description("User's JWT token.")
+            // },
+            group: 'Franchaise',
+            description: 'Route to get franchaise dropdwon for user',
+            model: 'getAllFranchaise'
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
-        handler: userController.userDropdown
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        handler: franchaiseController.franchaiseDropdown
     },
 
 
-    {
-        method: 'DELETE',
-        path: '/v1/user',
-        joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
-            query: {
-                _id: Joi.string().required().description('_id of user'),
-            },
-            group: 'User',
-            description: 'Route to delete user for admin .',
-            model: 'DeleteUser'
-        },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
-        handler: userController.deleteUser
-    },
-    {
-        method: 'GET',
-        path: '/v1/user/details',
-        joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
-            query: {
-                userId: Joi.string().objectId().required().description("User's Id"),
-            },
-            group: 'Student',
-            description: 'Route to get userDetails for admin',
-            model: 'GetUserDetails'
-        },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
-        handler: userController.userDetails
-    },
     
 ]
 

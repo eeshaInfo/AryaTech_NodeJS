@@ -6,6 +6,7 @@ const CONFIG = require("../../config");
  ********************************/
 module.exports = {
   userModel: require(`../models/userModel`),
+  franchaiseModel: require('../models/franchaiseModel'),
   courseModel: require('../models/courseModel'),
   paymentModel: require('../models/paymentModel'),
   certificationModel: require('../models/certificationModel'),
