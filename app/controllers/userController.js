@@ -77,7 +77,7 @@ userController.list = async (payload) => {
       criteria = {status:payload.status , isDeleted : false }
    }
   let matchCriteria = {
-    $and: [{ $or: [{ studentsName: regex }, { mobileNumber: regex }] },criteria ]}
+    $and: [{ $or: [{ name: regex }, { mobileNumber: regex }] },criteria ]}
   //get user list with search and sort 
   let sort = {};
       sort[payload.sortKey] = payload.sortDirection;
