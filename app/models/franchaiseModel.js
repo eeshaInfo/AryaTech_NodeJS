@@ -10,39 +10,11 @@ const Schema = MONGOOSE.Schema;
  **************************************************/
 const franchaiseSchema = new Schema(
     {
-        centerCode: { type: String },
-        email: { type: String },
-        password: { type: String },
-        name: { type: String },
-        gender: { type: Number, enum: [GENDER_TYPES.MALE, GENDER_TYPES.FEMALE] },
-        fathersName: { type: String },
-        mothersName: { type: String },
-        dateOfReg: { type: Date },
-        dob: { type: Date, max: new Date() },
-        address:[{
-            type:{type: Number, enum:Object.values(ADDRESS_TYPE)},
-            address: {type:String},
-            postOffice:{type:String},
-            state: { type: String,},
-            city: { type: String },
-            dist: { type:String },
-            pincode: { type: String },
-        }],       
-        aadharNo: {type: String},
-        panNo: {type: String},
-        educations: [{
-            examination:{type: String},
-            board: {type:String},
-            passingYear:{type:String},
-            percentage: { type: Number,},
-        }],
-        mobileNumber: { type: String },   
-        imagePath: { type: String },
-        centerName: {type: String},
-        centerAddress: {type: String},
-        centerEmail: {type: String},
-        areaType: {type: Number, enum:Object.values(CONSTANTS.AREA_TYPES)},   //Rural or URBAN
+        centerCode: { type: String,unique:true},
+        name: {type: String,unique:true},
+        address: {type: String},
         status: { type: Number, default:CONSTANTS.STATUS.PENDING, enum:Object.values(CONSTANTS.STATUS) },
+        userId:{type:Schema.Types.ObjectId,ref:'users'},
         isDeleted: { type: Boolean, default: false},
     },
     { versionKey: false, timestamps: true,collection: 'franchaise' }

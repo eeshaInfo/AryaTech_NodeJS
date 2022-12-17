@@ -29,7 +29,7 @@ var defaults = {
     environment: process.env.NODE_ENV || 'development',
     MONGODB: {
         PROTOCOL: process.env.DB_PROTOCOL || 'mongodb',
-        HOST: process.env.DB_HOST || '127.0.0.1',
+        HOST: process.env.DB_HOST || '192.168.29.100',
         PORT: process.env.DB_PORT || 27017,
         NAME: PLATFORM || 'AryaTech',
         USER: '',

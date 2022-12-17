@@ -38,10 +38,14 @@ let courseRoutes=[
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body:{
-                _id: Joi.string().objectId().description('course MongoId'),
                 name: Joi.string().required().description('Course Name'),
                 duration: Joi.number().required().description('course duration'),
-                price: Joi.number().required().description('course price'),
+                modules:Joi.array().items(
+                  Joi.object({
+                    name: Joi.string().required().description('module Name'),
+                    details: Joi.string().default(" ").description('Details of course eg: All Topics')
+                  })  
+                )
             },
             group: 'Course',
             description: 'Route to update Course for Admin',
@@ -82,6 +86,20 @@ let courseRoutes=[
         },
         auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: courseController.getCourseList
+    },
+    {
+        method: 'GET',
+        path: '/v1/course/dropdown',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            group: 'Course',
+            description: 'Route to get list of course for Admin dropdown in student creation',
+            model: 'courseListForDropdown'
+        },
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
+        handler: courseController.forDropdown
     },
 ]
 

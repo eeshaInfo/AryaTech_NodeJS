@@ -48,6 +48,11 @@ module.exports = {
   PAYMENT_LIST_FETCHED_SUCCESSFULLY: 'Payment List Fetched successfully',
   PAYMENT_ALREADY_ACCEPTED: 'Payment already accepted',
 
+  //franchaise
+  FRANCHAISE_CREATED_SUCCESSFULLY:'Franchaise created successfully.',
+  FRANCHAISE_ALREADY_EXISTS:'Franchaise name already exists.',
+  FRANCHAISE_FETCHED_SUCCESSFULLY:'Franchaise fetch successfully.',
+
   //Notifications
   FCM: {
     SUBSCRIBED_TO_TOPIC: "Successfully subscribed to topic.",

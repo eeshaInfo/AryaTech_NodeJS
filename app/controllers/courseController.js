@@ -35,6 +35,11 @@ courseController.getCourseList = async(payload)=>{
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
 }
 
+courseController.forDropdown = async(payload)=>{
+    let data = await courseService.getCourseList({isDeleted:false},{name:1})
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
+}
+
 /**
  * function to get Course Detail by id
  * @param {*} payload 

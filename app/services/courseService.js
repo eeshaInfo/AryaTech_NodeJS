@@ -6,7 +6,7 @@ courseService.createCourse= async(dataToInsert)=>{
     return await new courseModel(dataToInsert).save()    
 }
 
-courseService.getCourseList = async(criteria)=>{
+courseService.getCourseList = async(criteria,projection={})=>{
     return await courseModel.find(criteria)
 }
 

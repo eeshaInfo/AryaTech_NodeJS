@@ -18,19 +18,13 @@ let franchaiseController = {};
  * function to register a franchaise
  */
 franchaiseController.registerNewFranchaise = async (payload) => {
-    let centerDetails = await SERVICES.franchaiseService.getLatestRecord({})
-    let lastCenterCode = centerDetails?centerDetails.centerCode.slice(-3):null;
-    console.log('centerCode==>',lastCenterCode)
-    let newCenterCode = lastCenterCode?'00'+(parseInt(lastCenterCode) + 1):'001'
-    payload.centerCode = lastCenterCode?`ACE${newCenterCode}`:'ACE001';
-    console.log('new Center code would be===>',payload.centerCode)
-    payload.password = hashPassword(payload.mobileNumber);
-    console.log(payload)
-
-    let data = await SERVICES.franchaiseService.createUser(payload)
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: data });
+  let data = await SERVICES.franchaiseService.getOne({name:payload.name});
+  if(data){
+    return Object.assign(HELPERS.responseHelper.createErrorResponse(MESSAGES.FRANCHAISE_ALREADY_EXISTS,ERROR_TYPES.ALREADY_EXISTS));
+  }
+  await SERVICES.franchaiseService.create({...payload,centerCode:'ARYATECH'+new Date().valueOf()});
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_CREATED_SUCCESSFULLY));
 }
-// throw HELPERS.responseHelper.createErrorResponse(MESSAGES.MOBILE_NUMBER_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
 
 /**
  * function to update franchaise details
@@ -38,7 +32,7 @@ franchaiseController.registerNewFranchaise = async (payload) => {
  */
 franchaiseController.udpateFranchaise = async(payload)=>{
   let criteria = { _id:payload._id };
-  let data = await SERVICES.franchaiseService.updateUser(criteria,payload,{ ...NORMAL_PROJECTION, password: 0, passwordToken: 0 })
+  let data = await SERVICES.franchaiseService.update(criteria,payload,{ ...NORMAL_PROJECTION, password: 0, passwordToken: 0 })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY),{data})
 }
 
@@ -64,7 +58,7 @@ franchaiseController.getAdminProfile = async (payload) => {
 franchaiseController.list = async (payload) => {
   let regex = new RegExp(payload.searchKey, 'i');
   let criteria = {
-     $or: [ { name: regex }, { centerName: regex },{ email: regex }  ] 
+     $or: [ { name: regex } ] 
   }
   //get user list with search and sort
   let sort = {};
@@ -81,8 +75,8 @@ franchaiseController.list = async (payload) => {
     { $project: {"password": 0} },
   ]
   let franchaiseList = await SERVICES.franchaiseService.userAggregate(query);
-  let count = await SERVICES.franchaiseService.getCountOfUsers(criteria)
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { franchaiseList,count })
+  let count = await SERVICES.franchaiseService.getCount(criteria)
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_FETCHED_SUCCESSFULLY), { franchaiseList,count })
 }
 
 /**
@@ -91,8 +85,8 @@ franchaiseController.list = async (payload) => {
  * @returns 
  */
 franchaiseController.franchaiseDropdown = async (payload) => {
-  let userList = await SERVICES.franchaiseService.getUsers({userType:payload.userType }, { centerCode: 1, centerName: 1, name:1 })
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { userList })
+  let list = await SERVICES.franchaiseService.getAll({status:CONSTANTS.STATUS.PENDING }, { centerCode: 1, name:1 })
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_FETCHED_SUCCESSFULLY), { list })
 }
 
 
