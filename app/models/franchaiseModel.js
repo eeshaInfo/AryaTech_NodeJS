@@ -6,7 +6,7 @@ const CONSTANTS = require("../utils/constants");
 const Schema = MONGOOSE.Schema;
 
 /**************************************************
- ************* User,Franchise/Admin/SuperAdmin Model or collection ***********
+ *************Franchise_Admin/SuperAdmin Model or collection ***********
  **************************************************/
 const franchaiseSchema = new Schema(
     {

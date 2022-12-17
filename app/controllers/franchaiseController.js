@@ -39,25 +39,26 @@ franchaiseController.udpateFranchaise = async(payload)=>{
 
 franchaiseController.getFranchaise = async(payload)=>{
     let criteria = {_id: payload._id};
-    let data = await SERVICES.franchaiseService.getUser(criteria,{...NORMAL_PROJECTION, password: 0, passwordToken: 0})
+    let data = await SERVICES.franchaiseService.getUser(criteria,{...NORMAL_PROJECTION })
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS),{data})
 
 }
 /**
  * Function to get admin data.
  */
-franchaiseController.getAdminProfile = async (payload) => {
-  //get user profile
-  let user = await SERVICES.franchaiseService.getUser({ _id: payload.user._id }, { ...NORMAL_PROJECTION, password: 0, challengeCompleted: 0 })
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: user });
-};
+// franchaiseController.getAdminProfile = async (payload) => {
+//   //get user profile
+//   let user = await SERVICES.franchaiseService.getUser({ _id: payload.user._id }, { ...NORMAL_PROJECTION})
+//   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: user });
+// };
 
 /**
  * Function to get user data 
  */
 franchaiseController.list = async (payload) => {
+  let criteria={ isDeleted : false, userType: USER_TYPES.ADMIN }
   let regex = new RegExp(payload.searchKey, 'i');
-  let criteria = {
+   criteria = {
      $or: [ { name: regex } ] 
   }
   //get user list with search and sort
@@ -68,7 +69,7 @@ franchaiseController.list = async (payload) => {
     sort['createdAt'] = -1;
   }
   let query = [
-    { $match: criteria },
+    { $match: matchCriteria },
     { $sort: sort },
     { $skip: payload.skip },
     { $limit: payload.limit },

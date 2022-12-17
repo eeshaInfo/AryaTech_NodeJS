@@ -13,7 +13,6 @@ let routes = [
         path: '/v1/user',
         joiSchemaForSwagger: {
             body: {
-                userType: Joi.number().default(USER_TYPES.STUDENT).valid(...Object.values(USER_TYPES)).description('user Type, 2=>Admin, 3=>Student'),
                 centerId: Joi.string().objectId().description('Center mongo _id'),
                 name: Joi.string().required().description('User\'s  name.'),
                 fathersName: Joi.string().optional().description('father\'s name'),
@@ -50,7 +49,7 @@ let routes = [
             description: 'Route to register a user.',
             model: 'Register',
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.registerNewUser
     },
 
@@ -98,7 +97,7 @@ let routes = [
             description: 'Route to update a user details',
             model: 'updateUser'
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.updateUser
     },
 
@@ -144,7 +143,7 @@ let routes = [
             description: "Changes user application status",
             model: "changeUserStatus",
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.userStatus,
     },
 
@@ -152,9 +151,9 @@ let routes = [
         method: 'GET',
         path: '/v1/user/list',
         joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
+            // headers: {
+            //     'authorization': Joi.string().required().description("User's JWT token.")
+            // },
             query: {
                 userType: Joi.number().required().default(USER_TYPES.STUDENT).valid(...[USER_TYPES.ADMIN, USER_TYPES.STUDENT]).description('User Type'),
                 status: Joi.number().default(STATUS.PENDING).valid(...Object.values(STATUS)).description('status'),
@@ -168,7 +167,7 @@ let routes = [
             description: 'Route to get userList for admin',
             model: 'GetUserList'
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.list
     },
 
@@ -186,35 +185,17 @@ let routes = [
             description: 'Route to get user dropdwon for user',
             model: 'getUsersDropDown'
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.userDropdown
     },
 
-
-    {
-        method: 'DELETE',
-        path: '/v1/user',
-        joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
-            query: {
-                _id: Joi.string().required().description('_id of user'),
-            },
-            group: 'User',
-            description: 'Route to delete user for admin .',
-            model: 'DeleteUser'
-        },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
-        handler: userController.deleteUser
-    },
     {
         method: 'GET',
         path: '/v1/user/details',
         joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
+            // headers: {
+            //     'authorization': Joi.string().required().description("User's JWT token.")
+            // },
             query: {
                 userId: Joi.string().objectId().required().description("User's Id"),
             },
@@ -222,7 +203,7 @@ let routes = [
             description: 'Route to get userDetails for admin',
             model: 'GetUserDetails'
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.userDetails
     },
 

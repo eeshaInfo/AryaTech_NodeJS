@@ -1,5 +1,5 @@
 'use strict';
-const { userModel, userChallengesModel,walletAddressModel, contactsModel } = require('../models');
+const { userModel } = require('../models');
 const CONSTANTS = require('../utils/constants');
 let userService = {};
 
@@ -18,7 +18,7 @@ userService.getUser = async (criteria, projection) => {
 };
 
 userService.updateUserStatus = async(criteria, dataToUpdate)=>{
-  return await userModel.updateOne(criteria,{$set:{dataToUpdate}})
+  return await userModel.updateOne(criteria,{$set:dataToUpdate})
 }
 
 /**
@@ -46,10 +46,13 @@ userService.getUsers = async (criteria, projection= {}) => {
  * Function for delete user
  */
 userService.deleteUser = async (criteria) => {
-  await userChallengesModel.deleteMany({ userId: criteria._id });
   return await userModel.deleteOne(criteria);
 }
 
+
+userService.update = async(criteria,dataToUpdate)=>{
+  return await userModel.updateOne(criteria,{$set:dataToUpdate})
+}
 
 /**
  * Function to get  wallet address
