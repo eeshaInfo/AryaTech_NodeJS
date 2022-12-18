@@ -24,8 +24,8 @@ franchaiseController.registerNewFranchaise = async (payload) => {
     console.log('last Center Details', lastCenterRecord)
     if(lastCenterRecord){
         let lastCenterCode = lastCenterRecord.centerCode
-        let newCenterCode = parseInt(lastCenterCode.slice(3))+1
-        payload.centerCode = `ACE{newCenterCode}`
+        let newCenterCode = ('00' + (parseInt(lastCenterCode.slice(3))+1)).slice(-3)
+        payload.centerCode = `ACE${newCenterCode}`
         console.log('------->Payload for Center',payload)
     }else{
       payload.centerCode = 'ACE001' 
