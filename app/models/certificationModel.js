@@ -1,6 +1,6 @@
 "use strict";
 /************* Modules ***********/
-const {CERTIFICATE_STATUS} = require("../utils/constants");
+const {CERTIFICATE_STATUS, CERTIFICATE_TYPES} = require("../utils/constants");
 const MONGOOSE = require("mongoose");
 const Schema = MONGOOSE.Schema;
 
@@ -9,6 +9,7 @@ const Schema = MONGOOSE.Schema;
  **************************************************/
 const certificationSchema = new Schema(
     {
+        certificateType: { type: String, enum: Object.values(CERTIFICATE_TYPES)},
         userId: { type: Schema.Types.ObjectId, ref:'users' },
         courseId: { type: Schema.Types.ObjectId, ref: 'course'},
         centerId: { type: Schema.Types.ObjectId, ref:'users'},
@@ -19,6 +20,8 @@ const certificationSchema = new Schema(
             assignment: { type: Number, default: 0 },
             viva: { type: Number, default: 0 },
         },
+        englishTypingSpeed: { type: Number },
+        hindiTypingSpeed: { type: Number },
         status: { type: Number, default: CERTIFICATE_STATUS.PENDING,enum :Object.values(CERTIFICATE_STATUS)},
         isDeleted: { type: Boolean, default: false},
     },

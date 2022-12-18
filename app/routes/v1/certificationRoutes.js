@@ -13,7 +13,7 @@ let certificationRoutes=[
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
-            body:{
+            body:{ 
                 centerId:Joi.string().objectId().description('centerId'),
                 userId: Joi.string().objectId().description('userId'),
                 courseId: Joi.string().objectId().description('course MongoId'),
