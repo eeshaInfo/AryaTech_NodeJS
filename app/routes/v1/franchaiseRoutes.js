@@ -11,6 +11,9 @@ let routes = [
         method: 'POST',
         path: '/v1/franchaise',
         joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
             body: {
                 name: Joi.string().description('center Name'),
                 address: Joi.string().description('center full address Address'),
@@ -20,13 +23,16 @@ let routes = [
             description: 'Route to register a new franchaise',
             model: 'RegisterNewFranchaise'
         },
-        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: franchaiseController.registerNewFranchaise
     },
     {
         method: 'PUT',
         path: '/v1/franchaise',
         joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
             body: {
                 _id:Joi.string().objectId().required().description('franchaise mongo _id'),
                 address:Joi.string().description('Address of frachiaise'),
@@ -37,13 +43,16 @@ let routes = [
             description: 'Route to update a franchaise details',
             model: 'updateFranchaise'
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: franchaiseController.udpateFranchaise
     },
     {
         method: "GET",
         path: "/v1/franchaise",
         joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
            query:{
                 _id:Joi.string().objectId().required().description('franchaise mongo _id')
            },
@@ -51,7 +60,7 @@ let routes = [
             description: "get franchaise details by _id",
             model: "getFranchaiseDetails",
         },
-        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: franchaiseController.getFranchaise,
     },
 
@@ -68,13 +77,12 @@ let routes = [
                 searchKey: Joi.string().allow(""),
                 sortKey: Joi.string().default("createdAt").optional().description('sort key'),
                 sortDirection: Joi.number().default(-1).optional().description('sort direction'),
-                page:Joi.number().optional().description('Page number.')
             },
             group: 'Franchaise',
             description: 'Route to get userList for admin',
             model: 'GetUserList'
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: franchaiseController.list
     },
 

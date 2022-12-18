@@ -12,6 +12,9 @@ let routes = [
         method: 'POST',
         path: '/v1/user',
         joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
             body: {
                 userType: Joi.number().valid(...[USER_TYPES.ADMIN, USER_TYPES.STUDENT]).description('USER_TYPES 1=>SuperAdmin, 2=>Admin, 3=>Student'),
                 centerId: Joi.string().objectId().description('Center mongo _id'),
@@ -49,7 +52,7 @@ let routes = [
             description: 'Route to register a user.',
             model: 'Register',
         },
-        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.registerNewUser
     },
 
@@ -58,6 +61,9 @@ let routes = [
         method: 'PUT',
         path: '/v1/user',
         joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
             body: {
                 _id: Joi.string().objectId().required().description('user mongo _id'),
                 centerId: Joi.string().objectId().description('Center mongo _id'),
@@ -94,7 +100,7 @@ let routes = [
             description: 'Route to update a user details',
             model: 'updateUser'
         },
-        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.updateUser
     },
 
@@ -102,6 +108,9 @@ let routes = [
         method: "DELETE",
         path: "/v1/user",
         joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
             query: {
                 _id: Joi.string().objectId().required().description('user mongo _id')
             },
@@ -109,7 +118,7 @@ let routes = [
             description: 'Route to delete a user',
             model: 'deleteUser'
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: userController.deleteUser,
     },
 
@@ -132,6 +141,9 @@ let routes = [
         method: "PUT",
         path: "/v1/user/status",
         joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
             body: {
                 userId: Joi.string().objectId().description('UserId'),
                 status: Joi.number().valid(...Object.values(STATUS)).description('Status of the user')
@@ -140,7 +152,7 @@ let routes = [
             description: "Changes user application status",
             model: "changeUserStatus",
         },
-        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.userStatus,
     },
 
@@ -148,9 +160,9 @@ let routes = [
         method: 'GET',
         path: '/v1/user/list',
         joiSchemaForSwagger: {
-            // headers: {
-            //     'authorization': Joi.string().required().description("User's JWT token.")
-            // },
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
             query: {
                 userType: Joi.number().required().default(USER_TYPES.STUDENT).valid(...[USER_TYPES.ADMIN, USER_TYPES.STUDENT]).description('User Type'),
                 status: Joi.number().default(STATUS.PENDING).valid(...Object.values(STATUS)).description('status'),
@@ -164,7 +176,7 @@ let routes = [
             description: 'Route to get userList for admin',
             model: 'GetUserList'
         },
-        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.list
     },
 
@@ -182,7 +194,7 @@ let routes = [
             description: 'Route to get user dropdwon for user',
             model: 'getUsersDropDown'
         },
-        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.userDropdown
     },
 
@@ -190,9 +202,9 @@ let routes = [
         method: 'GET',
         path: '/v1/user/details',
         joiSchemaForSwagger: {
-            // headers: {
-            //     'authorization': Joi.string().required().description("User's JWT token.")
-            // },
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
             query: {
                 userId: Joi.string().objectId().required().description("User's Id"),
             },
@@ -200,7 +212,7 @@ let routes = [
             description: 'Route to get userDetails for admin',
             model: 'GetUserDetails'
         },
-        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.userDetails
     },
 

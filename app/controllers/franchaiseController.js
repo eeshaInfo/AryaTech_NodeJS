@@ -66,11 +66,10 @@ franchaiseController.getFranchaise = async(payload)=>{
  * Function to get user data 
  */
 franchaiseController.list = async (payload) => {
-  let criteria={ isDeleted : false, userType: USER_TYPES.ADMIN }
+  let criteria={ isDeleted : {$ne:true} }
   let regex = new RegExp(payload.searchKey, 'i');
-   criteria = {
-     $or: [ { name: regex } ] 
-  }
+  let matchCriteria = {
+    $and: [{ $or: [{ name: regex }, { mobileNumber: regex }] },criteria ]}
   //get user list with search and sort
   let sort = {};
   if (payload.sortKey) {
@@ -80,10 +79,25 @@ franchaiseController.list = async (payload) => {
   }
   let query = [
     { $match: matchCriteria },
+    {$lookup:{
+      from: "users",
+      localField: "userId",
+      foreignField:"_id",
+      as:"userData"
+    }},
+    {$unwind:{path: "$userData", preserveNullAndEmptyArrays: true}},
     { $sort: sort },
     { $skip: payload.skip },
     { $limit: payload.limit },
-    { $project: {"password": 0} },
+    { $project: 
+      {
+        "centerCode": 1,
+        "name": 1,
+        "address": 1,
+        "centerAdminName":"$userData.name",
+        "centerAdminEmail":"$userData.email",
+        "centerAdminMobile":"$userData.mobileNumber"
+      } },
   ]
   let franchaiseList = await SERVICES.franchaiseService.userAggregate(query);
   let count = await SERVICES.franchaiseService.getCount(criteria)
