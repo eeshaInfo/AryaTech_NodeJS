@@ -13,7 +13,7 @@ franchaiseService.update = async (criteria, dataToUpdate, projection = {}) => {
 /**
  * function to fetch user from the system based on criteria.
  */
-franchaiseService.getOne = async (criteria, projection) => {
+franchaiseService.getFranchaise = async (criteria, projection) => {
   return await franchaiseModel.findOne(criteria, projection).lean();
 };
 

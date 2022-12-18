@@ -2,11 +2,10 @@
 const path = require('path');
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
-const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES } = require('../utils/constants');
+const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES } = require('../utils/constants');
 const SERVICES = require('../services');
 const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword, sendSms } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
-const qrCode = require('qrcode');
 const fs = require('fs');
 
 /**************************************************
@@ -27,12 +26,7 @@ let authController = {};
  */
  authController.loginUser = async (payload) => {
   // check is user exists in the database with provided email or not.
-  let user = await SERVICES.userService.getUser({ email: payload.email }, { ...NORMAL_PROJECTION });
-  console.log('Student Login',user)
-  if(!user){
-    user = await SERVICES.franchaiseService.getUser({ email: payload.email }, { ...NORMAL_PROJECTION });
-    console.log('Super Admin and Adminlogin',user)
-  }
+  let user = await SERVICES.userService.getUser({ email: payload.email });
   // if user exists then compare the password that user entered.
   if (user) {
     // compare user's password.

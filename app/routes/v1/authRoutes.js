@@ -18,20 +18,20 @@ let routes = [
         handler: authController.getServerResponse
     },
 
-    {
-        method: 'GET',
-        path: '/v1/admin/auth',
-        joiSchemaForSwagger: {
-            headers: {
-                'authorization': Joi.string().required().description("User's JWT token.")
-            },
-            group: 'Test',
-            description: 'Route to user/admin auth example',
-            model: 'Admin_Auth'
-        },
-        auth: AVAILABLE_AUTHS.COMMON,
-        handler: authController.getServerResponse
-    },
+    // {
+    //     method: 'GET',
+    //     path: '/v1/admin/auth',
+    //     joiSchemaForSwagger: {
+    //         headers: {
+    //             'authorization': Joi.string().required().description("User's JWT token.")
+    //         },
+    //         group: 'Test',
+    //         description: 'Route to user/admin auth example',
+    //         model: 'Admin_Auth'
+    //     },
+    //     auth: AVAILABLE_AUTHS.COMMON,
+    //     handler: authController.getServerResponse
+    // },
 
     {
         method: 'POST',

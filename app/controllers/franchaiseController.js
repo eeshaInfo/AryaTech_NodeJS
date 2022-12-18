@@ -18,12 +18,22 @@ let franchaiseController = {};
  * function to register a franchaise
  */
 franchaiseController.registerNewFranchaise = async (payload) => {
-  let data = await SERVICES.franchaiseService.getOne({name:payload.name});
-  if(data){
-    return Object.assign(HELPERS.responseHelper.createErrorResponse(MESSAGES.FRANCHAISE_ALREADY_EXISTS,ERROR_TYPES.ALREADY_EXISTS));
+  let isUserAlreadyExist = await SERVICES.franchaiseService.getFranchaise({userId: payload.userId})
+  if(!isUserAlreadyExist){
+    let lastCenterRecord = await SERVICES.franchaiseService.getLatestRecord({ isDeleted: {$ne:true}} )
+    console.log('last Center Details', lastCenterRecord)
+    if(lastCenterRecord){
+        let lastCenterCode = lastCenterRecord.centerCode
+        let newCenterCode = parseInt(lastCenterCode.slice(3))+1
+        payload.centerCode = `ACE{newCenterCode}`
+        console.log('------->Payload for Center',payload)
+    }else{
+      payload.centerCode = 'ACE001' 
+    }
+    let data = await SERVICES.franchaiseService.create(payload);
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_CREATED_SUCCESSFULLY),{data});
   }
-  await SERVICES.franchaiseService.create({...payload,centerCode:'ARYATECH'+new Date().valueOf()});
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_CREATED_SUCCESSFULLY));
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_ALREADY_ACTIVE, ERROR_TYPES.ALREADY_EXISTS);
 }
 
 /**
@@ -86,7 +96,7 @@ franchaiseController.list = async (payload) => {
  * @returns 
  */
 franchaiseController.franchaiseDropdown = async (payload) => {
-  let list = await SERVICES.franchaiseService.getAll({status:CONSTANTS.STATUS.PENDING }, { centerCode: 1, name:1 })
+  let list = await SERVICES.franchaiseService.getAll({}, { centerCode: 1, name:1 })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_FETCHED_SUCCESSFULLY), { list })
 }
 

@@ -35,17 +35,19 @@ userController.uploadFile = async (payload) => {
 userController.registerNewUser = async (payload) => {
   let isUserAlreadyExist = await SERVICES.userService.findOne({email:payload.email, isDeleted:false})
   if(!isUserAlreadyExist){
+    if(payload.userType==CONSTANTS.USER_TYPES.STUDENT){
       let lastRegStuForGivenYear = await SERVICES.userService.getLatestRecord({
-            centerId: payload.centerId, userType: CONSTANTS.USER_TYPES.STUDENT
+            centerId: payload.centerId, userType: CONSTANTS.USER_TYPES.STUDENT, regYear:payload.regYear
         } )
 
       //Auto Generate Registration No for Student----- 
         let lastRegNo = lastRegStuForGivenYear?parseInt(lastRegStuForGivenYear.regNo.slice(-4))+1 : `0001`
         lastRegNo = lastRegStuForGivenYear?'000'+lastRegNo:'0001'
-        let centerDetails = await SERVICES.franchaiseService.getUser({ _id: payload.centerId })
-        let newRegNo = `${centerDetails.centerCode}${payload.dateOfReg.getYear().toString().slice(1)}${lastRegNo}`
-        payload.regNo = newRegNo;
-        console.log('----------------New Registration No:----------------', payload.regNo)
+        let centerDetails = await SERVICES.franchaiseService.getFranchaise({ _id: payload.centerId })
+        let newRegNoForStudent = `${centerDetails.centerCode}${payload.regYear.slice(2)}${lastRegNo}`
+        payload.regNo = newRegNoForStudent;
+        console.log('----------------New Registration No:-----Student -----------', payload.regNo)
+      }
         payload.password = hashPassword(payload.mobileNumber);
         let data = await SERVICES.userService.createUser(payload)
         return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: data });

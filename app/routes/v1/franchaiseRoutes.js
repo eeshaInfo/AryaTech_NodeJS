@@ -13,7 +13,8 @@ let routes = [
         joiSchemaForSwagger: {
             body: {
                 name: Joi.string().description('center Name'),
-                address: Joi.string().description('center full address Address')   
+                address: Joi.string().description('center full address Address'),
+                userId: Joi.string().objectId().description('Admin _id')
             },
             group: 'Franchaise',
             description: 'Route to register a new franchaise',
@@ -30,6 +31,7 @@ let routes = [
                 _id:Joi.string().objectId().required().description('franchaise mongo _id'),
                 address:Joi.string().description('Address of frachiaise'),
                 name: Joi.string().required().description('User\'s  name.'),
+                userId: Joi.string().objectId().description('Admin _id')
             },
             group: 'Franchaise',
             description: 'Route to update a franchaise details',

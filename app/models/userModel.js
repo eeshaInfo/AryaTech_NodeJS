@@ -11,19 +11,19 @@ const Schema = MONGOOSE.Schema;
 const userSchema = new Schema(
     {
         //user details
-        regNo: { type: String,default:'ARYATECH'+new Date().valueOf() },
+        regNo: { type: String },
+        regYear: { type: String },
         email: { type: String },
         name: { type: String },
         email: { type: String },
         password: { type: String },
-        userType: { type: Number, default:CONSTANTS.USER_TYPES.STUDENT, enum: Object.values(CONSTANTS.USER_TYPES) },
-        gender: { type: Number, enum: [GENDER_TYPES.MALE, GENDER_TYPES.FEMALE] },
+        gender: { type: Number, enum: Object.values(GENDER_TYPES) },
         dob: { type: Date, max: new Date() },
         fathersName: { type: String },
         mothersName: { type: String },
         userType: { type: Number, enum: Object.values(CONSTANTS.USER_TYPES) },
         address:[{
-            type:{type: Number, enum:Object.values(ADDRESS_TYPE)},
+            type:{type: String, enum:Object.values(ADDRESS_TYPE)},
             address: {type:String},
             postOffice:{type:String},
             state: { type: String },
