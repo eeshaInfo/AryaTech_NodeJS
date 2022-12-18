@@ -37,7 +37,7 @@ userController.registerNewUser = async (payload) => {
   if(!isUserAlreadyExist){
     if(payload.userType==CONSTANTS.USER_TYPES.STUDENT){
       let lastRegStuForGivenYear = await SERVICES.userService.getLatestRecord({
-            centerId: payload.centerId, userType: CONSTANTS.USER_TYPES.STUDENT, regYear:payload.regYear
+        franchaiseId: payload.franchaiseId, userType: CONSTANTS.USER_TYPES.STUDENT, regYear:payload.regYear
         } )
 
       //Auto Generate Registration No for Student----- 
@@ -71,12 +71,12 @@ userController.updateUser = async(payload)=>{
  * Function to get user data 
  */
 userController.list = async (payload) => {
-  let criteria={}
+let criteria={}
   let regex = new RegExp(payload.searchKey, 'i');
    if(payload.centerId){
-      criteria = {centerId:payload.centerId, status:payload.status, isDeleted : false}
+      criteria = {franchaiseId:payload.franchaiseId, status:payload.status, userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
    }else{
-      criteria = {status:payload.status , isDeleted : false }
+      criteria = {status:payload.status ,userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
    }
   let matchCriteria = {
     $and: [{ $or: [{ name: regex }, { mobileNumber: regex }] },criteria ]}

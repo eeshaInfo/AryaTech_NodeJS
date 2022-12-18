@@ -17,7 +17,7 @@ let routes = [
             },
             body: {
                 userType: Joi.number().valid(...[USER_TYPES.ADMIN, USER_TYPES.STUDENT]).description('USER_TYPES 1=>SuperAdmin, 2=>Admin, 3=>Student'),
-                centerId: Joi.string().objectId().description('Center mongo _id'),
+                franchaiseId: Joi.string().objectId().description('Center mongo _id'),
                 regYear: Joi.string().default(new Date().getFullYear()).description('Registration Year For Student eg: 2022 '),//Year is required in case of student 
                 name: Joi.string().required().description('User\'s  name.'),
                 fathersName: Joi.string().optional().description('father\'s name'),
@@ -66,7 +66,7 @@ let routes = [
             },
             body: {
                 _id: Joi.string().objectId().required().description('user mongo _id'),
-                centerId: Joi.string().objectId().description('Center mongo _id'),
+                franchaiseId: Joi.string().objectId().description('Center mongo _id'),
                 name: Joi.string().required().description('User\'s  name.'),
                 fathersName: Joi.string().optional().description('father\'s name'),
                 mothersName: Joi.string().optional().description('mother\'s name'),
@@ -164,7 +164,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                userType: Joi.number().required().default(USER_TYPES.STUDENT).valid(...[USER_TYPES.ADMIN, USER_TYPES.STUDENT]).description('User Type'),
+                franchaiseId: Joi.string().objectId().description('franchaiseId mongo _id'),
                 status: Joi.number().default(STATUS.PENDING).valid(...Object.values(STATUS)).description('status'),
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),

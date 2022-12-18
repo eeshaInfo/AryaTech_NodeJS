@@ -1,6 +1,6 @@
 "use strict";
 /************* Modules ***********/
-const { USER_TYPES, GENDER_TYPES, DURATION_TYPES, ADDRESS_TYPE } = require("../utils/constants");
+const { USER_TYPES, GENDER_TYPES, DURATION_TYPES, ADDRESS_TYPE, STATUS } = require("../utils/constants");
 const MONGOOSE = require("mongoose");
 const CONSTANTS = require("../utils/constants");
 const Schema = MONGOOSE.Schema;
@@ -47,6 +47,7 @@ const userSchema = new Schema(
         parentsMobile: { type: String },    
         imagePath: { type: String },
         password: { type: String },
+        status:{type: Number, default:STATUS.PENDING },
         isDeleted: { type: Boolean, default: false},
     },
     { versionKey: false, timestamps: true,collection: 'users' }
