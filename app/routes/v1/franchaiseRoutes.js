@@ -15,6 +15,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body: {
+                regDate: Joi.date().description('registration number'),
                 name: Joi.string().description('center Name'),
                 address: Joi.string().description('center full address Address'),
                 userId: Joi.string().objectId().description('Admin _id')

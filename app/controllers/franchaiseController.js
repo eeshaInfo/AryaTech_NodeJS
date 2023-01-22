@@ -26,14 +26,13 @@ franchaiseController.registerNewFranchaise = async (payload) => {
         let lastCenterCode = lastCenterRecord.centerCode
         let newCenterCode = ('00' + (parseInt(lastCenterCode.slice(3))+1)).slice(-3)
         payload.centerCode = `ACE${newCenterCode}`
-        console.log('------->Payload for Center',payload)
     }else{
       payload.centerCode = 'ACE001' 
     }
     let data = await SERVICES.franchaiseService.create(payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_CREATED_SUCCESSFULLY),{data});
   }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_ALREADY_ACTIVE, ERROR_TYPES.ALREADY_EXISTS);
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_IS_ALREADY_ADMIN_OF_OTHER_FRANCHAISE, ERROR_TYPES.ALREADY_EXISTS);
 }
 
 /**
@@ -94,6 +93,8 @@ franchaiseController.list = async (payload) => {
         "centerCode": 1,
         "name": 1,
         "address": 1,
+        "status" : 1,
+        "regDate" : 1,
         "centerAdminName":"$userData.name",
         "centerAdminEmail":"$userData.email",
         "centerAdminMobile":"$userData.mobileNumber"

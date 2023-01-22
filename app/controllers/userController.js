@@ -35,7 +35,7 @@ userController.uploadFile = async (payload) => {
 userController.registerNewUser = async (payload) => {
   let isUserAlreadyExist = await SERVICES.userService.findOne({email:payload.email, isDeleted:false})
   if(!isUserAlreadyExist){
-    if(payload.userType==CONSTANTS.USER_TYPES.STUDENT){
+    if(payload.userType==CONSTANTS.USER_TYPES.STUDENT){ 
       let lastRegStuForGivenYear = await SERVICES.userService.getLatestRecord({
         franchaiseId: payload.franchaiseId, userType: CONSTANTS.USER_TYPES.STUDENT, regYear:payload.regYear
         } )
@@ -46,7 +46,6 @@ userController.registerNewUser = async (payload) => {
         let centerDetails = await SERVICES.franchaiseService.getFranchaise({ _id: payload.centerId })
         let newRegNoForStudent = `${centerDetails.centerCode}${payload.regYear.slice(2)}${lastRegNo}`
         payload.regNo = newRegNoForStudent;
-        console.log('----------------New Registration No:-----Student -----------', payload.regNo)
       }
         payload.password = hashPassword(payload.mobileNumber);
         let data = await SERVICES.userService.createUser(payload)
