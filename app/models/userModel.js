@@ -12,7 +12,7 @@ const userSchema = new Schema(
     {
         //user details
         regNo: { type: String },
-        regYear: { type: String },
+        regDate : { type : Date },
         email: { type: String },
         name: { type: String },
         email: { type: String },
@@ -35,7 +35,6 @@ const userSchema = new Schema(
         panNo: {type: String},
         courseId: { type:MONGOOSE.Types.ObjectId, ref:'course' },
         franchaiseId:{type:MONGOOSE.Types.ObjectId,ref:'franchaise'},
-        duration: {type: Number },
         educations: [{
             examination:{type: String},
             board: {type:String},

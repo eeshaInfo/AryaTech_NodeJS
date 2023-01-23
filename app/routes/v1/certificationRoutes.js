@@ -17,6 +17,7 @@ let certificationRoutes=[
                 centerId:Joi.string().objectId().description('centerId'),
                 userId: Joi.string().objectId().description('userId'),
                 courseId: Joi.string().objectId().description('course MongoId'),
+                dateOfIssue: Joi.date().description('certificate date issue'),
                 marks:Joi.object(
                     {
                         pratical: Joi.number().description('practical Marks'),
@@ -46,6 +47,7 @@ let certificationRoutes=[
                 centerId:Joi.string().objectId().description('centerId'),
                 userId: Joi.string().objectId().description('userId'),
                 courseId: Joi.string().objectId().description('course MongoId'),
+                dateOfIssue: Joi.date().description('certificate date issue'),
                 marks:Joi.object(
                     {
                         pratical: Joi.number().description('practical Marks'),
