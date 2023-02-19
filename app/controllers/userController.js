@@ -43,7 +43,7 @@ userController.registerNewUser = async (payload) => {
       //Auto Generate Registration No for Student----- 
         let lastRegNo = lastRegStuForGivenYear?parseInt(lastRegStuForGivenYear.regNo.slice(-4))+1 : `0001`
         lastRegNo = lastRegStuForGivenYear?'000'+lastRegNo:'0001'
-        let centerDetails = await SERVICES.franchaiseService.getFranchaise({ _id: payload.centerId })
+        let centerDetails = await SERVICES.franchaiseService.getFranchaise({ _id: payload.franchaiseId });
         let newRegNoForStudent = `${centerDetails.centerCode}${payload.regYear.slice(2)}${lastRegNo}`
         payload.regNo = newRegNoForStudent;
       }
