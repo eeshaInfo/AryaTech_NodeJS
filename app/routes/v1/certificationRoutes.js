@@ -1,6 +1,6 @@
 'use strict'
 const { Joi } = require('../../utils/joiUtils');
-const {AVAILABLE_AUTHS, CERTIFICATE_STATUS} = require('../../utils/constants');
+const {AVAILABLE_AUTHS, CERTIFICATE_STATUS, CERTIFICATE_TYPES} = require('../../utils/constants');
 const {certificationController} = require('../../controllers');
 const { object } = require('joi');
 
@@ -17,6 +17,7 @@ let certificationRoutes=[
                 centerId:Joi.string().objectId().description('centerId'),
                 userId: Joi.string().objectId().description('userId'),
                 courseId: Joi.string().objectId().description('course MongoId'),
+                type : Joi.string().valid(...Object.values(CERTIFICATE_TYPES)).description('Certificate Type'),
                 dateOfIssue: Joi.date().description('certificate date issue'),
                 marks:Joi.object(
                     {
@@ -46,6 +47,7 @@ let certificationRoutes=[
                 _id:Joi.string().objectId().description('certificate Request mongo _id'),
                 centerId:Joi.string().objectId().description('centerId'),
                 userId: Joi.string().objectId().description('userId'),
+                type : Joi.string().valid(...Object.values(CERTIFICATE_TYPES)).description('Certificate Type'),
                 courseId: Joi.string().objectId().description('course MongoId'),
                 dateOfIssue: Joi.date().description('certificate date issue'),
                 marks:Joi.object(
@@ -102,20 +104,29 @@ let certificationRoutes=[
         handler: certificationController.getCertificate
     },
 
-    // {
-    //     method: 'GET',
-    //     path: '/v1/certificate/list',
-    //     joiSchemaForSwagger: {
-    //         headers: {
-    //             'authorization': Joi.string().required().description("User's JWT token.")
-    //         },
-    //         group: 'Certificate',
-    //         description: 'Route to get list of certificate for Admin',
-    //         model: 'courseList'
-    //     },
-    //     auth: AVAILABLE_AUTHS.ADMIN,
-    //     handler: certificationController.getList
-    // },
+    {
+        method: 'GET',
+        path: '/v1/certificate/list',
+        joiSchemaForSwagger: {
+            // headers: {
+            //     'authorization': Joi.string().required().description("User's JWT token.")
+            // },
+            query : {
+                centerId: Joi.string().objectId().description('franchaiseId mongo _id'),
+                status: Joi.number().default(CERTIFICATE_STATUS.PENDING).valid(...Object.values(CERTIFICATE_STATUS)).description('status'),
+                skip: Joi.number().default(0).description('skip'),
+                limit: Joi.number().default(10).description('limit'),
+                searchKey: Joi.string().allow(""),
+                sortKey: Joi.string().default("createdAt").optional().description('sort key'),
+                sortDirection: Joi.number().default(-1).optional().description('sort direction'),
+            },
+            group: 'Certificate',
+            description: 'Route to get list of certificate for Admin',
+            model: 'courseList'
+        },
+        // auth: AVAILABLE_AUTHS.ADMIN,
+        handler: certificationController.getList
+    },
 ]
 
 module.exports = certificationRoutes

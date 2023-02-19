@@ -49,7 +49,7 @@ certificationController.getCertificate = async (payload) => {
         {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
 
         {$lookup:{
-            from:'users',
+            from:'franchaise',
             localField:'centerId',
             foreignField:'_id',
             as:'centerDetails'
@@ -74,16 +74,83 @@ certificationController.getCertificate = async (payload) => {
                 "marks":1,
                 "serialNumber":1,
                 "status": 1,
+                "type" :1,
                 "centerCode":"$centerDetails.regNo",
                 "centerName":"$centerDetails.centerName",
                 "centerAddress":"$centerDetails.centerAddress",
-                "centerCode":"$centerDetails.regNo",
                 "courseData":1
 
         }}
     ]
     let data = await certificationService.aggregate(queryArray)
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data }) 
+    let count = await certificationService.getCountOfUsers(criteria);
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data, count: count }) 
+}
+
+
+certificationController.getList = async(payload) =>{
+   let criteria = {}
+   let regex = new RegExp(payload.searchKey, 'i');
+    if(payload.centerId){
+        criteria = {centerId: payload.centerId, isDeleted : {$ne : true}}
+    }else{
+        criteria = {isDeleted : {$ne : true }}
+    }
+    let matchCriteria = {
+        $and: [{ $or: [{ name: regex }, { mobileNumber: regex }] },criteria ]}
+      let sort = {};
+          sort[payload.sortKey] = payload.sortDirection;
+    let queryArray=[
+        {$match:criteria},
+        {$lookup:{
+            from:'users',
+            localField:'userId',
+            foreignField:'_id',
+            as:'userData'
+        }},
+        {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
+
+        {$lookup:{
+            from:'franchaise',
+            localField:'centerId',
+            foreignField:'_id',
+            as:'centerDetails'
+        }},
+        {$unwind:{path:'$centerDetails',preserveNullAndEmptyArrays:true}},
+
+        {$lookup:{
+            from:'course',
+            localField:'courseId',
+            foreignField:'_id',
+            as:'courseData'
+        }},
+        {$unwind:{path:'$courseData',preserveNullAndEmptyArrays:true}},
+        { $sort: sort },
+        { $skip: payload.skip },
+        { $limit: payload.limit },
+        {$project:{
+                "regNo":"$userData.regNo",
+                "name":"$userData.name",
+                "fathersName":"$userData.fathersName",
+                "mothersName":"$userData.mothersName",
+                "dob":"$userData.dob",
+                "gender":"$userData.gender",
+                "imagePath":"$userData.imagePath",
+                "marks":1,
+                "serialNumber":1,
+                "status": 1,
+                "type" : 1,
+                "centerCode":"$centerDetails.regNo",
+                "centerName":"$centerDetails.centerName",
+                "centerAddress":"$centerDetails.centerAddress",
+                "centerCode":"$centerDetails.regNo",
+                "courseName":"$courseData.name"
+
+        }},
+        
+    ]
+let data = await certificationService.aggregate(queryArray)
+return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), { data })
 }
 
 

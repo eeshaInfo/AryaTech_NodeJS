@@ -71,11 +71,50 @@ let criteria={}
       sort[payload.sortKey] = payload.sortDirection;
   let query = [
     { $match: matchCriteria },
+    {$lookup: {
+      from :"course",
+      localField: "courseId",
+      foreignField : "_id",
+      as:"course_data"
+    }},
+    { $unwind: { path: "$course_data", preserveNullAndEmptyArrays: true }},
+    {$lookup: {
+      from :"franchaise",
+      localField: "centerId",
+      foreignField : "_id",
+      as:"center_data"
+    }},
+    { $unwind: { path: "$center_data", preserveNullAndEmptyArrays: true }},
     { $sort: sort },
     { $skip: payload.skip },
     { $limit: payload.limit },
     { $project: {
-        "password": 0,
+        "regNo" : 1,
+        "regDate" :1,
+        "email" : 1, 
+        "name" : 1,
+        "gender" :1,
+        "dob": 1,
+        "fathersName": 1,
+        "mothersName":1,
+        "userType": 1,
+        "address" : 1,
+        "aadharNo": 1,
+        "panNo": 1,
+        "educations" :1,
+        "mobileNumber": 1,
+        "imagePath": 1,
+        "status": 1,
+        "isDeleted": 1,
+        "createdAt":1,
+        "updatedAt":1,
+        "courseId": 1,
+        "courseName" : "$course_data.name",
+        "course" : "$course_data.duration",
+        "centerName" : "$center_data.name",
+        "centerCode" : "$center_data.centerCode",
+        "centerAddress" : "$center_data.address"
+
       }
     },
   ]
