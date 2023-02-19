@@ -23,6 +23,7 @@ const certificationSchema = new Schema(
         englishTypingSpeed: { type: Number },
         hindiTypingSpeed: { type: Number },
         status: { type: Number, default: CERTIFICATE_STATUS.PENDING,enum :Object.values(CERTIFICATE_STATUS)},
+        dateOfIssue : { type: Date },
         isDeleted: { type: Boolean, default: false},
     },
     { versionKey: false, timestamps: true,collection: 'certifications' }

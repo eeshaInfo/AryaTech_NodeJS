@@ -16,9 +16,10 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body: {
+                regNo: Joi.string().description('registration Number for the student only'),
+                regDate: Joi.string().description('registration date of student'),
                 userType: Joi.number().valid(...[USER_TYPES.ADMIN, USER_TYPES.STUDENT]).description('USER_TYPES 1=>SuperAdmin, 2=>Admin, 3=>Student'),
                 franchaiseId: Joi.string().objectId().description('Center mongo _id'),                
-                regYear: Joi.alternatives().conditional('userType', { is: USER_TYPES.ADMIN, then: Joi.string().required().description('Registration Year For Student eg: 2023'), otherwise : Joi.string().optional() }),
                 name: Joi.string().required().description('User\'s  name.'),
                 fathersName: Joi.string().optional().description('father\'s name'),
                 mothersName: Joi.string().optional().description('mother\'s name'),
@@ -46,7 +47,7 @@ let routes = [
                 ).required().description('Education Details of the Users or Admin'),
                 imagePath: Joi.string().default("").allow('').optional().description('Url of image.'),
                 panNo: Joi.string().description('pan card no of franchise admin'),
-                aadharNo: Joi.string().description('aadhar no of franchise admin'),
+                aadharNo: Joi.string().required().description('aadhar no of franchise admin'),
             },
             group: 'Users',
             description: 'Route to register a user.',
@@ -66,6 +67,8 @@ let routes = [
             },
             body: {
                 _id: Joi.string().objectId().required().description('user mongo _id'),
+                regNo: Joi.string().description('registration Number for the student only'),
+                regDate: Joi.string().description('registration date of student'),
                 franchaiseId: Joi.string().objectId().description('Center mongo _id'),
                 name: Joi.string().required().description('User\'s  name.'),
                 fathersName: Joi.string().optional().description('father\'s name'),

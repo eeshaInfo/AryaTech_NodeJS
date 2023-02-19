@@ -1,10 +1,9 @@
 'use strict';
 
 const { Joi } = require('../../utils/joiUtils');
-const { AVAILABLE_AUTHS, GENDER_TYPES, ADDRESS_TYPE,STATUS,USER_TYPES } = require('../../utils/constants');
+const { AVAILABLE_AUTHS} = require('../../utils/constants');
 //load controllers
 const { franchaiseController } = require('../../controllers');
-const CONSTANTS = require('../../utils/constants');
 
 let routes = [
     {
@@ -15,7 +14,8 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body: {
-                regDate: Joi.date().description('registration number'),
+                regDate : Joi.string().description('registration Date'),
+                centerCode: Joi.string().description('center code'),
                 name: Joi.string().description('center Name'),
                 address: Joi.string().description('center full address Address'),
                 userId: Joi.string().objectId().description('Admin _id')
@@ -36,6 +36,8 @@ let routes = [
             },
             body: {
                 _id:Joi.string().objectId().required().description('franchaise mongo _id'),
+                regDate : Joi.string().description('registration Date'),
+                centerCode: Joi.string().description('center code'),
                 address:Joi.string().description('Address of frachiaise'),
                 name: Joi.string().required().description('User\'s  name.'),
                 userId: Joi.string().objectId().description('Admin _id')

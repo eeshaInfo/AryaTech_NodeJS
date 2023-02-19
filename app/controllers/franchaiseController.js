@@ -20,15 +20,6 @@ let franchaiseController = {};
 franchaiseController.registerNewFranchaise = async (payload) => {
   let isUserAlreadyExist = await SERVICES.franchaiseService.getFranchaise({userId: payload.userId})
   if(!isUserAlreadyExist){
-    let lastCenterRecord = await SERVICES.franchaiseService.getLatestRecord({ isDeleted: {$ne:true}} )
-    console.log('last Center Details', lastCenterRecord)
-    if(lastCenterRecord){
-        let lastCenterCode = lastCenterRecord.centerCode
-        let newCenterCode = ('00' + (parseInt(lastCenterCode.slice(3))+1)).slice(-3)
-        payload.centerCode = `ACE${newCenterCode}`
-    }else{
-      payload.centerCode = 'ACE001' 
-    }
     let data = await SERVICES.franchaiseService.create(payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_CREATED_SUCCESSFULLY),{data});
   }
@@ -41,7 +32,7 @@ franchaiseController.registerNewFranchaise = async (payload) => {
  */
 franchaiseController.udpateFranchaise = async(payload)=>{
   let criteria = { _id:payload._id };
-  let data = await SERVICES.franchaiseService.update(criteria,payload,{ ...NORMAL_PROJECTION, password: 0, passwordToken: 0 })
+  let data = await SERVICES.franchaiseService.update(criteria,payload)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY),{data})
 }
 
@@ -52,14 +43,6 @@ franchaiseController.getFranchaise = async(payload)=>{
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS),{data})
 
 }
-/**
- * Function to get admin data.
- */
-// franchaiseController.getAdminProfile = async (payload) => {
-//   //get user profile
-//   let user = await SERVICES.franchaiseService.getUser({ _id: payload.user._id }, { ...NORMAL_PROJECTION})
-//   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PROFILE_FETCHED_SUCCESSFULLY), { data: user });
-// };
 
 /**
  * Function to get user data 
