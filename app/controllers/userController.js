@@ -80,7 +80,7 @@ let criteria={}
     { $unwind: { path: "$course_data", preserveNullAndEmptyArrays: true }},
     {$lookup: {
       from :"franchaise",
-      localField: "centerId",
+      localField: "franchaiseId",
       foreignField : "_id",
       as:"center_data"
     }},

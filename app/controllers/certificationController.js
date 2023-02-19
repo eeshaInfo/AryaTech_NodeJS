@@ -101,7 +101,7 @@ certificationController.getList = async(payload) =>{
       let sort = {};
           sort[payload.sortKey] = payload.sortDirection;
     let queryArray=[
-        {$match:criteria},
+        {$match:matchCriteria},
         {$lookup:{
             from:'users',
             localField:'userId',
