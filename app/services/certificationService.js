@@ -25,8 +25,8 @@ certificationService.delete = async(criteria)=>{
 certificationService.getLatestRecord = async(criteria) =>{
     return await certificationModel.findOne(criteria).sort({'createdAt':-1})
 }
-certificationService.getCountOfUsers = async (criteria) => {
+certificationService.documentCount = async (criteria) => {
     return await certificationModel.countDocuments(criteria)
-  }
+}
 
 module.exports =certificationService

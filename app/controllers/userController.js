@@ -59,7 +59,7 @@ userController.updateUser = async(payload)=>{
 userController.list = async (payload) => {
 let criteria={}
   let regex = new RegExp(payload.searchKey, 'i');
-   if(payload.centerId){
+   if(payload.franchaiseId){
       criteria = {franchaiseId:payload.franchaiseId, status:payload.status, userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
    }else{
       criteria = {status:payload.status ,userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}

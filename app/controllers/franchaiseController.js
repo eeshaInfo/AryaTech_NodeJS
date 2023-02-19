@@ -19,10 +19,10 @@ let franchaiseController = {};
  */
 franchaiseController.registerNewFranchaise = async (payload) => {
   let isUserAlreadyExist = await SERVICES.franchaiseService.getFranchaise({userId: payload.userId})
-  if(!isUserAlreadyExist){
+  // if(!isUserAlreadyExist){
     let data = await SERVICES.franchaiseService.create(payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_CREATED_SUCCESSFULLY),{data});
-  }
+  // }
   throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_IS_ALREADY_ADMIN_OF_OTHER_FRANCHAISE, ERROR_TYPES.ALREADY_EXISTS);
 }
 

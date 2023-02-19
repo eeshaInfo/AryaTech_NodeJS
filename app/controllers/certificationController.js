@@ -83,8 +83,7 @@ certificationController.getCertificate = async (payload) => {
         }}
     ]
     let data = await certificationService.aggregate(queryArray)
-    let count = await certificationService.getCountOfUsers(criteria);
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data, count: count }) 
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data }) 
 }
 
 
@@ -97,11 +96,10 @@ certificationController.getList = async(payload) =>{
         criteria = {isDeleted : {$ne : true }}
     }
     let matchCriteria = {
-        $and: [{ $or: [{ name: regex }, { mobileNumber: regex }] },criteria ]}
+        $and: [{ $or: [{ name: regex }] },criteria ]}
       let sort = {};
           sort[payload.sortKey] = payload.sortDirection;
     let queryArray=[
-        {$match:matchCriteria},
         {$lookup:{
             from:'users',
             localField:'userId',
@@ -125,14 +123,13 @@ certificationController.getList = async(payload) =>{
             as:'courseData'
         }},
         {$unwind:{path:'$courseData',preserveNullAndEmptyArrays:true}},
-        { $sort: sort },
-        { $skip: payload.skip },
-        { $limit: payload.limit },
         {$project:{
                 "regNo":"$userData.regNo",
                 "name":"$userData.name",
                 "fathersName":"$userData.fathersName",
                 "mothersName":"$userData.mothersName",
+                "mobileNumber" : "$userData.mobileNumber",
+                "regDate" : "$userData.regDate",
                 "dob":"$userData.dob",
                 "gender":"$userData.gender",
                 "imagePath":"$userData.imagePath",
@@ -147,10 +144,16 @@ certificationController.getList = async(payload) =>{
                 "courseName":"$courseData.name"
 
         }},
+        { $match:matchCriteria },
+        { $sort:sort },
+        { $skip : payload.skip },
+        { $limit : payload.limit }
+
         
     ]
 let data = await certificationService.aggregate(queryArray)
-return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), { data })
+let totalCount = await certificationService.documentCount(criteria)
+return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), {list: data, count:totalCount })
 }
 
 
