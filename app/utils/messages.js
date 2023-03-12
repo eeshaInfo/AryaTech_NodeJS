@@ -8,6 +8,7 @@ module.exports = {
   MOBILE_NUMBER_ALREADY_EXISTS: 'Mobile number already exists',
   EMP_NO_ALREADY_EXISTS: ' Employement number already exists',
   INVALID_EMAIL: 'Invalid email address.',
+  INALID_REGISTRATION_NO: 'Invalid Registration Number',
   INVALID_PASSWORD: 'Invalid password.',
   OLD_PASSWORD_INVALID: 'Old password invalid. ',
   PASSWORD_UPDATED_SUCCESSFULLY: 'Password updated Successfully.',

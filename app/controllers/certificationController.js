@@ -1,4 +1,4 @@
-const { certificationService } = require('../services')
+const { certificationService, userService } = require('../services')
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
 const { MESSAGES, ERROR_TYPES, CERTIFICATE_TYPES, NORMAL_PROJECTION, CERTIFICATE_STATUS } = require('../utils/constants');
@@ -83,7 +83,7 @@ certificationController.getCertificate = async (payload) => {
         }}
     ]
     let data = await certificationService.aggregate(queryArray)
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data }) 
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data:data[0] }) 
 }
 
 
@@ -170,6 +170,61 @@ certificationController.updateStatus = async (payload) => {
     }
     let data = await certificationService.update(criteria, dataToUpdate)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data })
+}
+
+certificationController.verifyCertificate = async (payload) =>{
+    let criteria = {regNo : payload.regNo}
+    let studentData = await userService.getUser(criteria)
+    if(studentData){
+        let queryArray=[
+            {$match:{ userId : studentData._id, type: payload.certificateType }},
+            {$lookup:{
+                from:'users',
+                localField:'userId',
+                foreignField:'_id',
+                as:'userData'
+            }},
+            {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
+    
+            {$lookup:{
+                from:'franchaise',
+                localField:'centerId',
+                foreignField:'_id',
+                as:'centerDetails'
+            }},
+            {$unwind:{path:'$centerDetails',preserveNullAndEmptyArrays:true}},
+    
+            {$lookup:{
+                from:'course',
+                localField:'courseId',
+                foreignField:'_id',
+                as:'courseData'
+            }},
+            {$unwind:{path:'$courseData',preserveNullAndEmptyArrays:true}},
+            {$project:{
+                    "regNo":"$userData.regNo",
+                    "name":"$userData.name",
+                    "fathersName":"$userData.fathersName",
+                    "mothersName":"$userData.mothersName",
+                    "dob":"$userData.dob",
+                    "gender":"$userData.gender",
+                    "imagePath":"$userData.imagePath",
+                    "marks":1,
+                    "serialNumber":1,
+                    "status": 1,
+                    "type" :1,
+                    "centerCode":"$centerDetails.regNo",
+                    "centerName":"$centerDetails.centerName",
+                    "centerAddress":"$centerDetails.centerAddress",
+                    "courseData":1
+    
+            }}
+        ]
+        let data = await certificationService.aggregate(queryArray)
+        return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data:data[0] }) 
+    }else{
+        throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INALID_REGISTRATION_NO, ERROR_TYPES.BAD_REQUEST);
+    }
 }
 
 

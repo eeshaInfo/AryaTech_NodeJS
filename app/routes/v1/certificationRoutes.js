@@ -127,6 +127,20 @@ let certificationRoutes=[
         // auth: AVAILABLE_AUTHS.ADMIN,
         handler: certificationController.getList
     },
+    {
+        method: 'GET',
+        path: '/v1/certificate/verify',
+        joiSchemaForSwagger: {
+            query:{
+                regNo: Joi.string().required().description('Registration No'),
+                certificateType : Joi.string().valid(...Object.values(CERTIFICATE_TYPES)).description('Certificate Type'),
+            },
+            group: 'Certificate',
+            description: 'Route to verify certificate for student',
+            model: 'getCertificateById'
+        },
+        handler: certificationController.verifyCertificate
+    },
 ]
 
 module.exports = certificationRoutes
