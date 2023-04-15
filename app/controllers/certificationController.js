@@ -1,7 +1,9 @@
-const { certificationService, userService } = require('../services')
+const {dbService} = require('../services')
+const {certificationModel} = require('../models/index')
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
 const { MESSAGES, ERROR_TYPES, CERTIFICATE_TYPES, NORMAL_PROJECTION, CERTIFICATE_STATUS } = require('../utils/constants');
+const userModel = require('../models/userModel');
 
 let certificationController = {}
 
@@ -10,8 +12,7 @@ let certificationController = {}
  * @param {*} payload 
  */
 certificationController.requestForCertificate = async (payload) => {
-    console.log(payload);
-    let data = await certificationService.create(payload)
+    let data = await dbService.create(certificationModel,payload)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data })
 
 }
@@ -82,7 +83,7 @@ certificationController.getCertificate = async (payload) => {
 
         }}
     ]
-    let data = await certificationService.aggregate(queryArray)
+    let data = await dbService.aggregate(certificationModel,payload)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data:data[0] }) 
 }
 
@@ -151,8 +152,8 @@ certificationController.getList = async(payload) =>{
 
         
     ]
-let data = await certificationService.aggregate(queryArray)
-let totalCount = await certificationService.documentCount(criteria)
+let data = await dbService.aggregate(certificationModel,queryArray)
+let totalCount = await dbService.countDocument(certificationModel,criteria)
 return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), {list: data, count:totalCount })
 }
 
@@ -168,13 +169,13 @@ certificationController.updateStatus = async (payload) => {
     else {
         dataToUpdate = { status: payload.status }
     }
-    let data = await certificationService.update(criteria, dataToUpdate)
+    let data = await dbService.aggregate(certificationModel, dataToUpdate)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data })
 }
 
 certificationController.verifyCertificate = async (payload) =>{
     let criteria = {regNo : payload.regNo}
-    let studentData = await userService.getUser(criteria)
+    let studentData = await dbService.findOne(userModel,criteria)
     if(studentData){
         let queryArray=[
             {$match:{ userId : studentData._id, type: payload.certificateType }},
@@ -220,7 +221,8 @@ certificationController.verifyCertificate = async (payload) =>{
     
             }}
         ]
-        let data = await certificationService.aggregate(queryArray)
+        let data = await dbService.aggregate(certificationModel,queryArray)
+        console.log(data)
         return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data:data[0] }) 
     }else{
         throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INALID_REGISTRATION_NO, ERROR_TYPES.BAD_REQUEST);

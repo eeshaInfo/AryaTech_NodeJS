@@ -136,7 +136,7 @@ let routes = [
             description: "Route to upload profile image for user",
             model: "UploadFiles",
         },
-        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.uploadFile,
     },
 

@@ -4,6 +4,8 @@ const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
 const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, USER_TYPES } = require('../utils/constants');
 const SERVICES = require('../services');
+const {dbService,fileUploadService} = require('../services')
+const {userModel} = require('../models/index')
 const { hashPassword} = require('../utils/utils');
 
 
@@ -24,7 +26,7 @@ userController.uploadFile = async (payload) => {
   }
   let pathToUpload = path.resolve(__dirname + `../../..${CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL}`),
     pathOnServer = CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL;
-  let fileUrl = await SERVICES.fileUploadService.uploadFile(payload, pathToUpload, pathOnServer);
+  let fileUrl = await fileUploadService.uploadFile(payload, pathToUpload, pathOnServer);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FILE_UPLOADED_SUCCESSFULLY), { fileUrl });
 };
 
@@ -35,11 +37,12 @@ userController.registerNewUser = async (payload) => {
   let isUserAlreadyExist = await SERVICES.userService.findOne({email:payload.email, isDeleted:false})
   if(!isUserAlreadyExist){
     payload.password = hashPassword(payload.mobileNumber);
-    let data = await SERVICES.userService.createUser(payload)
+    // let data = await SERVICES.userService.createUser(payload)
+    let data = await dbService.create(userModel,payload)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: data });
       }
       throw HELPERS.responseHelper.createErrorResponse(MESSAGES.EMAIL_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
-    }
+}
   
 
 /**
@@ -48,10 +51,70 @@ userController.registerNewUser = async (payload) => {
  */
 userController.updateUser = async(payload)=>{
   let criteria = { _id:payload._id };
-  let data = await SERVICES.userService.updateUser(criteria,payload,{ ...NORMAL_PROJECTION, password: 0, passwordToken: 0 })
+  let data = await dbService.findOneAndUpdate(userModel,criteria,payload)
+  // let data = await SERVICES.userService.updateUser(criteria,payload,{ ...NORMAL_PROJECTION, password: 0, passwordToken: 0 })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY),{data})
 }
 
+
+/**
+ * Function to get user details
+ * @param {*} payload 
+ * @returns 
+ */
+
+userController.userDetails = async (payload) => {
+  let criteria = {_id : payload.userId}
+  let query = [
+    { $match: criteria },
+    {$lookup: {
+      from :"course",
+      localField: "courseId",
+      foreignField : "_id",
+      as:"course_data"
+    }},
+    { $unwind: { path: "$course_data", preserveNullAndEmptyArrays: true }},
+    {$lookup: {
+      from :"franchaise",
+      localField: "franchaiseId",
+      foreignField : "_id",
+      as:"center_data"
+    }},
+    { $unwind: { path: "$center_data", preserveNullAndEmptyArrays: true }},
+    { $project: {
+        "regNo" : 1,
+        "regDate" :1,
+        "email" : 1, 
+        "name" : 1,
+        "gender" :1,
+        "dob": 1,
+        "fathersName": 1,
+        "mothersName":1,
+        "userType": 1,
+        "address" : 1,
+        "aadharNo": 1,
+        "panNo": 1,
+        "educations" :1,
+        "mobileNumber": 1,
+        "imagePath": 1,
+        "status": 1,
+        "isDeleted": 1,
+        "createdAt":1,
+        "updatedAt":1,
+        "courseId": 1,
+        "courseName" : "$course_data.name",
+        "course" : "$course_data.duration",
+        "centerName" : "$center_data.name",
+        "centerCode" : "$center_data.centerCode",
+        "centerAddress" : "$center_data.address"
+
+      }
+    },
+  ]
+  // let data = await userService.userAggregate(query)
+  let data = await dbService.aggregate(userModel,query)
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { data:data[0] })
+}
 
 /**
  * Function to get user data 
@@ -118,9 +181,11 @@ let criteria={}
       }
     },
   ]
-  let userList = await SERVICES.userService.userAggregate(query);
+  // let userList = await SERVICES.userService.userAggregate(query);
+  let userList = await dbService.aggregate(userModel,query);
   //count users in database
-  let userCount = await SERVICES.userService.getCountOfUsers(criteria);
+  // let userCount = await SERVICES.userService.getCountOfUsers(criteria);
+  let userCount = await dbService.countDocument(userModel,criteria)
   let data = {
     list: userList,
     userCount: userCount
@@ -134,7 +199,9 @@ let criteria={}
  * @returns 
  */
 userController.userDropdown = async (payload) => {
-  let userList = await SERVICES.userService.getUsers({ isDeleted:false }, { regNo: 1, name: 1, })
+  // let userList = await SERVICES.userService.getUsers({ isDeleted:false }, { regNo: 1, name: 1, })
+  let userList = await dbService.find(userModel,{ isDeleted:false} , {regNo: 1, name: 1, })
+
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { userList })
 }
 
@@ -143,7 +210,8 @@ userController.userDropdown = async (payload) => {
  */
 userController.deleteUser = async (payload) => {
   //get data of user
-  let data = await SERVICES.userService.update({ _id: payload._id },{isDeleted:true});
+  // let data = await SERVICES.userService.update({ _id: payload._id },{isDeleted:true});
+  let data = await dbService.findOneAndUpdate(userModel,{ _id: payload._id },{isDeleted:true});
   //if present then delete the user
   if (data) {
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_DELETED_SUCCESSFULLY));

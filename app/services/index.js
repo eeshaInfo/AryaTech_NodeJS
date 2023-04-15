@@ -5,11 +5,11 @@ const CONFIG = require('../../config');
  ********* independently ********
  ********************************/
 module.exports = {
+    dbService : require('./dbService'),
     userService: require('./userService'),
+    fileUploadService: require('./fileUploadService'),
     franchaiseService:require('./franchaiseService'),
-    courseService: require('./courseService'),
     paymentService: require('./paymentService'),
-    certificationService: require('./certificationService'),
     swaggerService: require('./swaggerService'),
     authService: require('./authService'),
     sessionService: require('./sessionService'),

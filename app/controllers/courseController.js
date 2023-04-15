@@ -1,7 +1,7 @@
-const {courseService} = require('../services')
-const CONFIG = require('../../config');
+const {dbService} = require('../services/index')
+const {courseModel} = require('../models/index')
 const HELPERS = require("../helpers");
-const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION } = require('../utils/constants');
+const { MESSAGES} = require('../utils/constants');
 
 let courseController = {}
 /**
@@ -10,7 +10,7 @@ let courseController = {}
  * @returns 
  */
 courseController.createCourse = async(payload)=>{
-   let data = await courseService.createCourse(payload)
+    let data = await dbService.create(courseModel,payload)
    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data })
 }
 
@@ -21,7 +21,7 @@ courseController.createCourse = async(payload)=>{
  */
 
 courseController.updateCourse = async(payload)=>{
-    let data = await courseService.updateCourse({_id:payload._id},payload)
+    let data = await dbService.findOneAndUpdate(courseModel,{_id:payload._id},payload)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY),{data})
 }
 
@@ -31,12 +31,12 @@ courseController.updateCourse = async(payload)=>{
  * @returns 
  */
 courseController.getCourseList = async(payload)=>{
-    let data = await courseService.getCourseList({isDeleted:false})
+    let data = await dbService.find(courseModel,{isDeleted:false})
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
 }
 
 courseController.forDropdown = async(payload)=>{
-    let data = await courseService.getCourseList({isDeleted:false},{name:1})
+    let data = await dbService.find(courseModel,{isDeleted:false},{name:1})
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
 }
 
@@ -46,7 +46,7 @@ courseController.forDropdown = async(payload)=>{
  * @returns 
  */
 courseController.getCourseById = async(payload)=>{
-    let data = await courseService.getCourseById({_id:payload._id})
+    let data = await dbService.findOne(courseModel,{_id:payload._id})
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_FETCHED_SUCCESSFULLY), { data })
 }
 

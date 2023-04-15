@@ -13,9 +13,10 @@ const HELPERS = require("../helpers");
  * function to upload a file to s3(AWS) bucket.
  */
 fileUploadService.uploadFileToS3 = (buffer, fileName, bucketName) => {
+    console.log(fileName)
     return new Promise((resolve, reject) => {
         s3Bucket.upload({
-            Bucket: bucketName || CONFIG.AWS.bucketName,
+            Bucket: CONFIG.S3_BUCKET.bucketName,
             Key: fileName,
             Body: buffer,
         }, function (err, data) {
@@ -61,8 +62,9 @@ fileUploadService.uploadFileToLocal = async (payload, fileName, pathToUpload, pa
  */
 fileUploadService.uploadFile = async (payload, pathToUpload, pathOnServer) => {
     let fileExtention = payload.file.originalname.split('.')[1];
+    console.log(fileExtention, AVAILABLE_EXTENSIONS_FOR_FILE_UPLOADS)
     if (AVAILABLE_EXTENSIONS_FOR_FILE_UPLOADS.indexOf(fileExtention) !== -(SERVER.ONE)) {
-        let fileName = `upload_${Date.now()}.${fileExtention}`, fileUrl = '';
+        let fileName = `profile_${Date.now()}.${fileExtention}`, fileUrl = '';
         let UPLOAD_TO_S3 = process.env.UPLOAD_TO_S3 ? process.env.UPLOAD_TO_S3 : '';
         if (UPLOAD_TO_S3.toLowerCase() === 'true') {
             let s3BucketName = CONFIG.S3_BUCKET.zipBucketName;

@@ -3,7 +3,8 @@ const path = require('path');
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
 const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES } = require('../utils/constants');
-const SERVICES = require('../services');
+const {franchaiseModel} = require('../models')
+const {dbService} = require('../services')
 const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword, sendSms } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
 const qrCode = require('qrcode');
@@ -18,7 +19,7 @@ let franchaiseController = {};
  * function to register a franchaise
  */
 franchaiseController.registerNewFranchaise = async (payload) => {
-  let isUserAlreadyExist = await SERVICES.franchaiseService.getFranchaise({userId: payload.userId})
+  let isUserAlreadyExist = await dbService.findOne(franchaiseModel,{userId: payload.userId})
   // if(!isUserAlreadyExist){
     let data = await SERVICES.franchaiseService.create(payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_CREATED_SUCCESSFULLY),{data});
@@ -32,14 +33,14 @@ franchaiseController.registerNewFranchaise = async (payload) => {
  */
 franchaiseController.udpateFranchaise = async(payload)=>{
   let criteria = { _id:payload._id };
-  let data = await SERVICES.franchaiseService.update(criteria,payload)
+  let data = await dbService.findOneAndUpdate(franchaiseModel,criteria,payload)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY),{data})
 }
 
 
 franchaiseController.getFranchaise = async(payload)=>{
     let criteria = {_id: payload._id};
-    let data = await SERVICES.franchaiseService.getUser(criteria,{...NORMAL_PROJECTION })
+    let data = await dbService.findOne(franchaiseModel,criteria,{...NORMAL_PROJECTION })
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS),{data})
 
 }
@@ -83,7 +84,7 @@ franchaiseController.list = async (payload) => {
         "centerAdminMobile":"$userData.mobileNumber"
       } },
   ]
-  let franchaiseList = await SERVICES.franchaiseService.userAggregate(query);
+  let franchaiseList = await dbService.aggregate(franchaiseModel,query);
   let count = await SERVICES.franchaiseService.getCount(criteria)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_FETCHED_SUCCESSFULLY), { franchaiseList,count })
 }
@@ -94,13 +95,13 @@ franchaiseController.list = async (payload) => {
  * @returns 
  */
 franchaiseController.franchaiseDropdown = async (payload) => {
-  let list = await SERVICES.franchaiseService.getAll({}, { centerCode: 1, name:1 })
+  let list = await dbService.find(franchaiseModel,{}, { centerCode: 1, name:1 })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_FETCHED_SUCCESSFULLY), { list })
 }
 
 
 franchaiseController.userStatus = async (payload) => {
-  await SERVICES.franchaiseService.updateUserStatus({ _id: payload.userId }, { status: payload.status })
+  await dbService.findOneAndUpdate(franchaiseModel,{ _id: payload.userId }, { status: payload.status })
 }
 /* export franchaiseController */
 module.exports = franchaiseController;

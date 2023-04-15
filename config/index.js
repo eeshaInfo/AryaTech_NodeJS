@@ -55,7 +55,7 @@ var defaults = {
     S3_BUCKET: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'access-key-id',
         secretAccessKey: process.env.AWS_SECRET_ACESS_KEY || 'secret-access-key',
-        zipBucketName: process.env.S3_BUCKET_NAME || 'bucket-name'
+        bucketName: process.env.S3_BUCKET_NAME || 'bucket-name'
     },
     AWS: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID || `aws_access_key`,
