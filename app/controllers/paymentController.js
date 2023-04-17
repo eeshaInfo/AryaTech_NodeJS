@@ -1,5 +1,6 @@
-const {paymentService} = require('../services')
 const CONFIG = require('../../config');
+const {dbService} = require('../services')
+const {paymentModel} = require('../models')
 const HELPERS = require("../helpers");
 const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION } = require('../utils/constants');
 
@@ -7,9 +8,8 @@ let paymentController= {}
 
 paymentController.acceptPayment= async(payload)=>{
     payload.transactionId = new Date().getTime()
-    console.log(payload)    
-    let data = await paymentService.createPayment(payload)
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data })
+    let data = await dbService.create(paymentModel,payload)
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_ACCEPTED_SUCCESSFULLY), { data })
 }
 
 paymentController.editAcceptedPayment= async(payload)=>{
@@ -54,24 +54,31 @@ paymentController.getPaymentList= async(payload)=>{
         { $unwind:{path:"$courseData", preserveNullAndEmptyArrays: true }},
         {$project:{
             "userId": 1,
-            "courseId":1,
             "transactionId":1,
             "mode":1,
             "amount":1,
             "createdAt":1,
-            "studentsName": "$userData.studentsName",
+            "name": "$userData.name",
             "mobileNumber":"$userData.mobileNumber",
             "course":"$courseData.name",
             "duration":"$courseData.duration"
 
+        }},
+        {$group:{
+            _id : "$userId",
+            amountReceived : {$sum : "$amount"},
+            userId: {$first : "$userId" },
+            name: {$first : "$name" },
+            transactionId: {$first : "$transactionId" },
+            mode: {$first : "$mode" },
         }},
         { $sort:sort},
         { $skip:payload.skip },
         { $limit: payload.limit },
     ]
 
-    let data = await paymentService.getPaymentList(queryArray)
-    let totalCount = await paymentService.countDocuments(matchCriteria)
+    let data = await dbService.aggregate(paymentModel,queryArray)
+    let totalCount = await dbService.countDocument(paymentModel,matchCriteria)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_LIST_FETCHED_SUCCESSFULLY), { data,totalCount })
 
  }
@@ -79,7 +86,7 @@ paymentController.getPaymentList= async(payload)=>{
 paymentController.deletePayment= async(payload)=>{
     let criteria= {_id: payload._id}
     let dataToUpdate = {isDeleted:true}
-    let data = await paymentService.update(criteria,dataToUpdate)
+    let data = await dbService.findOneAndUpdate(paymentModel,criteria,dataToUpdate)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_DELETE_SUCCESSFULLY), { data })
 }
 

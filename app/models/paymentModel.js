@@ -10,7 +10,6 @@ const Schema = MONGOOSE.Schema;
 const paymentSchema = new Schema(
     {
         userId: { type: Schema.Types.ObjectId, required:true, ref:'users' },
-        courseId: { type: Schema.Types.ObjectId, ref: 'course'},
         amount: { type: Number, required:true},
         transactionId: { type: String, required:true},
         mode:{type:String},

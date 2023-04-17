@@ -15,7 +15,6 @@ let routes = [
             },
             body:{
                 userId:Joi.string().objectId().required().description('Student MongoId'),
-                courseId:Joi.string().objectId().required().description('Course MongoId'),
                 amount:Joi.number().integer().required().description('Amount'),
                 mode:Joi.string().required().description('mode of payment, cash,online,cheque')
             },
@@ -23,7 +22,7 @@ let routes = [
             description: 'Route for Accept Payment of student',
             model: 'acceptPayment'
         },
-        auth:AVAILABLE_AUTHS.ADMIN,
+        auth:AVAILABLE_AUTHS.SUPER_ADMIN,
         handler:paymentController.acceptPayment
     },
     
@@ -38,14 +37,13 @@ let routes = [
             body:{
                 _id: Joi.string().objectId().required().description('payment _id MongoId'),
                 userId:Joi.string().objectId().required().description('Student MongoId'),
-                courseId:Joi.string().objectId().required().description('Course MongoId'),
                 amount:Joi.number().integer().required().description('Amount'),
             },
             group: 'Payment',
             description: 'Route for edit accepted Payment of student',
             model: 'editAcceptedPayment'
         },
-        auth:AVAILABLE_AUTHS.ADMIN,
+        auth:AVAILABLE_AUTHS.SUPER_ADMIN,
         handler:paymentController.editAcceptedPayment
     },
 
@@ -65,7 +63,7 @@ let routes = [
             description: 'Route for get payment by id',
             model: 'getPaymentById'
         },
-        auth:AVAILABLE_AUTHS.ADMIN,
+        auth:AVAILABLE_AUTHS.SUPER_ADMIN,
         handler:paymentController.getPaymentById
     },
 
@@ -83,7 +81,7 @@ let routes = [
             description: 'Route for delete payment record',
             model: 'deletePaymentRecord'
         },
-        auth:AVAILABLE_AUTHS.ADMIN,
+        auth:AVAILABLE_AUTHS.SUPER_ADMIN,
         handler:paymentController.deletePayment
     },
 
@@ -107,7 +105,7 @@ let routes = [
             description: 'Route for all payment list',
             model: 'getPaymentList'
         },
-        auth:AVAILABLE_AUTHS.ADMIN,
+        auth:AVAILABLE_AUTHS.SUPER_ADMIN,
         handler:paymentController.getPaymentList
     }
 ]

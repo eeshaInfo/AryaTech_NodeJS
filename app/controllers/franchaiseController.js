@@ -85,7 +85,7 @@ franchaiseController.list = async (payload) => {
       } },
   ]
   let franchaiseList = await dbService.aggregate(franchaiseModel,query);
-  let count = await SERVICES.franchaiseService.getCount(criteria)
+  let count = await dbService.countDocument(franchaiseModel,criteria)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_FETCHED_SUCCESSFULLY), { franchaiseList,count })
 }
 
