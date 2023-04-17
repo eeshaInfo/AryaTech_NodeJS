@@ -38,7 +38,7 @@ const userSchema = new Schema(
         educations: [{
             examination:{type: String},
             board: {type:String},
-            passingYear:{type:String},
+            year:{type:String},
             percentage: { type: Number,},
         }],
         mobileNumber: { type: String }, 
