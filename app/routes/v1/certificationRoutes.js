@@ -24,7 +24,9 @@ let certificationRoutes=[
                         pratical: Joi.number().description('practical Marks'),
                         written: Joi.number().description('written Marks'),
                         assignment: Joi.number().description('assignment Marks'),
-                        viva: Joi.number().description('viva Marks')
+                        viva: Joi.number().description('viva Marks'),
+                        englishTyping : Joi.number().description('English typing speed if certificate type is typing'),
+                        hindiTyping : Joi.number().description('Hindi typing speed if certificate type is typing')
                     }
                 )
             },
@@ -55,7 +57,9 @@ let certificationRoutes=[
                         pratical: Joi.number().description('practical Marks'),
                         written: Joi.number().description('written Marks'),
                         assignment: Joi.number().description('assignment Marks'),
-                        viva: Joi.number().description('viva Marks')
+                        viva: Joi.number().description('viva Marks'),
+                        englishTyping : Joi.number().description('English typing speed if certificate type is typing'),
+                        hindiTyping : Joi.number().description('Hindi typing speed if certificate type is typing')
                     }
                 )
             },
