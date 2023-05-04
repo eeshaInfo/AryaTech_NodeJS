@@ -22,14 +22,59 @@ paymentController.getPaymentById= async(payload)=>{
 }
 
 paymentController.getPaymentList= async(payload)=>{
-    let regex = new RegExp(payload.searchKey, 'i');
+    if(payload.userId){
+       let queryArray=[
+         { $match:{_id:payload.userId}},
+         { $lookup:{
+            from:'course',
+            localField:'courseId',
+            foreignField: '_id',
+            as:'courseData'
+        }},
+        { $unwind:{path:"$courseData", preserveNullAndEmptyArrays: true }},
+        { $lookup:{
+            from:'payments',
+            localField:'_id',
+            foreignField: 'userId',
+            as:'paymentsData'
+        }},
+        { $unwind:{path:"$paymentsData", preserveNullAndEmptyArrays: true }},
+        { $lookup:{
+            from:'payments',
+            localField:'_id',
+            foreignField: 'userId',
+            as:'transactions'
+        }},
+        {$project:{
+            regNo:1,
+            "createdAt":1,
+            "name": 1,
+            "course":"$courseData.name",
+            "mobileNumber":1,
+            "totalFees" :1,
+            paymentsData:1,
+            "transactions":1,
+        }},
+        {$group:{
+            _id : "$_id",
+            amountPaid : { $sum : "$paymentsData.amount"},
+            name: {$first : "$name" },
+            totalFees: {$first : "$totalFees"},
+            course: {$first : "$course" },
+            mobileNumber: {$first : "$mobileNumber" },
+            transactions: {$first : "$transactions" },
+            
+        }},
+        {$addFields:{"totalDues":{$subtract:["$totalFees","$amountPaid"]}}},
+    ]
+
+    let data = await dbService.aggregate(userModel,queryArray)
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_LIST_FETCHED_SUCCESSFULLY), {data:data[0]})
+    }else{
+        let regex = new RegExp(payload.searchKey, 'i');
     let criteria = {
         $and: [{ $or: [{ "name": regex } ,{ "regNo": regex }] },{isDeleted: {$ne:true} ,userType: USER_TYPES.STUDENT}]
     }
-    // if(payload.userId){
-        //     criteria = {
-            //         $and: [{ $or: [{ "userData.studentsName": regex } ,{ "userData.mobileNumber": regex }] },{isDeleted: false,userId:payload.userId}]
-            // }}
     let matchCriteria = criteria;
     let sort={}
     sort[payload.sortKey]= payload.sortDirection
@@ -58,8 +103,6 @@ paymentController.getPaymentList= async(payload)=>{
             "totalFees" :1,
             "amount" : "$paymentsData.amount",
             "course":"$courseData.name",
-            "duration":"$courseData.duration"
-
         }},
         {$group:{
             _id : "$_id",
@@ -78,6 +121,8 @@ paymentController.getPaymentList= async(payload)=>{
     let data = await dbService.aggregate(userModel,queryArray)
     let totalCount = await dbService.countDocument(userModel,matchCriteria)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_LIST_FETCHED_SUCCESSFULLY), { data,totalCount })
+    }
+    
 
  }
 
