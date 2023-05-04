@@ -1,8 +1,8 @@
 const CONFIG = require('../../config');
 const {dbService} = require('../services')
-const {paymentModel} = require('../models')
+const {paymentModel, userModel} = require('../models')
 const HELPERS = require("../helpers");
-const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION } = require('../utils/constants');
+const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, USER_TYPES } = require('../utils/constants');
 
 let paymentController= {}
 
@@ -22,28 +22,71 @@ paymentController.getPaymentById= async(payload)=>{
 }
 
 paymentController.getPaymentList= async(payload)=>{
-    let regex = new RegExp(payload.searchKey, 'i');
-    let criteria = {
-        $and: [{ $or: [{ "userData.studentsName": regex } ,{ "userData.mobileNumber": regex }] },{isDeleted: false}]
-    }
     if(payload.userId){
-        criteria = {
-            $and: [{ $or: [{ "userData.studentsName": regex } ,{ "userData.mobileNumber": regex }] },{isDeleted: false,userId:payload.userId}]
-    }}
+       let queryArray=[
+         { $match:{_id:payload.userId}},
+         { $lookup:{
+            from:'course',
+            localField:'courseId',
+            foreignField: '_id',
+            as:'courseData'
+        }},
+        { $unwind:{path:"$courseData", preserveNullAndEmptyArrays: true }},
+        { $lookup:{
+            from:'payments',
+            localField:'_id',
+            foreignField: 'userId',
+            as:'paymentsData'
+        }},
+        { $unwind:{path:"$paymentsData", preserveNullAndEmptyArrays: true }},
+        { $lookup:{
+            from:'payments',
+            localField:'_id',
+            foreignField: 'userId',
+            as:'transactions'
+        }},
+        {$project:{
+            regNo:1,
+            "createdAt":1,
+            "name": 1,
+            "course":"$courseData.name",
+            "mobileNumber":1,
+            "totalFees" :1,
+            paymentsData:1,
+            "transactions":1,
+        }},
+        {$group:{
+            _id : "$_id",
+            amountPaid : { $sum : "$paymentsData.amount"},
+            name: {$first : "$name" },
+            totalFees: {$first : "$totalFees"},
+            course: {$first : "$course" },
+            mobileNumber: {$first : "$mobileNumber" },
+            transactions: {$first : "$transactions" },
+            
+        }},
+        {$addFields:{"totalDues":{$subtract:["$totalFees","$amountPaid"]}}},
+    ]
+
+    let data = await dbService.aggregate(userModel,queryArray)
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_LIST_FETCHED_SUCCESSFULLY), {data:data[0]})
+    }else{
+        let regex = new RegExp(payload.searchKey, 'i');
+    let criteria = {
+        $and: [{ $or: [{ "name": regex } ,{ "regNo": regex }] },{isDeleted: {$ne:true} ,userType: USER_TYPES.STUDENT}]
+    }
     let matchCriteria = criteria;
     let sort={}
     sort[payload.sortKey]= payload.sortDirection
-    console.log('sortData',sort)
-
     let queryArray=[
-        { $lookup:{
-            from:'users',
-            localField:'userId',
-            foreignField: '_id',
-            as:'userData'
-        }},
         { $match:matchCriteria},
-        { $unwind:{path:"$userData", preserveNullAndEmptyArrays: true }},
+        { $lookup:{
+            from:'payments',
+            localField:'_id',
+            foreignField: 'userId',
+            as:'paymentsData'
+        }},
+        { $unwind:{path:"$paymentsData", preserveNullAndEmptyArrays: true }},
 
         { $lookup:{
             from:'course',
@@ -53,33 +96,33 @@ paymentController.getPaymentList= async(payload)=>{
         }},
         { $unwind:{path:"$courseData", preserveNullAndEmptyArrays: true }},
         {$project:{
-            "userId": 1,
-            "transactionId":1,
-            "mode":1,
-            "amount":1,
+            "userId": "$paymentsData.userId",
             "createdAt":1,
-            "name": "$userData.name",
-            "mobileNumber":"$userData.mobileNumber",
+            "name": 1,
+            "mobileNumber":1,
+            "totalFees" :1,
+            "amount" : "$paymentsData.amount",
             "course":"$courseData.name",
-            "duration":"$courseData.duration"
-
         }},
         {$group:{
-            _id : "$userId",
-            amountReceived : {$sum : "$amount"},
-            userId: {$first : "$userId" },
+            _id : "$_id",
+            amountPaid : {$sum : "$amount"},
             name: {$first : "$name" },
-            transactionId: {$first : "$transactionId" },
-            mode: {$first : "$mode" },
+            totalFees: {$first : "$totalFees"},
+            course: {$first : "$course" },
+            mobileNumber: {$first : "$mobileNumber" },
         }},
+        {$addFields:{"totalDues":{$subtract:["$totalFees","$amountPaid"]}}},
         { $sort:sort},
         { $skip:payload.skip },
         { $limit: payload.limit },
     ]
 
-    let data = await dbService.aggregate(paymentModel,queryArray)
-    let totalCount = await dbService.countDocument(paymentModel,matchCriteria)
+    let data = await dbService.aggregate(userModel,queryArray)
+    let totalCount = await dbService.countDocument(userModel,matchCriteria)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_LIST_FETCHED_SUCCESSFULLY), { data,totalCount })
+    }
+    
 
  }
 
