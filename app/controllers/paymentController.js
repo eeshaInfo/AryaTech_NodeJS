@@ -46,10 +46,14 @@ paymentController.getPaymentList= async(payload)=>{
             as:'transactions'
         }},
         {$project:{
-            regNo:1,
+            "regNo":1,
+            "regDate":1,
+            "imagePath":1,
+            "fathersName" :1,
             "createdAt":1,
             "name": 1,
             "course":"$courseData.name",
+            "duration" :"$courseData.duration",
             "mobileNumber":1,
             "totalFees" :1,
             paymentsData:1,
@@ -59,8 +63,13 @@ paymentController.getPaymentList= async(payload)=>{
             _id : "$_id",
             amountPaid : { $sum : "$paymentsData.amount"},
             name: {$first : "$name" },
+            regDate: {$first : "$regDate" },
+            regNo: {$first : "$regNo" },
+            imagePath: {$first : "$imagePath" },
+            fathersName: {$first : "$fathersName" },
             totalFees: {$first : "$totalFees"},
             course: {$first : "$course" },
+            duration: {$first : "$duration" },
             mobileNumber: {$first : "$mobileNumber" },
             transactions: {$first : "$transactions" },
             
@@ -98,6 +107,7 @@ paymentController.getPaymentList= async(payload)=>{
         {$project:{
             "userId": "$paymentsData.userId",
             "createdAt":1,
+            "regNo":1,
             "name": 1,
             "mobileNumber":1,
             "totalFees" :1,
@@ -108,8 +118,9 @@ paymentController.getPaymentList= async(payload)=>{
             _id : "$_id",
             amountPaid : {$sum : "$amount"},
             name: {$first : "$name" },
+            regNo: {$first:"$regNo"},
             totalFees: {$first : "$totalFees"},
-            course: {$first : "$course" },
+            courseName: {$first : "$course" },
             mobileNumber: {$first : "$mobileNumber" },
         }},
         {$addFields:{"totalDues":{$subtract:["$totalFees","$amountPaid"]}}},
@@ -118,9 +129,13 @@ paymentController.getPaymentList= async(payload)=>{
         { $limit: payload.limit },
     ]
 
-    let data = await dbService.aggregate(userModel,queryArray)
+    let userList = await dbService.aggregate(userModel,queryArray)
     let totalCount = await dbService.countDocument(userModel,matchCriteria)
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_LIST_FETCHED_SUCCESSFULLY), { data,totalCount })
+    let data = {
+        list: userList,
+        userCount: totalCount
+      }
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_LIST_FETCHED_SUCCESSFULLY), { data })
     }
     
 
