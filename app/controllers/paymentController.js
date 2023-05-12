@@ -7,6 +7,7 @@ const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, USER_TYPES } = require('../uti
 let paymentController= {}
 
 paymentController.acceptPayment= async(payload)=>{
+    console.log(payload)
     payload.transactionId = new Date().getTime()
     let data = await dbService.create(paymentModel,payload)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_ACCEPTED_SUCCESSFULLY), { data })

@@ -16,7 +16,7 @@ const certificationSchema = new Schema(
         type : { type : String, enum:Object.values(CERTIFICATE_TYPES)},
         serialNumber: { type: Number },
         marks:{
-            pratical: { type : Number, default:0},
+            practical: { type : Number, default:0},
             written: { type: Number, default: 0 },
             assignment: { type: Number, default: 0 },
             viva: { type: Number, default: 0 },

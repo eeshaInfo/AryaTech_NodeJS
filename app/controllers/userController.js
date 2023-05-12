@@ -111,7 +111,6 @@ userController.userDetails = async (payload) => {
       }
     },
   ]
-  // let data = await userService.userAggregate(query)
   let data = await dbService.aggregate(userModel,query)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { data:data[0] })
 }
@@ -150,7 +149,7 @@ let criteria={}
     { $unwind: { path: "$center_data", preserveNullAndEmptyArrays: true }},
     { $sort: sort },
     { $skip: payload.skip },
-    { $limit: payload.limit },
+    payload.franchaiseId?{ $limit: 9999}:{ $limit: payload.limit  },
     { $project: {
         "regNo" : 1,
         "regDate" :1,

@@ -14,9 +14,12 @@ let routes = [
                 'authorization':Joi.string().required().description('User Auth Token')
             },
             body:{
-                userId:Joi.string().objectId().required().description('Student MongoId'),
-                amount:Joi.number().integer().required().description('Amount'),
-                mode:Joi.string().required().description('mode of payment, cash,online,cheque')
+                franchaiseId: Joi.string().objectId().required().description('FranchaiseId MongoId'),
+                userId: Joi.string().objectId().required().description('Student MongoId'),
+                amount: Joi.number().integer().required().description('Amount'),
+                feeType: Joi.string().required().description('fee type'),
+                description: Joi.string().required().description('description type'),
+                mode: Joi.string().required().description('mode of payment, cash,online,cheque')
             },
             group: 'Payment',
             description: 'Route for Accept Payment of student',

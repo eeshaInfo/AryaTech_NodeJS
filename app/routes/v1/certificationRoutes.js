@@ -133,6 +133,19 @@ let certificationRoutes=[
     },
     {
         method: 'GET',
+        path: '/v1/certificate/userId',
+        joiSchemaForSwagger: {
+            query:{
+                userId: Joi.string().objectId().required().description('UserId'),
+            },
+            group: 'Certificate',
+            description: 'Route to get all certificate by userid',
+            model: 'getAllCertificateByUserId'
+        },
+        handler: certificationController.getAllCertificateByUserId
+    },
+    {
+        method: 'GET',
         path: '/v1/certificate/verify',
         joiSchemaForSwagger: {
             query:{

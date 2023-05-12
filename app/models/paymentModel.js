@@ -10,6 +10,9 @@ const Schema = MONGOOSE.Schema;
 const paymentSchema = new Schema(
     {
         userId: { type: Schema.Types.ObjectId, required:true, ref:'users' },
+        franchaiseId: { type : Schema.Types.ObjectId, required:true, ref:'franchaise'},
+        feeType: {type:String},
+        description: {type:String},
         amount: { type: Number, required:true},
         transactionId: { type: String, required:true},
         mode:{type:String},

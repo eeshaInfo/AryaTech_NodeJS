@@ -13,7 +13,6 @@ const userSchema = new Schema(
         //user details
         regNo: { type: String },
         regDate : { type : Date },
-        email: { type: String },
         name: { type: String },
         email: { type: String },
         password: { type: String },

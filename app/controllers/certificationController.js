@@ -126,6 +126,7 @@ certificationController.getList = async(payload) =>{
         {$unwind:{path:'$courseData',preserveNullAndEmptyArrays:true}},
         {$project:{
                 "regNo":"$userData.regNo",
+                userId:"$userData._id",
                 "name":"$userData.name",
                 "fathersName":"$userData.fathersName",
                 "mothersName":"$userData.mothersName",
@@ -227,6 +228,62 @@ certificationController.verifyCertificate = async (payload) =>{
     }else{
         throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INALID_REGISTRATION_NO, ERROR_TYPES.BAD_REQUEST);
     }
+}
+
+certificationController.getAllCertificateByUserId = async(payload) =>{
+    let criteria = {userId: payload.userId}
+    let queryArray=[
+        {$match : criteria},
+        {$lookup:{
+            from:'users',
+            localField:'userId',
+            foreignField:'_id',
+            as:'userData'
+        }},
+        {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
+
+        {$lookup:{
+            from:'franchaise',
+            localField:'centerId',
+            foreignField:'_id',
+            as:'centerDetails'
+        }},
+        {$unwind:{path:'$centerDetails',preserveNullAndEmptyArrays:true}},
+
+        {$lookup:{
+            from:'course',
+            localField:'courseId',
+            foreignField:'_id',
+            as:'courseData'
+        }},
+        {$unwind:{path:'$courseData',preserveNullAndEmptyArrays:true}},
+        {$project:{
+                "regNo":"$userData.regNo",
+                userId:"$userData._id",
+                "name":"$userData.name",
+                "fathersName":"$userData.fathersName",
+                "mothersName":"$userData.mothersName",
+                "mobileNumber" : "$userData.mobileNumber",
+                "regDate" : "$userData.regDate",
+                "dob":"$userData.dob",
+                "gender":"$userData.gender",
+                "imagePath":"$userData.imagePath",
+                "marks":1,
+                "serialNumber":1,
+                "status": 1,
+                "type" : 1,
+                "centerCode":"$centerDetails.regNo",
+                "centerName":"$centerDetails.centerName",
+                "centerAddress":"$centerDetails.centerAddress",
+                "centerCode":"$centerDetails.regNo",
+                "courseName":"$courseData.name"
+
+        }}
+        
+    ]
+    let data = await dbService.aggregate(certificationModel, queryArray)
+    console.log(data)
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), { data: data[0]})
 }
 
 
