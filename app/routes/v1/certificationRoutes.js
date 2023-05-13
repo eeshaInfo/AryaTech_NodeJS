@@ -19,6 +19,8 @@ let certificationRoutes=[
                 courseId: Joi.string().objectId().description('course MongoId'),
                 type : Joi.string().valid(...Object.values(CERTIFICATE_TYPES)).description('Certificate Type'),
                 dateOfIssue: Joi.date().description('certificate date issue'),
+                certificateNo: Joi.string().description('certificate number'),
+                serialNo: Joi.number().description('certificate serial number'),
                 marks:Joi.object(
                     {
                         pratical: Joi.number().description('practical Marks'),
@@ -142,6 +144,7 @@ let certificationRoutes=[
             description: 'Route to get all certificate by userid',
             model: 'getAllCertificateByUserId'
         },
+          auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: certificationController.getAllCertificateByUserId
     },
     {

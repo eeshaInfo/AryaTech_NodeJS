@@ -136,15 +136,32 @@ certificationController.getList = async(payload) =>{
                 "gender":"$userData.gender",
                 "imagePath":"$userData.imagePath",
                 "marks":1,
-                "serialNumber":1,
+                "serialNo":1,
                 "status": 1,
                 "type" : 1,
-                "centerCode":"$centerDetails.regNo",
-                "centerName":"$centerDetails.centerName",
-                "centerAddress":"$centerDetails.centerAddress",
-                "centerCode":"$centerDetails.regNo",
+                "centerCode":"$centerDetails.centerCode",
+                "centerName":"$centerDetails.name",
+                "centerAddress":"$centerDetails.address",
                 "courseName":"$courseData.name"
 
+        }},
+        {$group:{
+            _id:"$userId",
+            regNo: {$first: "$regNo"},
+            name: {$first: "$name"},
+            fathersName: {$first: "$fathersName"},
+            mothersName: {$first: "$mothersName"},
+            mobileNumber: {$first: "$mobileNumber"},
+            regDate: {$first: "$regDate"},
+            dob: {$first: "$dob"},
+            gender: {$first: "$gender"},
+            imagePath: {$first: "$imagePath"},
+            marks: {$first: "$marks"},
+            serialNo: {$first: "$serialNo"},
+            centerCode: {$first: "$centerCode"},
+            centerName: {$first: "$centerName"},
+            centerAddress: {$first: "$centerAddress"},
+            courseName: {$first: "$courseName"},
         }},
         { $match:matchCriteria },
         { $sort:sort },
@@ -259,7 +276,7 @@ certificationController.getAllCertificateByUserId = async(payload) =>{
         {$unwind:{path:'$courseData',preserveNullAndEmptyArrays:true}},
         {$project:{
                 "regNo":"$userData.regNo",
-                userId:"$userData._id",
+                "userId":"$userData._id",
                 "name":"$userData.name",
                 "fathersName":"$userData.fathersName",
                 "mothersName":"$userData.mothersName",
@@ -269,21 +286,21 @@ certificationController.getAllCertificateByUserId = async(payload) =>{
                 "gender":"$userData.gender",
                 "imagePath":"$userData.imagePath",
                 "marks":1,
-                "serialNumber":1,
+                "serialNo":1,
+                "certificateNo":1,
+                "dateOfIssue" :1,
                 "status": 1,
                 "type" : 1,
-                "centerCode":"$centerDetails.regNo",
-                "centerName":"$centerDetails.centerName",
-                "centerAddress":"$centerDetails.centerAddress",
-                "centerCode":"$centerDetails.regNo",
-                "courseName":"$courseData.name"
-
+                "centerCode":"$centerDetails.centerCode",
+                "centerName":"$centerDetails.name",
+                "centerAddress":"$centerDetails.address",
+                "courseName":"$courseData.name",
+                "courseDuration":"$courseData.duration"
         }}
         
     ]
     let data = await dbService.aggregate(certificationModel, queryArray)
-    console.log(data)
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), { data: data[0]})
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), { data: data})
 }
 
 
