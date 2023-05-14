@@ -118,7 +118,7 @@ let certificationRoutes=[
             //     'authorization': Joi.string().required().description("User's JWT token.")
             // },
             query : {
-                centerId: Joi.string().objectId().description('franchaiseId mongo _id'),
+                centerId: Joi.string().objectId().description('franchiseId mongo _id'),
                 status: Joi.number().default(CERTIFICATE_STATUS.PENDING).valid(...Object.values(CERTIFICATE_STATUS)).description('status'),
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),

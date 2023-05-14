@@ -8,7 +8,7 @@ const Schema = MONGOOSE.Schema;
 /**************************************************
  *************Franchise_Admin/SuperAdmin Model or collection ***********
  **************************************************/
-const franchaiseSchema = new Schema(
+const franchiseSchema = new Schema(
     {   regDate : { type : Date , required : true },
         centerCode: { type: String, unique : true},
         name: {type: String, unique : true},
@@ -17,8 +17,8 @@ const franchaiseSchema = new Schema(
         userId:{type:Schema.Types.ObjectId,ref:'users'},
         isDeleted: { type: Boolean, default: false},
     },
-    { versionKey: false, timestamps: true,collection: 'franchaise' }
+    { versionKey: false, timestamps: true,collection: 'franchise' }
 );
 
-module.exports = MONGOOSE.model("franchaise", franchaiseSchema);
+module.exports = MONGOOSE.model("franchise", franchiseSchema);
 

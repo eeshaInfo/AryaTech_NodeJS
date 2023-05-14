@@ -40,7 +40,7 @@ const userSchema = new Schema(
         aadharNo: {type: String},
         panNo: {type: String},
         courseId: { type:MONGOOSE.Types.ObjectId, ref:'course' },
-        franchaiseId:{type:MONGOOSE.Types.ObjectId,ref:'franchaise'},
+        franchiseId:{type:MONGOOSE.Types.ObjectId,ref:'franchise'},
         educations: [{
             examination:{type: String},
             board: {type:String},

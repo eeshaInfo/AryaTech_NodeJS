@@ -50,7 +50,7 @@ certificationController.getCertificate = async (payload) => {
         {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
 
         {$lookup:{
-            from:'franchaise',
+            from:'franchise',
             localField:'centerId',
             foreignField:'_id',
             as:'centerDetails'
@@ -110,7 +110,7 @@ certificationController.getList = async(payload) =>{
         {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
 
         {$lookup:{
-            from:'franchaise',
+            from:'franchise',
             localField:'centerId',
             foreignField:'_id',
             as:'centerDetails'
@@ -206,7 +206,7 @@ certificationController.verifyCertificate = async (payload) =>{
             {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
     
             {$lookup:{
-                from:'franchaise',
+                from:'franchise',
                 localField:'centerId',
                 foreignField:'_id',
                 as:'centerDetails'
@@ -260,7 +260,7 @@ certificationController.getAllCertificateByUserId = async(payload) =>{
         {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
 
         {$lookup:{
-            from:'franchaise',
+            from:'franchise',
             localField:'centerId',
             foreignField:'_id',
             as:'centerDetails'

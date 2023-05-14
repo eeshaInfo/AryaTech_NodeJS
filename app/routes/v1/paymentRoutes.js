@@ -14,7 +14,7 @@ let routes = [
                 'authorization':Joi.string().required().description('User Auth Token')
             },
             body:{
-                franchaiseId: Joi.string().objectId().required().description('FranchaiseId MongoId'),
+                franchiseId: Joi.string().objectId().required().description('FranchaiseId MongoId'),
                 userId: Joi.string().objectId().required().description('Student MongoId'),
                 amount: Joi.number().integer().required().description('Amount'),
                 feeType: Joi.string().required().description('fee type'),

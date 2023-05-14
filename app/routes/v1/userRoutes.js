@@ -19,7 +19,7 @@ let routes = [
                 regNo: Joi.string().description('registration Number for the student only'),
                 regDate: Joi.string().description('registration date of student'),
                 userType: Joi.number().valid(...[USER_TYPES.ADMIN, USER_TYPES.STUDENT]).description('USER_TYPES 1=>SuperAdmin, 2=>Admin, 3=>Student'),
-                franchaiseId: Joi.string().objectId().description('Center mongo _id'),                
+                franchiseId: Joi.string().objectId().description('Center mongo _id'),                
                 name: Joi.string().required().description('User\'s  name.'),
                 fathersName: Joi.string().optional().description('father\'s name'),
                 mothersName: Joi.string().optional().description('mother\'s name'),
@@ -76,7 +76,7 @@ let routes = [
                 _id: Joi.string().objectId().required().description('user mongo _id'),
                 regNo: Joi.string().description('registration Number for the student only'),
                 regDate: Joi.string().description('registration date of student'),
-                franchaiseId: Joi.string().objectId().description('Center mongo _id'),
+                franchiseId: Joi.string().objectId().description('Center mongo _id'),
                 name: Joi.string().required().description('User\'s  name.'),
                 fathersName: Joi.string().optional().description('father\'s name'),
                 mothersName: Joi.string().optional().description('mother\'s name'),
@@ -174,7 +174,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                franchaiseId: Joi.string().objectId().description('franchaiseId mongo _id'),
+                franchiseId: Joi.string().objectId().description('franchiseId mongo _id'),
                 status: Joi.number().default(STATUS.PENDING).valid(...Object.values(STATUS)).description('status'),
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
