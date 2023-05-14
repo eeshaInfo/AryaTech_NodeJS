@@ -14,7 +14,8 @@ let courseRoutes=[
             },
             body:{
                 name: Joi.string().required().description('Course Name'),
-                full_name : Joi.string().required().description('course full name'),
+                fullName : Joi.string().required().description('course full name'),
+                fee : Joi.number().required().description('course fee'),
                 duration: Joi.number().required().description('course duration'),
                 modules:Joi.array().items(
                   Joi.object({
@@ -40,7 +41,8 @@ let courseRoutes=[
             },
             body:{
                 name: Joi.string().required().description('Course Name'),
-                full_name : Joi.string().required().description('course full name'),
+                fullName : Joi.string().required().description('course full name'),
+                fee : Joi.number().required().description('course fee'),
                 duration: Joi.number().required().description('course duration'),
                 modules:Joi.array().items(
                   Joi.object({

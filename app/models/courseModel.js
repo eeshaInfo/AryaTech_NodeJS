@@ -10,7 +10,9 @@ const Schema = MONGOOSE.Schema;
 const courseSchema = new Schema(
     {
         name: { type: String, required:true },
+        fullName: { type: String, required:true },
         duration: { type: Number }, // Duration will be in Months only
+        fee : { type : Number },
         modules :[{
                 name: { type: String },
                 details: { type: String, default: ""},

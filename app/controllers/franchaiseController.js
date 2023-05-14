@@ -3,7 +3,7 @@ const path = require('path');
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
 const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES } = require('../utils/constants');
-const {franchiseModel} = require('../models')
+const {franchiseModel, userModel} = require('../models')
 const {dbService} = require('../services')
 const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword, sendSms } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
@@ -39,9 +39,31 @@ franchaiseController.udpateFranchaise = async(payload)=>{
 
 
 franchaiseController.getFranchaise = async(payload)=>{
-    let criteria = {_id: payload._id};
-    let data = await dbService.findOne(franchiseModel,criteria,{...NORMAL_PROJECTION })
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS),{data})
+    console.log(payload)
+    let criteria = {franchiseId: payload._id,userType: USER_TYPES.ADMIN};
+    let queryArray= [
+      {$match : criteria},
+      {$lookup :{
+        from : "franchise",
+        localField: "franchiseId",
+        foreignField: "_id",
+        as : "centerInfo"
+      }},
+      {$unwind:{path: "$centerInfo", preserveNullAndEmptyArrays: true}},
+      {$project:{
+        "regDate" : "$centerInfo.regDate",
+        "centerCode" : "$centerInfo.centerCode",
+        "centerName" : "$centerInfo.name",
+        "address" : "$centerInfo.address",
+        "name":1,
+        "email":1,
+        "mobileNumber":1,
+        "imagePath":1,
+      }}
+    ]
+    let data = await dbService.aggregate(userModel,queryArray)
+    console.log('data',data)
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS),{data:data[0]})
 
 }
 
@@ -79,9 +101,9 @@ franchaiseController.list = async (payload) => {
         "address": 1,
         "status" : 1,
         "regDate" : 1,
-        "centerAdminName":"$userData.name",
+        "admin":"$userData.name",
         "centerAdminEmail":"$userData.email",
-        "centerAdminMobile":"$userData.mobileNumber"
+        "mobileNo":"$userData.mobileNumber"
       } },
   ]
   let franchaiseList = await dbService.aggregate(franchiseModel,query);
