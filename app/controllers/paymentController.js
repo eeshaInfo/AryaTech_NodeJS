@@ -3,6 +3,7 @@ const {dbService} = require('../services')
 const {paymentModel, userModel} = require('../models')
 const HELPERS = require("../helpers");
 const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, USER_TYPES } = require('../utils/constants');
+const CONSTANTS = require('../utils/constants');
 
 let paymentController= {}
 
@@ -59,6 +60,7 @@ paymentController.getPaymentList= async(payload)=>{
             "totalFees" :1,
             paymentsData:1,
             "transactions":1,
+            "franchiseId":1,
         }},
         {$group:{
             _id : "$_id",
@@ -73,6 +75,7 @@ paymentController.getPaymentList= async(payload)=>{
             duration: {$first : "$duration" },
             mobileNumber: {$first : "$mobileNumber" },
             transactions: {$first : "$transactions" },
+            franchiseId: {$first : "$franchiseId" },
             
         }},
         {$addFields:{"totalDues":{$subtract:["$totalFees","$amountPaid"]}}},
@@ -147,6 +150,14 @@ paymentController.deletePayment= async(payload)=>{
     let dataToUpdate = {isDeleted:true}
     let data = await dbService.findOneAndUpdate(paymentModel,criteria,dataToUpdate)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_DELETE_SUCCESSFULLY), { data })
+}
+
+paymentController.addStudentFee = async(payload) =>{
+    console.log(payload)
+    await dbService.findOneAndUpdate(userModel,{_id:payload.userId},{ $inc: { totalFees: payload.amount }})
+    let data = await dbService.create(paymentModel,payload)
+    console.log('data',data)
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), { data })
 }
 
 module.exports= paymentController;

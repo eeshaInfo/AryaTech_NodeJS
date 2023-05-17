@@ -20,6 +20,7 @@ const userSchema = new Schema(
         dob: { type: Date, max: new Date() },
         fathersName: { type: String },
         mothersName: { type: String },
+        totalFees: { type : Number , default: 0},
         userType: { type: Number, enum: Object.values(CONSTANTS.USER_TYPES) },
         primaryAddress:{
             address: {type:String},

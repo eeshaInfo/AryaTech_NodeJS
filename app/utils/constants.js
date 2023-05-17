@@ -74,6 +74,11 @@ CONSTANTS.CERTIFICATE_TYPES = {
     TYPING:"typing"
 }
 
+CONSTANTS.PAYMENT_TYPE ={
+    CREDIT : "Credit", 
+    DEBIT : "Debit"
+}
+
 CONSTANTS.GENDER_TYPES = {
     MALE: 1,
     FEMALE: 2
