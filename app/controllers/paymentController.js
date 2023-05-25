@@ -64,7 +64,16 @@ paymentController.getPaymentList= async(payload)=>{
         }},
         {$group:{
             _id : "$_id",
-            amountPaid : { $sum : "$paymentsData.amount"},
+            amountPaid : { $sum:{
+                '$cond': [
+                        { '$eq': ['$paymentsData.paymentType', 'Credit']},"$paymentsData.amount",0
+                 ]
+            }},
+            feeAdded : { $sum:{
+                '$cond': [
+                        { '$eq': ['$paymentsData.paymentType', 'Debit']},"$paymentsData.amount",0
+                 ]
+            }},
             name: {$first : "$name" },
             regDate: {$first : "$regDate" },
             regNo: {$first : "$regNo" },
@@ -76,9 +85,11 @@ paymentController.getPaymentList= async(payload)=>{
             mobileNumber: {$first : "$mobileNumber" },
             transactions: {$first : "$transactions" },
             franchiseId: {$first : "$franchiseId" },
+            createdAt : {$first : "$createdAt"}
             
         }},
-        {$addFields:{"totalDues":{$subtract:["$totalFees","$amountPaid"]}}},
+        {$addFields:{"totalDues":{ $add:[ {$subtract:["$totalFees","$amountPaid"]},  "$feeAdded"] }}},
+
     ]
 
     let data = await dbService.aggregate(userModel,queryArray)
@@ -100,7 +111,6 @@ paymentController.getPaymentList= async(payload)=>{
             as:'paymentsData'
         }},
         { $unwind:{path:"$paymentsData", preserveNullAndEmptyArrays: true }},
-
         { $lookup:{
             from:'course',
             localField:'courseId',
@@ -108,26 +118,46 @@ paymentController.getPaymentList= async(payload)=>{
             as:'courseData'
         }},
         { $unwind:{path:"$courseData", preserveNullAndEmptyArrays: true }},
+        { $lookup:{
+            from:'franchise',
+            localField:'franchiseId',
+            foreignField: '_id',
+            as:'franchiseData'
+        }},
+        { $unwind:{path:"$franchiseData", preserveNullAndEmptyArrays: true }},
         {$project:{
             "userId": "$paymentsData.userId",
+            "centerName" : "$franchiseData.name",
             "createdAt":1,
             "regNo":1,
             "name": 1,
             "mobileNumber":1,
             "totalFees" :1,
             "amount" : "$paymentsData.amount",
+            "paymentType" : "$paymentsData.paymentType",
             "course":"$courseData.name",
         }},
         {$group:{
             _id : "$_id",
-            amountPaid : {$sum : "$amount"},
+            amountPaid : { $sum:{
+                '$cond': [
+                        { '$eq': ['$paymentType', 'Credit']},"$amount",0
+                 ]
+            }},
             name: {$first : "$name" },
             regNo: {$first:"$regNo"},
+            feeAdded : { $sum:{
+                '$cond': [
+                        { '$eq': ['$paymentType', 'Debit']},"$amount",0
+                 ]
+            }},
             totalFees: {$first : "$totalFees"},
             courseName: {$first : "$course" },
             mobileNumber: {$first : "$mobileNumber" },
+            centerName: {$first : "$centerName" },
+            createdAt : {$first : "$createdAt"}
         }},
-        {$addFields:{"totalDues":{$subtract:["$totalFees","$amountPaid"]}}},
+        {$addFields:{"totalDues":{ $add:[ {$subtract:["$totalFees","$amountPaid"]},  "$feeAdded"] }}},
         { $sort:sort},
         { $skip:payload.skip },
         { $limit: payload.limit },
