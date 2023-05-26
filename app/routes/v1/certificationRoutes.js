@@ -144,7 +144,7 @@ let certificationRoutes=[
             description: 'Route to get all certificate by userid',
             model: 'getAllCertificateByUserId'
         },
-          auth: AVAILABLE_AUTHS.SUPER_ADMIN,
+        //   auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: certificationController.getAllCertificateByUserId
     },
     {

@@ -207,7 +207,7 @@ certificationController.verifyCertificate = async (payload) =>{
     
             {$lookup:{
                 from:'franchise',
-                localField:'centerId',
+                localField:'franchiseId',
                 foreignField:'_id',
                 as:'centerDetails'
             }},
@@ -222,6 +222,7 @@ certificationController.verifyCertificate = async (payload) =>{
             {$unwind:{path:'$courseData',preserveNullAndEmptyArrays:true}},
             {$project:{
                     "regNo":"$userData.regNo",
+                    "userId": "$userData._id",
                     "name":"$userData.name",
                     "fathersName":"$userData.fathersName",
                     "mothersName":"$userData.mothersName",
@@ -232,7 +233,7 @@ certificationController.verifyCertificate = async (payload) =>{
                     "serialNumber":1,
                     "status": 1,
                     "type" :1,
-                    "centerCode":"$centerDetails.regNo",
+                    "centerCode":"$centerDetails.centerCode",
                     "centerName":"$centerDetails.centerName",
                     "centerAddress":"$centerDetails.centerAddress",
                     "courseData":1
@@ -240,7 +241,6 @@ certificationController.verifyCertificate = async (payload) =>{
             }}
         ]
         let data = await dbService.aggregate(certificationModel,queryArray)
-        console.log(data)
         return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data:data[0] }) 
     }else{
         throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INALID_REGISTRATION_NO, ERROR_TYPES.BAD_REQUEST);
@@ -261,7 +261,7 @@ certificationController.getAllCertificateByUserId = async(payload) =>{
 
         {$lookup:{
             from:'franchise',
-            localField:'centerId',
+            localField:'franchiseId',
             foreignField:'_id',
             as:'centerDetails'
         }},
