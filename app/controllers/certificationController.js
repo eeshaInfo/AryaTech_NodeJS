@@ -172,7 +172,7 @@ certificationController.getList = async(payload) =>{
     ]
 let data = await dbService.aggregate(certificationModel,queryArray)
 let totalCount = await dbService.countDocument(certificationModel,criteria)
-return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), {list: data, count:totalCount })
+return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.STUDENTS_CERTIFICATE_FETCHED_SUCCESSFULLY), {list: data, count:totalCount })
 }
 
 

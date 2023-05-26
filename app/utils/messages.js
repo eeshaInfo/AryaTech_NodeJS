@@ -63,4 +63,7 @@ module.exports = {
     NOTIFICATIONS_SENT_SUCCESSFULLY: "Notifications Sent Successfully.",
     FAILED_TO_SEND_NOTIFICATIONS: "Failed to send notifications.",
   },
+//certificate
+STUDENTS_CERTIFICATE_FETCHED_SUCCESSFULLY: 'Students Certificate Fetched successfully'
+
 };
