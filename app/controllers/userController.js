@@ -75,8 +75,8 @@ userController.userDetails = async (payload) => {
     }},
     { $unwind: { path: "$course_data", preserveNullAndEmptyArrays: true }},
     {$lookup: {
-      from :"franchaise",
-      localField: "franchaiseId",
+      from :"franchise",
+      localField: "franchiseId",
       foreignField : "_id",
       as:"center_data"
     }},
@@ -111,7 +111,6 @@ userController.userDetails = async (payload) => {
       }
     },
   ]
-  // let data = await userService.userAggregate(query)
   let data = await dbService.aggregate(userModel,query)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { data:data[0] })
 }
@@ -122,8 +121,8 @@ userController.userDetails = async (payload) => {
 userController.list = async (payload) => {
 let criteria={}
   let regex = new RegExp(payload.searchKey, 'i');
-   if(payload.franchaiseId){
-      criteria = {franchaiseId:payload.franchaiseId, status:payload.status, userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
+   if(payload.franchiseId){
+      criteria = {franchiseId:payload.franchiseId, status:payload.status, userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
    }else{
       criteria = {status:payload.status ,userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
    }
@@ -142,15 +141,15 @@ let criteria={}
     }},
     { $unwind: { path: "$course_data", preserveNullAndEmptyArrays: true }},
     {$lookup: {
-      from :"franchaise",
-      localField: "franchaiseId",
+      from :"franchise",
+      localField: "franchiseId",
       foreignField : "_id",
       as:"center_data"
     }},
     { $unwind: { path: "$center_data", preserveNullAndEmptyArrays: true }},
     { $sort: sort },
     { $skip: payload.skip },
-    { $limit: payload.limit },
+    payload.franchiseId?{ $limit: 9999}:{ $limit: payload.limit  },
     { $project: {
         "regNo" : 1,
         "regDate" :1,

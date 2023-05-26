@@ -14,9 +14,10 @@ const certificationSchema = new Schema(
         courseId: { type: Schema.Types.ObjectId, ref: 'course'},
         centerId: { type: Schema.Types.ObjectId, ref:'users'},
         type : { type : String, enum:Object.values(CERTIFICATE_TYPES)},
-        serialNumber: { type: Number },
+        serialNo: { type: Number },
+        certificateNo : {type: String},
         marks:{
-            pratical: { type : Number, default:0},
+            practical: { type : Number, default:0},
             written: { type: Number, default: 0 },
             assignment: { type: Number, default: 0 },
             viva: { type: Number, default: 0 },

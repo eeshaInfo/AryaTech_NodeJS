@@ -19,6 +19,8 @@ let certificationRoutes=[
                 courseId: Joi.string().objectId().description('course MongoId'),
                 type : Joi.string().valid(...Object.values(CERTIFICATE_TYPES)).description('Certificate Type'),
                 dateOfIssue: Joi.date().description('certificate date issue'),
+                certificateNo: Joi.string().description('certificate number'),
+                serialNo: Joi.number().description('certificate serial number'),
                 marks:Joi.object(
                     {
                         pratical: Joi.number().description('practical Marks'),
@@ -116,7 +118,7 @@ let certificationRoutes=[
             //     'authorization': Joi.string().required().description("User's JWT token.")
             // },
             query : {
-                centerId: Joi.string().objectId().description('franchaiseId mongo _id'),
+                centerId: Joi.string().objectId().description('franchiseId mongo _id'),
                 status: Joi.number().default(CERTIFICATE_STATUS.PENDING).valid(...Object.values(CERTIFICATE_STATUS)).description('status'),
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
@@ -130,6 +132,20 @@ let certificationRoutes=[
         },
         // auth: AVAILABLE_AUTHS.ADMIN,
         handler: certificationController.getList
+    },
+    {
+        method: 'GET',
+        path: '/v1/certificate/userId',
+        joiSchemaForSwagger: {
+            query:{
+                userId: Joi.string().objectId().required().description('UserId'),
+            },
+            group: 'Certificate',
+            description: 'Route to get all certificate by userid',
+            model: 'getAllCertificateByUserId'
+        },
+        //   auth: AVAILABLE_AUTHS.SUPER_ADMIN,
+        handler: certificationController.getAllCertificateByUserId
     },
     {
         method: 'GET',

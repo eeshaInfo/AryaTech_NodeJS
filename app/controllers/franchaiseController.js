@@ -3,7 +3,7 @@ const path = require('path');
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
 const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, LOGIN_TYPES, EMAIL_TYPES, TOKEN_TYPE, STATUS, USER_TYPES } = require('../utils/constants');
-const {franchaiseModel} = require('../models')
+const {franchiseModel, userModel} = require('../models')
 const {dbService} = require('../services')
 const { compareHash, encryptJwt, createResetPasswordLink, sendEmail, createSetupPasswordLink, decryptJwt, hashPassword, sendSms } = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
@@ -16,10 +16,10 @@ const fs = require('fs');
 let franchaiseController = {};
 
 /**
- * function to register a franchaise
+ * function to register a franchise
  */
 franchaiseController.registerNewFranchaise = async (payload) => {
-  let isUserAlreadyExist = await dbService.findOne(franchaiseModel,{userId: payload.userId})
+  let isUserAlreadyExist = await dbService.findOne(franchiseModel,{userId: payload.userId})
   // if(!isUserAlreadyExist){
     let data = await SERVICES.franchaiseService.create(payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_CREATED_SUCCESSFULLY),{data});
@@ -28,20 +28,42 @@ franchaiseController.registerNewFranchaise = async (payload) => {
 }
 
 /**
- * function to update franchaise details
+ * function to update franchise details
  * @param {*} payload 
  */
 franchaiseController.udpateFranchaise = async(payload)=>{
   let criteria = { _id:payload._id };
-  let data = await dbService.findOneAndUpdate(franchaiseModel,criteria,payload)
+  let data = await dbService.findOneAndUpdate(franchiseModel,criteria,payload)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY),{data})
 }
 
 
 franchaiseController.getFranchaise = async(payload)=>{
-    let criteria = {_id: payload._id};
-    let data = await dbService.findOne(franchaiseModel,criteria,{...NORMAL_PROJECTION })
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS),{data})
+    console.log(payload)
+    let criteria = {franchiseId: payload._id,userType: USER_TYPES.ADMIN};
+    let queryArray= [
+      {$match : criteria},
+      {$lookup :{
+        from : "franchise",
+        localField: "franchiseId",
+        foreignField: "_id",
+        as : "centerInfo"
+      }},
+      {$unwind:{path: "$centerInfo", preserveNullAndEmptyArrays: true}},
+      {$project:{
+        "regDate" : "$centerInfo.regDate",
+        "centerCode" : "$centerInfo.centerCode",
+        "centerName" : "$centerInfo.name",
+        "address" : "$centerInfo.address",
+        "name":1,
+        "email":1,
+        "mobileNumber":1,
+        "imagePath":1,
+      }}
+    ]
+    let data = await dbService.aggregate(userModel,queryArray)
+    console.log('data',data)
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS),{data:data[0]})
 
 }
 
@@ -79,13 +101,13 @@ franchaiseController.list = async (payload) => {
         "address": 1,
         "status" : 1,
         "regDate" : 1,
-        "centerAdminName":"$userData.name",
+        "admin":"$userData.name",
         "centerAdminEmail":"$userData.email",
-        "centerAdminMobile":"$userData.mobileNumber"
+        "mobileNo":"$userData.mobileNumber"
       } },
   ]
-  let franchaiseList = await dbService.aggregate(franchaiseModel,query);
-  let count = await dbService.countDocument(franchaiseModel,criteria)
+  let franchaiseList = await dbService.aggregate(franchiseModel,query);
+  let count = await dbService.countDocument(franchiseModel,criteria)
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_FETCHED_SUCCESSFULLY), { franchaiseList,count })
 }
 
@@ -95,13 +117,13 @@ franchaiseController.list = async (payload) => {
  * @returns 
  */
 franchaiseController.franchaiseDropdown = async (payload) => {
-  let list = await dbService.find(franchaiseModel,{}, { centerCode: 1, name:1 })
+  let list = await dbService.find(franchiseModel,{}, { centerCode: 1, name:1 })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_FETCHED_SUCCESSFULLY), { list })
 }
 
 
 franchaiseController.userStatus = async (payload) => {
-  await dbService.findOneAndUpdate(franchaiseModel,{ _id: payload.userId }, { status: payload.status })
+  await dbService.findOneAndUpdate(franchiseModel,{ _id: payload.userId }, { status: payload.status })
 }
 /* export franchaiseController */
 module.exports = franchaiseController;

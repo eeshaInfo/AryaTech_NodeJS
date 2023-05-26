@@ -8,7 +8,7 @@ const { franchaiseController } = require('../../controllers');
 let routes = [
     {
         method: 'POST',
-        path: '/v1/franchaise',
+        path: '/v1/franchise',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -21,7 +21,7 @@ let routes = [
                 userId: Joi.string().objectId().description('Admin _id')
             },
             group: 'Franchaise',
-            description: 'Route to register a new franchaise',
+            description: 'Route to register a new franchise',
             model: 'RegisterNewFranchaise'
         },
         auth: AVAILABLE_AUTHS.SUPER_ADMIN,
@@ -29,13 +29,13 @@ let routes = [
     },
     {
         method: 'PUT',
-        path: '/v1/franchaise',
+        path: '/v1/franchise',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body: {
-                _id:Joi.string().objectId().required().description('franchaise mongo _id'),
+                _id:Joi.string().objectId().required().description('franchise mongo _id'),
                 regDate : Joi.string().description('registration Date'),
                 centerCode: Joi.string().description('center code'),
                 address:Joi.string().description('Address of frachiaise'),
@@ -43,7 +43,7 @@ let routes = [
                 userId: Joi.string().objectId().description('Admin _id')
             },
             group: 'Franchaise',
-            description: 'Route to update a franchaise details',
+            description: 'Route to update a franchise details',
             model: 'updateFranchaise'
         },
         auth: AVAILABLE_AUTHS.SUPER_ADMIN,
@@ -51,16 +51,16 @@ let routes = [
     },
     {
         method: "GET",
-        path: "/v1/franchaise",
+        path: "/v1/franchise",
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
            query:{
-                _id:Joi.string().objectId().required().description('franchaise mongo _id')
+                _id:Joi.string().objectId().required().description('franchise mongo _id')
            },
             group: "Franchaise",
-            description: "get franchaise details by _id",
+            description: "get franchise details by _id",
             model: "getFranchaiseDetails",
         },
         auth: AVAILABLE_AUTHS.SUPER_ADMIN,
@@ -69,7 +69,7 @@ let routes = [
 
     {
         method: 'GET',
-        path: '/v1/franchaise/list',
+        path: '/v1/franchise/list',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
@@ -91,13 +91,13 @@ let routes = [
 
     {
         method: 'GET',
-        path: '/v1/franchaise/dropdown',
+        path: '/v1/franchise/dropdown',
         joiSchemaForSwagger: {
             headers: {
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             group: 'Franchaise',
-            description: 'Route to get franchaise dropdwon for user',
+            description: 'Route to get franchise dropdwon for user',
             model: 'getAllFranchaise'
         },
         auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,

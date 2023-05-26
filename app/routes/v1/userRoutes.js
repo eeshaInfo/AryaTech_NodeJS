@@ -19,7 +19,7 @@ let routes = [
                 regNo: Joi.string().description('registration Number for the student only'),
                 regDate: Joi.string().description('registration date of student'),
                 userType: Joi.number().valid(...[USER_TYPES.ADMIN, USER_TYPES.STUDENT]).description('USER_TYPES 1=>SuperAdmin, 2=>Admin, 3=>Student'),
-                franchaiseId: Joi.string().objectId().description('Center mongo _id'),                
+                franchiseId: Joi.string().objectId().description('Center mongo _id'),                
                 name: Joi.string().required().description('User\'s  name.'),
                 fathersName: Joi.string().optional().description('father\'s name'),
                 mothersName: Joi.string().optional().description('mother\'s name'),
@@ -28,16 +28,23 @@ let routes = [
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
                 email: Joi.string().required().description('email id of Users'),
                 courseId: Joi.string().description('course in which student will take admission'),
-                address: Joi.array().items(
+                primaryAddress: 
                     Joi.object({
-                        type: Joi.string().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
+                        
                         address: Joi.string().description('localicty, street No'),
                         postOffice: Joi.string().description('post office'),
                         state: Joi.string().description('state'),
                         dist: Joi.string().description('district'),
                         pincode: Joi.string().description('zip code')
-                    })
-                ),
+                    }),
+                    secondaryAddress: 
+                    Joi.object({
+                        address: Joi.string().description('localicty, street No'),
+                        postOffice: Joi.string().description('post office'),
+                        state: Joi.string().description('state'),
+                        dist: Joi.string().description('district'),
+                        pincode: Joi.string().description('zip code')
+                    }),
                 educations: Joi.array().items(
                     Joi.object({
                         examination: Joi.string().description('examination'),
@@ -69,7 +76,7 @@ let routes = [
                 _id: Joi.string().objectId().required().description('user mongo _id'),
                 regNo: Joi.string().description('registration Number for the student only'),
                 regDate: Joi.string().description('registration date of student'),
-                franchaiseId: Joi.string().objectId().description('Center mongo _id'),
+                franchiseId: Joi.string().objectId().description('Center mongo _id'),
                 name: Joi.string().required().description('User\'s  name.'),
                 fathersName: Joi.string().optional().description('father\'s name'),
                 mothersName: Joi.string().optional().description('mother\'s name'),
@@ -167,7 +174,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                franchaiseId: Joi.string().objectId().description('franchaiseId mongo _id'),
+                franchiseId: Joi.string().objectId().description('franchiseId mongo _id'),
                 status: Joi.number().default(STATUS.PENDING).valid(...Object.values(STATUS)).description('status'),
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),

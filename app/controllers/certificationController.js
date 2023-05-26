@@ -50,7 +50,7 @@ certificationController.getCertificate = async (payload) => {
         {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
 
         {$lookup:{
-            from:'franchaise',
+            from:'franchise',
             localField:'centerId',
             foreignField:'_id',
             as:'centerDetails'
@@ -110,7 +110,7 @@ certificationController.getList = async(payload) =>{
         {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
 
         {$lookup:{
-            from:'franchaise',
+            from:'franchise',
             localField:'centerId',
             foreignField:'_id',
             as:'centerDetails'
@@ -126,6 +126,7 @@ certificationController.getList = async(payload) =>{
         {$unwind:{path:'$courseData',preserveNullAndEmptyArrays:true}},
         {$project:{
                 "regNo":"$userData.regNo",
+                userId:"$userData._id",
                 "name":"$userData.name",
                 "fathersName":"$userData.fathersName",
                 "mothersName":"$userData.mothersName",
@@ -135,15 +136,32 @@ certificationController.getList = async(payload) =>{
                 "gender":"$userData.gender",
                 "imagePath":"$userData.imagePath",
                 "marks":1,
-                "serialNumber":1,
+                "serialNo":1,
                 "status": 1,
                 "type" : 1,
-                "centerCode":"$centerDetails.regNo",
-                "centerName":"$centerDetails.centerName",
-                "centerAddress":"$centerDetails.centerAddress",
-                "centerCode":"$centerDetails.regNo",
+                "centerCode":"$centerDetails.centerCode",
+                "centerName":"$centerDetails.name",
+                "centerAddress":"$centerDetails.address",
                 "courseName":"$courseData.name"
 
+        }},
+        {$group:{
+            _id:"$userId",
+            regNo: {$first: "$regNo"},
+            name: {$first: "$name"},
+            fathersName: {$first: "$fathersName"},
+            mothersName: {$first: "$mothersName"},
+            mobileNumber: {$first: "$mobileNumber"},
+            regDate: {$first: "$regDate"},
+            dob: {$first: "$dob"},
+            gender: {$first: "$gender"},
+            imagePath: {$first: "$imagePath"},
+            marks: {$first: "$marks"},
+            serialNo: {$first: "$serialNo"},
+            centerCode: {$first: "$centerCode"},
+            centerName: {$first: "$centerName"},
+            centerAddress: {$first: "$centerAddress"},
+            courseName: {$first: "$courseName"},
         }},
         { $match:matchCriteria },
         { $sort:sort },
@@ -154,7 +172,7 @@ certificationController.getList = async(payload) =>{
     ]
 let data = await dbService.aggregate(certificationModel,queryArray)
 let totalCount = await dbService.countDocument(certificationModel,criteria)
-return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), {list: data, count:totalCount })
+return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.STUDENTS_CERTIFICATE_FETCHED_SUCCESSFULLY), {list: data, count:totalCount })
 }
 
 
@@ -188,8 +206,8 @@ certificationController.verifyCertificate = async (payload) =>{
             {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
     
             {$lookup:{
-                from:'franchaise',
-                localField:'centerId',
+                from:'franchise',
+                localField:'franchiseId',
                 foreignField:'_id',
                 as:'centerDetails'
             }},
@@ -204,6 +222,7 @@ certificationController.verifyCertificate = async (payload) =>{
             {$unwind:{path:'$courseData',preserveNullAndEmptyArrays:true}},
             {$project:{
                     "regNo":"$userData.regNo",
+                    "userId": "$userData._id",
                     "name":"$userData.name",
                     "fathersName":"$userData.fathersName",
                     "mothersName":"$userData.mothersName",
@@ -214,7 +233,7 @@ certificationController.verifyCertificate = async (payload) =>{
                     "serialNumber":1,
                     "status": 1,
                     "type" :1,
-                    "centerCode":"$centerDetails.regNo",
+                    "centerCode":"$centerDetails.centerCode",
                     "centerName":"$centerDetails.centerName",
                     "centerAddress":"$centerDetails.centerAddress",
                     "courseData":1
@@ -222,11 +241,66 @@ certificationController.verifyCertificate = async (payload) =>{
             }}
         ]
         let data = await dbService.aggregate(certificationModel,queryArray)
-        console.log(data)
         return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data:data[0] }) 
     }else{
         throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INALID_REGISTRATION_NO, ERROR_TYPES.BAD_REQUEST);
     }
+}
+
+certificationController.getAllCertificateByUserId = async(payload) =>{
+    let criteria = {userId: payload.userId}
+    let queryArray=[
+        {$match : criteria},
+        {$lookup:{
+            from:'users',
+            localField:'userId',
+            foreignField:'_id',
+            as:'userData'
+        }},
+        {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
+
+        {$lookup:{
+            from:'franchise',
+            localField:'franchiseId',
+            foreignField:'_id',
+            as:'centerDetails'
+        }},
+        {$unwind:{path:'$centerDetails',preserveNullAndEmptyArrays:true}},
+
+        {$lookup:{
+            from:'course',
+            localField:'courseId',
+            foreignField:'_id',
+            as:'courseData'
+        }},
+        {$unwind:{path:'$courseData',preserveNullAndEmptyArrays:true}},
+        {$project:{
+                "regNo":"$userData.regNo",
+                "userId":"$userData._id",
+                "name":"$userData.name",
+                "fathersName":"$userData.fathersName",
+                "mothersName":"$userData.mothersName",
+                "mobileNumber" : "$userData.mobileNumber",
+                "regDate" : "$userData.regDate",
+                "dob":"$userData.dob",
+                "gender":"$userData.gender",
+                "imagePath":"$userData.imagePath",
+                "marks":1,
+                "serialNo":1,
+                "certificateNo":1,
+                "dateOfIssue" :1,
+                "status": 1,
+                "type" : 1,
+                "centerCode":"$centerDetails.centerCode",
+                "centerName":"$centerDetails.name",
+                "centerAddress":"$centerDetails.address",
+                "courseName":"$courseData.name",
+                "courseDuration":"$courseData.duration"
+        }}
+        
+    ]
+    let data = await dbService.aggregate(certificationModel, queryArray)
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), { data: data})
 }
 
 

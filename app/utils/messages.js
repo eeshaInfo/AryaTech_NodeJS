@@ -32,7 +32,7 @@ module.exports = {
   INVITATION_SENT_SUCCESSFULLY: 'Invitation Sent Successfully.',
   INVALID_MOBILE_NUMBER: 'Invalid mobile number.',
   USER_DOESNOT_EXIST: 'User does not Exist,please register',
-  USER_FETCHED_SUCCESSFULLY: 'User List fetched Successfully',
+  USER_FETCHED_SUCCESSFULLY: 'User Details fetched Successfully',
   USER_BLOCKED_SUCCESSFULLY: 'User blocked Successfully',
   USER_ALREADY_BLOCKED: 'User Already Blocked',
   USER_ACTIVE_SUCCESSFULLY: 'User Active Successfully',
@@ -49,7 +49,7 @@ module.exports = {
   PAYMENT_LIST_FETCHED_SUCCESSFULLY: 'Payment List Fetched successfully',
   PAYMENT_ALREADY_ACCEPTED: 'Payment already accepted',
 
-  //franchaise
+  //franchise
   FRANCHAISE_CREATED_SUCCESSFULLY:'Franchaise created successfully.',
   FRANCHAISE_ALREADY_EXISTS:'Franchaise name already exists.',
   FRANCHAISE_FETCHED_SUCCESSFULLY:'Franchaise fetch successfully.',
@@ -63,4 +63,7 @@ module.exports = {
     NOTIFICATIONS_SENT_SUCCESSFULLY: "Notifications Sent Successfully.",
     FAILED_TO_SEND_NOTIFICATIONS: "Failed to send notifications.",
   },
+//certificate
+STUDENTS_CERTIFICATE_FETCHED_SUCCESSFULLY: 'Students Certificate Fetched successfully'
+
 };

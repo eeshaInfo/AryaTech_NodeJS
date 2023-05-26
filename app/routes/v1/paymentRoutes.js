@@ -3,7 +3,7 @@
 const { Joi } = require('../../utils/joiUtils');
 //load controllers
 const { paymentController } = require('../../controllers');
-const {AVAILABLE_AUTHS} = require('../../utils/constants');
+const {AVAILABLE_AUTHS, PAYMENT_TYPE} = require('../../utils/constants');
 
 let routes = [
     {
@@ -14,9 +14,13 @@ let routes = [
                 'authorization':Joi.string().required().description('User Auth Token')
             },
             body:{
-                userId:Joi.string().objectId().required().description('Student MongoId'),
-                amount:Joi.number().integer().required().description('Amount'),
-                mode:Joi.string().required().description('mode of payment, cash,online,cheque')
+                franchiseId: Joi.string().objectId().required().description('FranchaiseId MongoId'),
+                userId: Joi.string().objectId().required().description('Student MongoId'),
+                amount: Joi.number().integer().required().description('Amount'),
+                feeType: Joi.string().required().description('fee type'),
+                paymentType: Joi.string().default(PAYMENT_TYPE.CREDIT).description('Payment type'),
+                description: Joi.string().required().description('description type'),
+                mode: Joi.string().required().description('mode of payment, cash,online,cheque')
             },
             group: 'Payment',
             description: 'Route for Accept Payment of student',
@@ -107,6 +111,29 @@ let routes = [
         },
         auth:AVAILABLE_AUTHS.SUPER_ADMIN,
         handler:paymentController.getPaymentList
+    },
+
+    {
+        method: 'PUT',
+        path:'/v1/add/fee',
+        joiSchemaForSwagger:{
+            headers:{
+                'authorization':Joi.string().required().description('User Auth Token')
+            },
+            body:{
+                userId: Joi.string().objectId().optional().description('UserId'),
+                franchiseId: Joi.string().objectId().optional().description('franchiseId'),
+                amount: Joi.number().integer().required().description('Amount'),
+                feeType: Joi.string().description('fee type'),
+                paymentType : Joi.string().valid(...Object.values(PAYMENT_TYPE)).description('payment type, credit or debit'),
+                description: Joi.string().required().description('description type'),
+            },
+            group: 'Payment',
+            description: 'Route for Add Student Fee',
+            model: 'addStudentFee'
+        },
+        auth:AVAILABLE_AUTHS.SUPER_ADMIN,
+        handler:paymentController.addStudentFee
     }
 ]
 
