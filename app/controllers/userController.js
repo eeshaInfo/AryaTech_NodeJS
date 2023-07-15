@@ -7,6 +7,7 @@ const SERVICES = require('../services');
 const {dbService,fileUploadService} = require('../services')
 const {userModel} = require('../models/index')
 const { hashPassword} = require('../utils/utils');
+const { log } = require('console');
 
 
 /**************************************************
@@ -29,6 +30,12 @@ userController.uploadFile = async (payload) => {
   let fileUrl = await fileUploadService.uploadFile(payload, pathToUpload, pathOnServer);
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FILE_UPLOADED_SUCCESSFULLY), { fileUrl });
 };
+
+userController.getFile = async(payload) =>{
+  let filePath = payload.filePath
+  let fileUrl = await fileUploadService.getFile(filePath)
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), { fileUrl });
+}
 
 /**
  * function to register a user to the system.
