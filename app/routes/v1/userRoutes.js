@@ -146,6 +146,20 @@ let routes = [
         // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.uploadFile,
     },
+    {
+        method: "GET",
+        path: "/v1/file/get",
+        joiSchemaForSwagger: {
+            query: {
+                filePath: Joi.string().required().description('s3 file path')
+            },
+            group: "File",
+            description: "Route to get profile image for user",
+            model: "getFileFromS3",
+        },
+        // auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
+        handler: userController.getFile,
+    },
 
     {
         method: "PUT",

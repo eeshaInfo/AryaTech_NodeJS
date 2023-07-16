@@ -14,17 +14,18 @@ const HELPERS = require("../helpers");
  */
 fileUploadService.uploadFileToS3 = (buffer, fileName, bucketName) => {
     console.log(fileName)
+    const dir = 'profile';
     return new Promise((resolve, reject) => {
         s3Bucket.upload({
             Bucket: CONFIG.S3_BUCKET.bucketName,
-            Key: fileName,
+            Key: `aryatech/${dir}/`+fileName,
             Body: buffer,
         }, function (err, data) {
             if (err) {
                 console.log('Error here', err);
                 return reject(err);
             }
-            let imageUrl = `${process.env.CLOUD_FRONT_URL}/${data.key}`;
+            let imageUrl = data.key;
             resolve(imageUrl);
         });
     });
@@ -76,5 +77,46 @@ fileUploadService.uploadFile = async (payload, pathToUpload, pathOnServer) => {
     }
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_FILE_TYPE, ERROR_TYPES.BAD_REQUEST);
 };
+
+
+/**
+ * Function to download file from s3_bucket
+ * @param {*} uploadPath 
+ * @returns 
+ */
+fileUploadService.downloadFromS3 =async(filePath) => {
+    try {
+         let awsParams = {
+                Bucket: CONFIG.S3_BUCKET.bucketName,
+                Key: filePath || "dlf/MOHAMMAD EESHA AADHAR CARD .png",
+                // Key: uploadPath
+         };
+            let file_data = await s3.getObject(awsParams).promise()
+            return file_data.Body;
+        } catch (downloadErr) {
+            console.log(downloadErr);
+            reject({ status: "failed", error: downloadErr })
+
+        }
+}
+/**
+ * function to view file
+ * @param {*} file 
+ */
+
+fileUploadService.getFile = async(filePath) => {
+    try {
+        const params = {
+          Bucket: CONFIG.S3_BUCKET.bucketName,
+          Key: filePath,
+          Expires: 100
+        }
+        var url = s3Bucket.getSignedUrl('getObject', params)
+        return url;
+      } catch (error) {
+        console.error(error);
+        // ctx.body = {'message': `Could not retrieve file from S3`}
+      }
+}
 
 module.exports = fileUploadService;
