@@ -27,8 +27,8 @@ userController.uploadFile = async (payload) => {
   }
   let pathToUpload = path.resolve(__dirname + `../../..${CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL}`),
     pathOnServer = CONFIG.PATH_TO_UPLOAD_FILES_ON_LOCAL;
-  let fileUrl = await fileUploadService.uploadFile(payload, pathToUpload, pathOnServer);
-  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FILE_UPLOADED_SUCCESSFULLY), { fileUrl });
+  let profileImage = await fileUploadService.uploadFile(payload, pathToUpload, pathOnServer);
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FILE_UPLOADED_SUCCESSFULLY), { profileImage });
 };
 
 userController.getFile = async(payload) =>{
