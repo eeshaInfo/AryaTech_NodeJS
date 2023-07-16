@@ -95,6 +95,7 @@ userController.userDetails = async (payload) => {
         "name" : 1,
         "gender" :1,
         "dob": 1,
+        "franchiseId" :1,
         "fathersName": 1,
         "mothersName":1,
         "userType": 1,
