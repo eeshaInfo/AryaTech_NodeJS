@@ -1,0 +1,17 @@
+node_modules/
+
+# Visual Studio Code created by default file's
+.vscode
+.DS_Store
+
+# Remove unnessary file's
+.idea
+
+.eslintrc
+
+uploads
+.env
+swagger.json
+db-data
+public
+package-lock.json
