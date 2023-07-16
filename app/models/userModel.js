@@ -22,6 +22,7 @@ const userSchema = new Schema(
         mothersName: { type: String },
         totalFees: { type : Number , default: 0},
         userType: { type: Number, enum: Object.values(CONSTANTS.USER_TYPES) },
+        isAddressSame : { type : Boolean, default : true },
         primaryAddress:{
             address: {type:String},
             postOffice:{type:String},

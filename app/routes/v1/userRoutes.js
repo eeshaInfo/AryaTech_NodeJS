@@ -28,6 +28,7 @@ let routes = [
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
                 email: Joi.string().required().description('email id of Users'),
                 courseId: Joi.string().description('course in which student will take admission'),
+                isAddressSame: Joi.boolean().description('true if both address will be same'),
                 primaryAddress: 
                     Joi.object({
                         
@@ -85,6 +86,7 @@ let routes = [
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
                 email: Joi.string().required().description('email id of Users'),
                 courseId: Joi.string().description('course'),
+                isAddressSame: Joi.boolean().description('true if both address will be same'),
                 primaryAddress: 
                 Joi.object({
                     
