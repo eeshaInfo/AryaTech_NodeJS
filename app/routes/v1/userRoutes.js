@@ -83,6 +83,7 @@ let routes = [
                 mothersName: Joi.string().optional().description('mother\'s name'),
                 dob: Joi.date().max(new Date()).description('User date of birth.'),
                 gender: Joi.number().valid(...Object.values(GENDER_TYPES)).required().description(`User's gender. 1 for male and 2 for female 3.`),
+                userType: Joi.number().valid(...[USER_TYPES.ADMIN, USER_TYPES.STUDENT]).description('USER_TYPES 1=>SuperAdmin, 2=>Admin, 3=>Student'),
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
                 email: Joi.string().required().description('email id of Users'),
                 courseId: Joi.string().description('course'),
