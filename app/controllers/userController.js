@@ -102,6 +102,8 @@ userController.userDetails = async (payload) => {
         "aadharNo": 1,
         "panNo": 1,
         "educations" :1,
+        "primaryAddress" :1,
+        "secondaryAddress" :1,
         "mobileNumber": 1,
         "imagePath": 1,
         "status": 1,
