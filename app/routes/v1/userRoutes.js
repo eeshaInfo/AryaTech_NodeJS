@@ -85,16 +85,23 @@ let routes = [
                 mobileNumber: Joi.string().required().description('User\'s mobile number.'),
                 email: Joi.string().required().description('email id of Users'),
                 courseId: Joi.string().description('course'),
-                address: Joi.array().items(
-                    Joi.object({
-                        type: Joi.number().valid(...Object.values(ADDRESS_TYPE)).description('Address type 1=>Permanent Address, 2=>Present Address'),
-                        address: Joi.string().description('localicty, street No'),
-                        postOffice: Joi.string().description('post office'),
-                        state: Joi.string().description('state'),
-                        dist: Joi.string().description('district'),
-                        pincode: Joi.string().description('zip code')
-                    })
-                ),
+                primaryAddress: 
+                Joi.object({
+                    
+                    address: Joi.string().description('localicty, street No'),
+                    postOffice: Joi.string().description('post office'),
+                    state: Joi.string().description('state'),
+                    dist: Joi.string().description('district'),
+                    pincode: Joi.string().description('zip code')
+                }),
+                secondaryAddress: 
+                Joi.object({
+                    address: Joi.string().description('localicty, street No'),
+                    postOffice: Joi.string().description('post office'),
+                    state: Joi.string().description('state'),
+                    dist: Joi.string().description('district'),
+                    pincode: Joi.string().description('zip code')
+                }),
                 educations: Joi.array().items(
                     Joi.object({
                         examination: Joi.string().description('examination'),
