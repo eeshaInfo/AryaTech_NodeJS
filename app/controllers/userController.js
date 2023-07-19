@@ -107,7 +107,7 @@ userController.userDetails = async (payload) => {
         "primaryAddress" :1,
         "secondaryAddress" :1,
         "mobileNumber": 1,
-        "imagePath": 1,
+        "profileImage": 1,
         "status": 1,
         "isDeleted": 1,
         "createdAt":1,

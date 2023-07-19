@@ -53,7 +53,7 @@ let routes = [
                         year: Joi.string().description('passing year')
                     })
                 ).required().description('Education Details of the Users or Admin'),
-                imagePath: Joi.string().default("").allow('').optional().description('Profile image.'),
+                profileImage: Joi.string().default("").allow('').optional().description('Profile image.'),
                 panNo: Joi.string().description('pan card no of franchise admin'),
                 aadharNo: Joi.string().required().description('aadhar no of franchise admin'),
             },
@@ -112,7 +112,7 @@ let routes = [
                         year: Joi.string().description('passing year')
                     })
                 ).required().description('Education Details of the Users or Admin'),
-                imagePath: Joi.string().default("").allow('').optional().description('profile image.'),
+                profileImage: Joi.string().default("").allow('').optional().description('profile image.'),
                 panNo: Joi.string().description('pan card no of franchise admin'),
                 aadharNo: Joi.string().description('aadhar no of franchise admin'),
             },

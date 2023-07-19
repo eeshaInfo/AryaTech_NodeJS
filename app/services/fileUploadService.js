@@ -25,7 +25,7 @@ fileUploadService.uploadFileToS3 = (buffer, fileName, bucketName) => {
                 console.log('Error here', err);
                 return reject(err);
             }
-            let imageUrl = data.key;
+            let imageUrl = `${process.env.CLOUDFRONT_URL}/${data.key}`;
             resolve(imageUrl);
         });
     });
