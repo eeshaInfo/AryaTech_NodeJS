@@ -54,7 +54,7 @@ let routes = [
                     })
                 ).required().description('Education Details of the Users or Admin'),
                 profileImage: Joi.object({
-                    originalImageName : Joi.string().description('original image name'),
+                    originalImage : Joi.string().description('original image name'),
                     imageUrl : Joi.string().description('image url '),
                 }),
                 panNo: Joi.string().description('pan card no of franchise admin'),
@@ -116,7 +116,7 @@ let routes = [
                     })
                 ).required().description('Education Details of the Users or Admin'),
                 profileImage: Joi.object({
-                    originalImageName : Joi.string().description('original image name'),
+                    originalImage : Joi.string().description('original image name'),
                     imageUrl : Joi.string().description('image url '),
                 }),
                 panNo: Joi.string().description('pan card no of franchise admin'),
