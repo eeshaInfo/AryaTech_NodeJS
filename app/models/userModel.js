@@ -54,7 +54,6 @@ const userSchema = new Schema(
         parentsMobile: { type: String },    
         profileImage: { 
             originalImageName : { type : String },
-            newImageName : { type : String },
             imageUrl : { type : String }
          },
         password: { type: String },
