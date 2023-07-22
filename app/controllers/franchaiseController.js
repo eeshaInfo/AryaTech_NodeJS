@@ -127,7 +127,7 @@ franchaiseController.list = async (payload) => {
  * @returns 
  */
 franchaiseController.franchaiseDropdown = async (payload) => {
-  let list = await dbService.find(franchiseModel,{}, { centerCode: 1, name:1 })
+  let list = await dbService.find(franchiseModel,{isDeleted : { $ne:true }}, { centerCode: 1, name:1 })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_FETCHED_SUCCESSFULLY), { list })
 }
 
