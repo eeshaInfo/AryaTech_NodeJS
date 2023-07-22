@@ -12,7 +12,7 @@ const HELPERS = require("../helpers");
 /**
  * function to upload a file to s3(AWS) bucket.
  */
-fileUploadService.uploadFileToS3 = (buffer, fileName, bucketName) => {
+fileUploadService.uploadFileToS3 = (buffer, fileName,originalImageName) => {
     console.log(fileName)
     const dir = 'profile';
     return new Promise((resolve, reject) => {
@@ -25,8 +25,11 @@ fileUploadService.uploadFileToS3 = (buffer, fileName, bucketName) => {
                 console.log('Error here', err);
                 return reject(err);
             }
-            let imageUrl = `${process.env.CLOUDFRONT_URL}/${data.key}`;
-            resolve(imageUrl);
+            let profileImage = {
+                originalImage : originalImageName,
+                imageUrl :  `${process.env.CLOUDFRONT_URL}/${data.key}`
+            }
+            resolve(profileImage);
         });
     });
 };
@@ -65,15 +68,16 @@ fileUploadService.uploadFile = async (payload, pathToUpload, pathOnServer) => {
     let fileExtention = payload.file.originalname.split('.')[1];
     console.log(fileExtention, AVAILABLE_EXTENSIONS_FOR_FILE_UPLOADS)
     if (AVAILABLE_EXTENSIONS_FOR_FILE_UPLOADS.indexOf(fileExtention) !== -(SERVER.ONE)) {
-        let fileName = `profile_${Date.now()}.${fileExtention}`, fileUrl = '';
+        let fileName = `profile_${Date.now()}.${fileExtention}`, profileImage = '';
+        let originalImageName = payload.file.originalname;
         let UPLOAD_TO_S3 = process.env.UPLOAD_TO_S3 ? process.env.UPLOAD_TO_S3 : '';
         if (UPLOAD_TO_S3.toLowerCase() === 'true') {
             let s3BucketName = CONFIG.S3_BUCKET.zipBucketName;
-            fileUrl = await fileUploadService.uploadFileToS3(payload.file.buffer, fileName, s3BucketName);
+            profileImage = await fileUploadService.uploadFileToS3(payload.file.buffer, fileName,originalImageName);
         } else {
-            fileUrl = await fileUploadService.uploadFileToLocal(payload, fileName, pathToUpload, pathOnServer);
+            profileImage = await fileUploadService.uploadFileToLocal(payload, fileName, pathToUpload, pathOnServer);
         }
-        return fileUrl;
+        return profileImage;
     }
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.INVALID_FILE_TYPE, ERROR_TYPES.BAD_REQUEST);
 };

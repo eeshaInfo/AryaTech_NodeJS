@@ -52,7 +52,11 @@ const userSchema = new Schema(
         mobileNumber: { type: String }, 
         parentsMobileNumber: { type: String }, 
         parentsMobile: { type: String },    
-        profileImage: { type: String },
+        profileImage: { 
+            originalImageName : { type : String },
+            newImageName : { type : String },
+            imageUrl : { type : String }
+         },
         password: { type: String },
         status:{type: Number, default:STATUS.PENDING },
         isDeleted: { type: Boolean, default: false},
