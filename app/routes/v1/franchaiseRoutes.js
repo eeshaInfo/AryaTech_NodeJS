@@ -74,7 +74,7 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                _id: Joi.string().objectId().required().description('user mongo _id')
+                _id: Joi.string().objectId().required().description('franchise mongo _id')
             },
             group: "Franchaise",
             description: "delete franchise",
