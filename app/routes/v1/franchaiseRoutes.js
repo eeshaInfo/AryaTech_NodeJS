@@ -81,7 +81,7 @@ let routes = [
             model: "deleteFranchise",
         },
         auth: AVAILABLE_AUTHS.SUPER_ADMIN,
-        handler: userController.deleteFranchise,
+        handler: franchaiseController.deleteFranchise,
     },
 
     {
