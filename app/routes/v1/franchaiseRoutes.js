@@ -66,6 +66,23 @@ let routes = [
         auth: AVAILABLE_AUTHS.SUPER_ADMIN,
         handler: franchaiseController.getFranchaise,
     },
+    {
+        method: "DELETE",
+        path: "/v1/franchise",
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            query: {
+                _id: Joi.string().objectId().required().description('user mongo _id')
+            },
+            group: "Franchaise",
+            description: "delete franchise",
+            model: "deleteFranchise",
+        },
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
+        handler: userController.deleteFranchise,
+    },
 
     {
         method: 'GET',

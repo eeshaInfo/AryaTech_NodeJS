@@ -54,6 +54,7 @@ module.exports = {
   FRANCHAISE_ALREADY_EXISTS:'Franchaise name already exists.',
   FRANCHAISE_FETCHED_SUCCESSFULLY:'Franchaise fetch successfully.',
   USER_IS_ALREADY_ADMIN_OF_OTHER_FRANCHAISE: 'Selected user is already admin of some other branch',
+  FRANCHISE_DELETED_SUCCESSFULLY: 'Franchise deleted successfully',
 
 
   //Notifications

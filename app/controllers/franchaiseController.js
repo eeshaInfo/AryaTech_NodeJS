@@ -67,6 +67,16 @@ franchaiseController.getFranchaise = async(payload)=>{
 
 }
 
+
+franchaiseController.deleteFranchise = async(payload) =>{
+
+  let data = await dbService.findOneAndUpdate(franchiseModel,{ _id: payload._id },{isDeleted:true});
+  //if present then delete the user
+  if (data) {
+    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHISE_DELETED_SUCCESSFULLY));
+  }
+}
+
 /**
  * Function to get user data 
  */
