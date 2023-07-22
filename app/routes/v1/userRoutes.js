@@ -32,19 +32,19 @@ let routes = [
                 primaryAddress: 
                     Joi.object({
                         
-                        address: Joi.string().description('localicty, street No'),
-                        postOffice: Joi.string().description('post office'),
-                        state: Joi.string().description('state'),
-                        dist: Joi.string().description('district'),
-                        pincode: Joi.string().description('zip code')
+                        address: Joi.string().allow("").description('localicty, street No'),
+                        postOffice: Joi.string().allow("").description('post office'),
+                        state: Joi.string().allow("").description('state'),
+                        dist: Joi.string().allow("").description('district'),
+                        pincode: Joi.string().allow("").description('zip code')
                     }),
                     secondaryAddress: 
                     Joi.object({
-                        address: Joi.string().description('localicty, street No'),
-                        postOffice: Joi.string().description('post office'),
-                        state: Joi.string().description('state'),
-                        dist: Joi.string().description('district'),
-                        pincode: Joi.string().description('zip code')
+                        address: Joi.string().allow("").description('localicty, street No'),
+                        postOffice: Joi.string().allow("").description('post office'),
+                        state: Joi.string().allow("").description('state'),
+                        dist: Joi.string().allow("").description('district'),
+                        pincode: Joi.string().allow("").description('zip code')
                     }),
                 educations: Joi.array().items(
                     Joi.object({
@@ -94,19 +94,19 @@ let routes = [
                 primaryAddress: 
                 Joi.object({
                     
-                    address: Joi.string().description('localicty, street No'),
-                    postOffice: Joi.string().description('post office'),
-                    state: Joi.string().description('state'),
-                    dist: Joi.string().description('district'),
-                    pincode: Joi.string().description('zip code')
+                    address: Joi.string().allow("").description('localicty, street No'),
+                    postOffice: Joi.string().allow("").description('post office'),
+                    state: Joi.string().allow("").description('state'),
+                    dist: Joi.string().allow("").description('district'),
+                    pincode: Joi.string().allow("").description('zip code')
                 }),
                 secondaryAddress: 
                 Joi.object({
-                    address: Joi.string().description('localicty, street No'),
-                    postOffice: Joi.string().description('post office'),
-                    state: Joi.string().description('state'),
-                    dist: Joi.string().description('district'),
-                    pincode: Joi.string().description('zip code')
+                    address: Joi.string().allow("").description('localicty, street No'),
+                    postOffice: Joi.string().allow("").description('post office'),
+                    state: Joi.string().allow("").description('state'),
+                    dist: Joi.string().allow("").description('district'),
+                    pincode: Joi.string().allow("").description('zip code')
                 }),
                 educations: Joi.array().items(
                     Joi.object({
