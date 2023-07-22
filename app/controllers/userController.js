@@ -8,6 +8,8 @@ const {dbService,fileUploadService} = require('../services')
 const {userModel} = require('../models/index')
 const { hashPassword} = require('../utils/utils');
 const { log } = require('console');
+const CONSTANTS = require('../utils/constants');
+const franchiseModel = require('../models/franchiseModel');
 
 
 /**************************************************
@@ -44,8 +46,11 @@ userController.registerNewUser = async (payload) => {
   let isUserAlreadyExist = await SERVICES.userService.findOne({email:payload.email, isDeleted:false})
   if(!isUserAlreadyExist){
     payload.password = hashPassword(payload.mobileNumber);
-    // let data = await SERVICES.userService.createUser(payload)
     let data = await dbService.create(userModel,payload)
+    console.log("🚀 ~ file: userController.js:50 ~ userController.registerNewUser= ~ data:", data)
+    if(data && payload.userType===CONSTANTS.USER_TYPES.ADMIN){
+       await dbService.findOneAndUpdate(franchiseModel,{_id:payload.franchiseId},{userId:data._id})
+    }
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: data });
       }
       throw HELPERS.responseHelper.createErrorResponse(MESSAGES.EMAIL_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
@@ -59,7 +64,9 @@ userController.registerNewUser = async (payload) => {
 userController.updateUser = async(payload)=>{
   let criteria = { _id:payload._id };
   let data = await dbService.findOneAndUpdate(userModel,criteria,payload)
-  // let data = await SERVICES.userService.updateUser(criteria,payload,{ ...NORMAL_PROJECTION, password: 0, passwordToken: 0 })
+  if(data && payload.userType===CONSTANTS.USER_TYPES.ADMIN){
+    await dbService.findOneAndUpdate(franchiseModel,{_id:payload.franchiseId},{userId:data._id})
+  }
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY),{data})
 }
 
