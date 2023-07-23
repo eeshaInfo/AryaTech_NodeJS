@@ -50,7 +50,7 @@ userController.registerNewUser = async (payload) => {
     let frachiaiseDetails = await dbService.findOne(franchiseModel, {
       _id: payload.franchiseId,
     });
-    if (frachiaiseDetails?.userId) {
+    if (frachiaiseDetails.userId) {
       throw HELPERS.responseHelper.createErrorResponse(
         MESSAGES.USER_IS_ALREADY_ADMIN_OF_OTHER_FRANCHAISE,
         ERROR_TYPES.BAD_REQUEST
