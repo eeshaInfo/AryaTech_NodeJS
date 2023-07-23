@@ -205,7 +205,7 @@ let routes = [
             },
             query: {
                 franchiseId: Joi.string().objectId().description('franchiseId mongo _id'),
-                status: Joi.number().default(STATUS.PENDING).valid(...Object.values(STATUS)).description('status'),
+                status: Joi.number().valid(...Object.values(STATUS)).description('status'),
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
                 searchKey: Joi.string().allow(""),

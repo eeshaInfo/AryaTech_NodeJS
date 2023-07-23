@@ -166,9 +166,9 @@ userController.list = async (payload) => {
 let criteria={}
   let regex = new RegExp(payload.searchKey, 'i');
    if(payload.franchiseId){
-      criteria = {franchiseId:payload.franchiseId, status:payload.status, userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
+      criteria = {franchiseId:payload.franchiseId, userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
    }else{
-      criteria = {status:payload.status ,userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
+      criteria = {userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
    }
   let matchCriteria = {
     $and: [{ $or: [{ name: regex }, { mobileNumber: regex }] },criteria ]}
