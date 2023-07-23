@@ -133,8 +133,8 @@ franchaiseController.franchaiseDropdown = async (payload) => {
 }
 
 
-franchaiseController.userStatus = async (payload) => {
-  await dbService.findOneAndUpdate(franchiseModel,{ _id: payload.userId }, { status: payload.status })
-}
+// franchaiseController.userStatus = async (payload) => {
+//   await dbService.findOneAndUpdate(franchiseModel,{ _id: payload.userId }, { status: payload.status })
+// }
 /* export franchaiseController */
 module.exports = franchaiseController;

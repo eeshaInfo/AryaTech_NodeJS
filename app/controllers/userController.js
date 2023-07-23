@@ -265,6 +265,8 @@ userController.deleteUser = async (payload) => {
 
 userController.userStatus = async (payload) => {
   await dbService.findOneAndUpdate(userModel,{ _id: payload.userId }, { status: payload.status })
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS));
+  
 }
 
 /* export userController */
