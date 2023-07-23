@@ -262,5 +262,10 @@ userController.deleteUser = async (payload) => {
   }
 }
 
+
+userController.userStatus = async (payload) => {
+  await dbService.findOneAndUpdate(userModel,{ _id: payload.userId }, { status: payload.status })
+}
+
 /* export userController */
 module.exports = userController;
