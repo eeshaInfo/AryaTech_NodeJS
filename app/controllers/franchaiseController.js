@@ -19,12 +19,12 @@ let franchaiseController = {};
  * function to register a franchise
  */
 franchaiseController.registerNewFranchaise = async (payload) => {
-  let isUserAlreadyExist = await dbService.findOne(franchiseModel,{userId: payload.userId})
-  // if(!isUserAlreadyExist){
+  let alreadyExists = await dbService.findOne(franchiseModel,{centerCode: payload.centerCode})
+  if(!alreadyExists){
     let data = await dbService.create(franchiseModel,payload);
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.FRANCHAISE_CREATED_SUCCESSFULLY),{data});
-  // }
-  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.USER_IS_ALREADY_ADMIN_OF_OTHER_FRANCHAISE, ERROR_TYPES.ALREADY_EXISTS);
+  }
+  throw HELPERS.responseHelper.createErrorResponse(MESSAGES.ALREADY_EXISTS, ERROR_TYPES.ALREADY_EXISTS);
 }
 
 /**
@@ -39,7 +39,6 @@ franchaiseController.udpateFranchaise = async(payload)=>{
 
 
 franchaiseController.getFranchaise = async(payload)=>{
-    console.log(payload)
     let criteria = {franchiseId: payload._id,userType: USER_TYPES.ADMIN};
     let queryArray= [
       {$match : criteria},
@@ -58,18 +57,20 @@ franchaiseController.getFranchaise = async(payload)=>{
         "name":1,
         "email":1,
         "mobileNumber":1,
-        "imagePath":1,
+        "profileImage":1,
       }}
     ]
     let data = await dbService.aggregate(userModel,queryArray)
-    console.log('data',data)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS),{data:data[0]})
 
 }
 
 
 franchaiseController.deleteFranchise = async(payload) =>{
-
+  let isStudentExist = await dbService.findOneAndUpdate(userModel,{franchiseId:payload._id, userType: USER_TYPES.STUDENT})
+  if(isStudentExist){
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.FRANCHISE_CANNOT_BE_DELETED, ERROR_TYPES.BAD_REQUEST);
+  }
   let data = await dbService.findOneAndUpdate(franchiseModel,{ _id: payload._id },{isDeleted:true});
   //if present then delete the user
   if (data) {

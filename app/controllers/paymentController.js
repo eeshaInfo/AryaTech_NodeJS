@@ -8,7 +8,6 @@ const CONSTANTS = require('../utils/constants');
 let paymentController= {}
 
 paymentController.acceptPayment= async(payload)=>{
-    console.log(payload)
     payload.transactionId = new Date().getTime()
     let data = await dbService.create(paymentModel,payload)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.PAYMENT_ACCEPTED_SUCCESSFULLY), { data })
@@ -50,7 +49,7 @@ paymentController.getPaymentList= async(payload)=>{
         {$project:{
             "regNo":1,
             "regDate":1,
-            "imagePath":1,
+            "profileImage":1,
             "fathersName" :1,
             "createdAt":1,
             "name": 1,
@@ -77,7 +76,7 @@ paymentController.getPaymentList= async(payload)=>{
             name: {$first : "$name" },
             regDate: {$first : "$regDate" },
             regNo: {$first : "$regNo" },
-            imagePath: {$first : "$imagePath" },
+            profileImage: {$first : "$profileImage" },
             fathersName: {$first : "$fathersName" },
             totalFees: {$first : "$totalFees"},
             course: {$first : "$course" },
@@ -183,10 +182,8 @@ paymentController.deletePayment= async(payload)=>{
 }
 
 paymentController.addStudentFee = async(payload) =>{
-    console.log(payload)
     await dbService.findOneAndUpdate(userModel,{_id:payload.userId},{ $inc: { totalFees: payload.amount }})
     let data = await dbService.create(paymentModel,payload)
-    console.log('data',data)
     return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS), { data })
 }
 

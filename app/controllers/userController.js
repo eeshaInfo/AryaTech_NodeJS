@@ -7,7 +7,6 @@ const SERVICES = require('../services');
 const {dbService,fileUploadService} = require('../services')
 const {userModel} = require('../models/index')
 const { hashPassword} = require('../utils/utils');
-const { log } = require('console');
 const CONSTANTS = require('../utils/constants');
 const franchiseModel = require('../models/franchiseModel');
 
@@ -43,17 +42,44 @@ userController.getFile = async(payload) =>{
  * function to register a user to the system.
  */
 userController.registerNewUser = async (payload) => {
-  let isUserAlreadyExist = await SERVICES.userService.findOne({email:payload.email, isDeleted:false})
-  if(!isUserAlreadyExist){
-    payload.password = hashPassword(payload.mobileNumber);
-    let data = await dbService.create(userModel,payload)
-    console.log("🚀 ~ file: userController.js:50 ~ userController.registerNewUser= ~ data:", data)
-    if(data && payload.userType===CONSTANTS.USER_TYPES.ADMIN){
-       await dbService.findOneAndUpdate(franchiseModel,{_id:payload.franchiseId},{userId:data._id})
+  let isUserAlreadyExist = await SERVICES.userService.findOne({
+    email: payload.email,
+    isDeleted: false,
+  });
+  if (payload.userType === CONSTANTS.USER_TYPES.ADMIN) {
+    let frachiaiseDetails = await dbService.findOne(franchiseModel, {
+      _id: payload.franchiseId,
+    });
+    if (frachiaiseDetails?.userId) {
+      throw HELPERS.responseHelper.createErrorResponse(
+        MESSAGES.USER_IS_ALREADY_ADMIN_OF_OTHER_FRANCHAISE,
+        ERROR_TYPES.BAD_REQUEST
+      );
+      return;
     }
-    return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_REGISTERED_SUCCESSFULLY), { user: data });
-      }
-      throw HELPERS.responseHelper.createErrorResponse(MESSAGES.EMAIL_ALREADY_EXISTS, ERROR_TYPES.BAD_REQUEST);
+  }
+
+  if (!isUserAlreadyExist) {
+    payload.password = hashPassword(payload.mobileNumber);
+    let data = await dbService.create(userModel, payload);
+    if (data && payload.userType === CONSTANTS.USER_TYPES.ADMIN) {
+      await dbService.findOneAndUpdate(
+        franchiseModel,
+        { _id: payload.franchiseId },
+        { userId: data._id }
+      );
+    }
+    return Object.assign(
+      HELPERS.responseHelper.createSuccessResponse(
+        MESSAGES.USER_REGISTERED_SUCCESSFULLY
+      ),
+      { user: data }
+    );
+  }
+  throw HELPERS.responseHelper.createErrorResponse(
+    MESSAGES.EMAIL_ALREADY_EXISTS,
+    ERROR_TYPES.BAD_REQUEST
+  );
 }
   
 
@@ -184,7 +210,7 @@ let criteria={}
         "isAddressSame" : 1,
         "educations" :1,
         "mobileNumber": 1,
-        "imagePath": 1,
+        "profileImage": 1,
         "status": 1,
         "isDeleted": 1,
         "createdAt":1,

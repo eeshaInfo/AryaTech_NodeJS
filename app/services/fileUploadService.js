@@ -13,7 +13,6 @@ const HELPERS = require("../helpers");
  * function to upload a file to s3(AWS) bucket.
  */
 fileUploadService.uploadFileToS3 = (buffer, fileName,originalImageName) => {
-    console.log(fileName)
     const dir = 'profile';
     return new Promise((resolve, reject) => {
         s3Bucket.upload({
@@ -66,7 +65,6 @@ fileUploadService.uploadFileToLocal = async (payload, fileName, pathToUpload, pa
  */
 fileUploadService.uploadFile = async (payload, pathToUpload, pathOnServer) => {
     let fileExtention = payload.file.originalname.split('.')[1];
-    console.log(fileExtention, AVAILABLE_EXTENSIONS_FOR_FILE_UPLOADS)
     if (AVAILABLE_EXTENSIONS_FOR_FILE_UPLOADS.indexOf(fileExtention) !== -(SERVER.ONE)) {
         let fileName = `profile_${Date.now()}.${fileExtention}`, profileImage = '';
         let originalImageName = payload.file.originalname;
