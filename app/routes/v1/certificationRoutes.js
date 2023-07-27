@@ -23,7 +23,7 @@ let certificationRoutes=[
                 serialNo: Joi.number().description('certificate serial number'),
                 marks:Joi.object(
                     {
-                        pratical: Joi.number().description('practical Marks'),
+                        practical: Joi.number().description('practical Marks'),
                         written: Joi.number().description('written Marks'),
                         assignment: Joi.number().description('assignment Marks'),
                         viva: Joi.number().description('viva Marks'),
@@ -56,7 +56,7 @@ let certificationRoutes=[
                 dateOfIssue: Joi.date().description('certificate date issue'),
                 marks:Joi.object(
                     {
-                        pratical: Joi.number().description('practical Marks'),
+                        practical: Joi.number().description('practical Marks'),
                         written: Joi.number().description('written Marks'),
                         assignment: Joi.number().description('assignment Marks'),
                         viva: Joi.number().description('viva Marks'),
@@ -152,8 +152,7 @@ let certificationRoutes=[
         path: '/v1/certificate/verify',
         joiSchemaForSwagger: {
             query:{
-                regNo: Joi.string().required().description('Registration No'),
-                certificateType : Joi.string().valid(...Object.values(CERTIFICATE_TYPES)).description('Certificate Type'),
+                regNo: Joi.string().required().description('Registration No')
             },
             group: 'Certificate',
             description: 'Route to verify certificate for student',

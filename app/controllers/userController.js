@@ -2,7 +2,7 @@
 const path = require('path');
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
-const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, USER_TYPES } = require('../utils/constants');
+const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, USER_TYPES, STATUS } = require('../utils/constants');
 const SERVICES = require('../services');
 const {dbService,fileUploadService} = require('../services')
 const {userModel} = require('../models/index')
@@ -46,7 +46,7 @@ userController.registerNewUser = async (payload) => {
     email: payload.email,
     isDeleted: false,
   });
-  if (payload.userType === CONSTANTS.USER_TYPES.ADMIN) {
+  if (payload.userType === USER_TYPES.ADMIN) {
     let frachiaiseDetails = await dbService.findOne(franchiseModel, {
       _id: payload.franchiseId,
     });
@@ -62,7 +62,7 @@ userController.registerNewUser = async (payload) => {
   if (!isUserAlreadyExist) {
     payload.password = hashPassword(payload.mobileNumber);
     let data = await dbService.create(userModel, payload);
-    if (data && payload.userType === CONSTANTS.USER_TYPES.ADMIN) {
+    if (data && payload.userType === USER_TYPES.ADMIN) {
       await dbService.findOneAndUpdate(
         franchiseModel,
         { _id: payload.franchiseId },
@@ -75,6 +75,9 @@ userController.registerNewUser = async (payload) => {
       ),
       { user: data }
     );
+  }
+  if(payload.userType==USER_TYPES.ADMIN){
+    await dbService.findOneAndUpdate(franchiseModel,{_id:payload.franchiseId},{status:STATUS.APPROVE})
   }
   throw HELPERS.responseHelper.createErrorResponse(
     MESSAGES.EMAIL_ALREADY_EXISTS,
@@ -90,7 +93,7 @@ userController.registerNewUser = async (payload) => {
 userController.updateUser = async(payload)=>{
   let criteria = { _id:payload._id };
   let data = await dbService.findOneAndUpdate(userModel,criteria,payload)
-  if(data && payload.userType===CONSTANTS.USER_TYPES.ADMIN){
+  if(data && payload.userType===USER_TYPES.ADMIN){
     await dbService.findOneAndUpdate(franchiseModel,{_id:payload.franchiseId},{userId:data._id})
   }
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.DATA_UPDATED_SUCCESSFULLY),{data})

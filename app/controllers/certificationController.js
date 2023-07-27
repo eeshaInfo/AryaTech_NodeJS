@@ -181,7 +181,7 @@ certificationController.updateStatus = async (payload) => {
     let dataToUpdate = {}
     if (payload.status == CERTIFICATE_STATUS.ISSUED) {
         let latestRecord = await certificationService.getLatestRecord({ status: CERTIFICATE_STATUS.ISSUED })
-        let newSerialNumber = latestRecord ? latestRecord.serialNumber + 1 : 0001
+        let newSerialNumber = latestRecord ? latestRecord.serialNumber + 1 : '0001';
         dataToUpdate = { status: CERTIFICATE_STATUS.ISSUED, serialNumber: newSerialNumber }
     }
     else {
@@ -196,7 +196,7 @@ certificationController.verifyCertificate = async (payload) =>{
     let studentData = await dbService.findOne(userModel,criteria)
     if(studentData){
         let queryArray=[
-            {$match:{ userId : studentData._id, type: payload.certificateType }},
+            {$match:{ userId : studentData._id}},
             {$lookup:{
                 from:'users',
                 localField:'userId',
@@ -204,7 +204,6 @@ certificationController.verifyCertificate = async (payload) =>{
                 as:'userData'
             }},
             {$unwind:{path:'$userData',preserveNullAndEmptyArrays:true}},
-    
             {$lookup:{
                 from:'franchise',
                 localField:'franchiseId',
@@ -212,7 +211,6 @@ certificationController.verifyCertificate = async (payload) =>{
                 as:'centerDetails'
             }},
             {$unwind:{path:'$centerDetails',preserveNullAndEmptyArrays:true}},
-    
             {$lookup:{
                 from:'course',
                 localField:'courseId',
