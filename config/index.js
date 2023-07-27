@@ -9,7 +9,7 @@ var defaults = {
     PLATFORM: PLATFORM,
     ADMIN: {
         EMAIL: process.env.ADMIN_EMAIL || `admin.test@yopmail.com`,
-        PASSWORD: process.env.EMAIL_PASSWORD || `Admin@123`,
+        PASSWORD: process.env.ADMIN_PASSWORD || `Admin@123`,
         FIRST_NAME: 'ADMIN',
         LAST_NAME: 'ADMIN'
     },
