@@ -259,7 +259,7 @@ certificationController.getAllCertificateByUserId = async(payload) =>{
 
         {$lookup:{
             from:'franchise',
-            localField:'franchiseId',
+            localField:'centerId',
             foreignField:'_id',
             as:'centerDetails'
         }},
