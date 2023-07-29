@@ -228,7 +228,9 @@ let routes = [
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             query: {
-                userType: Joi.number().default(USER_TYPES.STUDENT).valid(...Object.values(USER_TYPES)).description('User Type')
+                userType: Joi.number().default(USER_TYPES.STUDENT).valid(...Object.values(USER_TYPES)).description('User Type'),
+                dropdownType: Joi.string().default('general').valid(...['certificate','general']).description('dropdown type eg: certificate or marksheet'),
+                franchiseId: Joi.string().objectId().description('Center mongo _id'),
             },
             group: 'Users',
             description: 'Route to get user dropdwon for user',

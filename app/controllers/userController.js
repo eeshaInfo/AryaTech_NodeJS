@@ -174,7 +174,7 @@ let criteria={}
       criteria = {userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
    }
   let matchCriteria = {
-    $and: [{ $or: [{ name: regex }, { mobileNumber: regex }] },criteria ]}
+    $and: [{ $or: [{ name: regex },{regNo: regex}, { mobileNumber: regex }] },criteria ]}
   //get user list with search and sort 
   let sort = {};
       sort[payload.sortKey] = payload.sortDirection;
@@ -246,8 +246,15 @@ let criteria={}
  * @returns 
  */
 userController.userDropdown = async (payload) => {
-  // let userList = await SERVICES.userService.getUsers({ isDeleted:false }, { regNo: 1, name: 1, })
-  let userList = await dbService.find(userModel,{ isDeleted:false} , {regNo: 1, name: 1, })
+  let criteria ={};
+  if(payload.dropdownType=='certificate' && payload.franchiseId){
+    criteria = { isDeleted : { $ne:true }, certificateIssued : { $ne:true },
+      userType: payload.userType, franchiseId: payload.franchiseId }
+  }else{
+    criteria = { isDeleted : { $ne:true }, userType: payload.userType }
+  }
+  console.log('---->',criteria)
+  let userList = await dbService.find( userModel, criteria, {regNo: 1, name: 1, })
 
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.USER_FETCHED_SUCCESSFULLY), { userList })
 }

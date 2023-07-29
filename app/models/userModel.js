@@ -58,6 +58,7 @@ const userSchema = new Schema(
          },
         password: { type: String },
         status:{type: Number, default:STATUS.PENDING },
+        certificateIssued: { type: Boolean, default: false },
         isDeleted: { type: Boolean, default: false},
     },
     { versionKey: false, timestamps: true,collection: 'users' }
