@@ -13,7 +13,7 @@ const franchiseSchema = new Schema(
         centerCode: { type: String, unique : true},
         name: {type: String, unique : true},
         address: {type: String},
-        status: { type: Number, default:CONSTANTS.FRANCHAISE_STATUS.ACTIVE, enum:Object.values(CONSTANTS.FRANCHAISE_STATUS) },
+        status: { type: Number, default:CONSTANTS.FRANCHAISE_STATUS.PENDING, enum:Object.values(CONSTANTS.FRANCHAISE_STATUS) },
         userId:{type:Schema.Types.ObjectId,ref:'users'},
         isDeleted: { type: Boolean, default: false},
     },

@@ -67,7 +67,7 @@ franchaiseController.getFranchaise = async(payload)=>{
 
 
 franchaiseController.deleteFranchise = async(payload) =>{
-  let isStudentExist = await dbService.findOneAndUpdate(userModel,{franchiseId:payload._id, userType: USER_TYPES.STUDENT})
+  let isStudentExist = await dbService.findOne(userModel,{franchiseId:payload._id})
   if(isStudentExist){
     throw HELPERS.responseHelper.createErrorResponse(MESSAGES.FRANCHISE_CANNOT_BE_DELETED, ERROR_TYPES.BAD_REQUEST);
   }

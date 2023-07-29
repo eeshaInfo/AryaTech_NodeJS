@@ -2,7 +2,7 @@ const {dbService} = require('../services')
 const {certificationModel, userModel} = require('../models/index')
 const CONFIG = require('../../config');
 const HELPERS = require("../helpers");
-const { MESSAGES, ERROR_TYPES, CERTIFICATE_TYPES, NORMAL_PROJECTION, CERTIFICATE_STATUS } = require('../utils/constants');
+const { MESSAGES, ERROR_TYPES, CERTIFICATE_TYPES, NORMAL_PROJECTION, CERTIFICATE_STATUS, STATUS } = require('../utils/constants');
 
 let certificationController = {}
 
@@ -11,9 +11,13 @@ let certificationController = {}
  * @param {*} payload 
  */
 certificationController.requestForCertificate = async (payload) => {
+    let user = await dbService.findOne(userModel,{_id: payload.userId})
+    if(user.status!==STATUS.APPROVED){
+        throw HELPERS.responseHelper.createErrorResponse(MESSAGES.STUDENT_NOT_APPROVED, ERROR_TYPES.BAD_REQUEST);
+    }
     let data = await dbService.create(certificationModel,payload)
     if(data){
-        await dbService.findOneAndUpdate(userModel,{_id:payload.userId},{certificateIssued :true})
+        await dbService.findOneAndUpdate(userModel,{_id:payload.userId},{certificateIssued :true, status: STATUS.CERTIFIED})
     }
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.createSuccessResponse), { data })
 

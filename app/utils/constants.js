@@ -21,10 +21,10 @@ CONSTANTS.ADDRESS_TYPE = {
 
 CONSTANTS.STATUS = {
     PENDING: 1,
-    APPROVE: 2,
-    ACTIVE: 3,
-    BLOCK: 4,
-    INACTIVE: 5
+    APPROVED: 2,
+    LEFT: 3,
+    CERTIFIED: 4,
+    BLOCKED: 5
 };
 
 CONSTANTS.PASSWORD_PATTER_REGEX = /^(?=.{6,})(?=.*[a-z])(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$/;
@@ -58,8 +58,9 @@ CONSTANTS.USER_TYPES = {
 };
 
 CONSTANTS.FRANCHAISE_STATUS = {
-    ACTIVE : 1, 
-    INACTIVE : 2
+
+    PENDING : 1, 
+    APPROVED : 2
 }
 
 CONSTANTS.CERTIFICATE_STATUS = {

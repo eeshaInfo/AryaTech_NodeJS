@@ -77,7 +77,7 @@ userController.registerNewUser = async (payload) => {
     );
   }
   if(payload.userType==USER_TYPES.ADMIN){
-    await dbService.findOneAndUpdate(franchiseModel,{_id:payload.franchiseId},{status:STATUS.APPROVE})
+    await dbService.findOneAndUpdate(franchiseModel,{_id:payload.franchiseId},{status:STATUS.APPROVED})
   }
   throw HELPERS.responseHelper.createErrorResponse(
     MESSAGES.EMAIL_ALREADY_EXISTS,
@@ -264,7 +264,6 @@ userController.userDropdown = async (payload) => {
  */
 userController.deleteUser = async (payload) => {
   //get data of user
-  // let data = await SERVICES.userService.update({ _id: payload._id },{isDeleted:true});
   let data = await dbService.findOneAndUpdate(userModel,{ _id: payload._id },{isDeleted:true});
   //if present then delete the user
   if (data) {

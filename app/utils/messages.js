@@ -42,6 +42,7 @@ module.exports = {
   DATA_FETCHED_SUCCESSFULLY: 'User Data Fetched Successfully',
   USER_UNBLOCKED_SUCCESSFULLY: 'User Unblocked Successfully',
   CONTACTS_ADDED_SUCCESSFULLY: 'User contacts added successfully',
+  STUDENT_NOT_APPROVED : 'Student is not approved, please approved first',
   //Payment
   PAYMENT_ACCEPTED_SUCCESSFULLY: 'Payment Accepted Successfully',
   PAYMENT_DELETE_SUCCESSFULLY: 'Payment deleted Successfully',
