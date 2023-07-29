@@ -5,10 +5,9 @@ const HELPERS = require("../helpers");
 const { MESSAGES, ERROR_TYPES, NORMAL_PROJECTION, USER_TYPES, STATUS } = require('../utils/constants');
 const SERVICES = require('../services');
 const {dbService,fileUploadService} = require('../services')
-const {userModel} = require('../models/index')
+const {userModel,courseModel,franchiseModel} = require('../models/index')
 const { hashPassword} = require('../utils/utils');
 const CONSTANTS = require('../utils/constants');
-const franchiseModel = require('../models/franchiseModel');
 
 
 /**************************************************
@@ -276,6 +275,17 @@ userController.userStatus = async (payload) => {
   await dbService.findOneAndUpdate(userModel,{ _id: payload.userId }, { status: payload.status })
   return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS));
   
+}
+
+
+userController.dashboardStat = async (payload) => {
+  let totalStudents = await dbService.countDocument(userModel,{isDeleted : { $ne : true }, userType : USER_TYPES.STUDENT })
+  let ActiveStudents = await dbService.countDocument(userModel,{isDeleted : { $ne : true }, userType : USER_TYPES.STUDENT, status:STATUS.APPROVED})
+  let totalFranchises = await dbService.countDocument(franchiseModel,{isDeleted : { $ne : true }})
+  let totalCourses = await dbService.countDocument(courseModel,{isDeleted : { $ne : true }})
+  let data = { totalFranchises : totalFranchises, totalCourses : totalCourses, totalStudents : totalStudents, totalActiveStudents:ActiveStudents }
+  return Object.assign(HELPERS.responseHelper.createSuccessResponse(MESSAGES.SUCCESS),{data});
+
 }
 
 /* export userController */

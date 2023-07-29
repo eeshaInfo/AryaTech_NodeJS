@@ -257,6 +257,20 @@ let routes = [
         auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.userDetails
     },
+    {
+        method: 'GET',
+        path: '/v1/dashboard',
+        joiSchemaForSwagger: {
+            headers: {
+                'authorization': Joi.string().required().description("User's JWT token.")
+            },
+            group: 'Users',
+            description: 'Route to get dashboard stat for admin',
+            model: 'getDashboardstat'
+        },
+        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
+        handler: userController.dashboardStat
+    },
 
 ]
 
