@@ -40,6 +40,7 @@ let courseRoutes=[
                 'authorization': Joi.string().required().description("User's JWT token.")
             },
             body:{
+                _id: Joi.string().objectId().description('Course Mongo Id'),
                 name: Joi.string().required().description('Course Name'),
                 fullName : Joi.string().required().description('course full name'),
                 fee : Joi.number().required().description('course fee'),
