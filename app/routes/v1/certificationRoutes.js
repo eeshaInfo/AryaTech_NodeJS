@@ -54,6 +54,7 @@ let certificationRoutes=[
                 type : Joi.string().valid(...Object.values(CERTIFICATE_TYPES)).description('Certificate Type'),
                 courseId: Joi.string().objectId().description('course MongoId'),
                 dateOfIssue: Joi.date().description('certificate date issue'),
+                serialNo: Joi.number().description('certificate serial number'),
                 marks:Joi.object(
                     {
                         practical: Joi.number().description('practical Marks'),
