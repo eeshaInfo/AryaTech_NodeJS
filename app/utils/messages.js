@@ -43,6 +43,7 @@ module.exports = {
   USER_UNBLOCKED_SUCCESSFULLY: 'User Unblocked Successfully',
   CONTACTS_ADDED_SUCCESSFULLY: 'User contacts added successfully',
   STUDENT_NOT_APPROVED : 'Student is not approved, please approved first',
+  CAN_NOT_DELETE_APPROVED_USER : 'Cannot delete approved user',
   //Payment
   PAYMENT_ACCEPTED_SUCCESSFULLY: 'Payment Accepted Successfully',
   PAYMENT_DELETE_SUCCESSFULLY: 'Payment deleted Successfully',

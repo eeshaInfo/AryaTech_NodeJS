@@ -267,6 +267,11 @@ userController.userDropdown = async (payload) => {
  */
 userController.deleteUser = async (payload) => {
   //get data of user
+  let user = await dbService.findOne(userModel,{_id:payload._id, status: STATUS.PENDING})
+  if(!user){
+    throw HELPERS.responseHelper.createErrorResponse(MESSAGES.CAN_NOT_DELETE_APPROVED_USER, ERROR_TYPES.BAD_REQUEST);
+    return;
+  }
   let data = await dbService.findOneAndUpdate(userModel,{ _id: payload._id },{isDeleted:true});
   //if present then delete the user
   if (data) {
