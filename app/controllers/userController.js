@@ -169,7 +169,10 @@ let criteria={}
   let regex = new RegExp(payload.searchKey, 'i');
    if(payload.franchiseId){
       criteria = {franchiseId:payload.franchiseId, userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
-   }else{
+   }else if(payload.userType==USER_TYPES.ADMIN){
+    criteria = {userType:USER_TYPES.ADMIN, isDeleted : {$ne:true}}
+   }
+   else{
       criteria = {userType:USER_TYPES.STUDENT, isDeleted : {$ne:true}}
    }
   let matchCriteria = {

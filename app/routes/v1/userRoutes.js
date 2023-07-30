@@ -206,6 +206,7 @@ let routes = [
             query: {
                 franchiseId: Joi.string().objectId().description('franchiseId mongo _id'),
                 status: Joi.number().valid(...Object.values(STATUS)).description('status'),
+                userType: Joi.number().valid(...Object.values(USER_TYPES)).description('User Types'),
                 skip: Joi.number().default(0).description('skip'),
                 limit: Joi.number().default(10).description('limit'),
                 searchKey: Joi.string().allow(""),
@@ -268,7 +269,7 @@ let routes = [
             description: 'Route to get dashboard stat for admin',
             model: 'getDashboardstat'
         },
-        auth: AVAILABLE_AUTHS.SUPER_ADMIN,
+        auth: AVAILABLE_AUTHS.ADMIN_AND_SUPER_ADMIN,
         handler: userController.dashboardStat
     },
 
