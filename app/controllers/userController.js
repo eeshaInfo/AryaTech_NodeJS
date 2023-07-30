@@ -46,6 +46,7 @@ userController.registerNewUser = async (payload) => {
     isDeleted: false,
   });
   if (payload.userType === USER_TYPES.ADMIN) {
+      payload.status = STATUS.APPROVED
     let frachiaiseDetails = await dbService.findOne(franchiseModel, {
       _id: payload.franchiseId,
     });
